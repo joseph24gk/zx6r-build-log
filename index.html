@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZX-6R Build Log — Midnight Emerald</title>
+<!--
+═══════════════════════════════════════════════════════════════════════════
+  AGENT EDITING GUIDE — READ THIS FIRST
+═══════════════════════════════════════════════════════════════════════════
+  This is a LIVING DOCUMENT. All content is data-driven. To add, edit, or
+  remove events, edit ONLY the JSON inside <script type="application/json"
+  id="build-data">. The page renders itself from that block on load.
+  Do not hand-edit the rendered timeline markup.
+
+  SCHEMA — top-level object:
+    meta: {
+      title, subtitle,
+      idLine,                              // shown under the subtitle. Model
+                                           // code etc. — keep VIN and other
+                                           // PII OUT in case repo goes public
+      acquisition: { date, cost, note },   // shown separately, not in totals
+      benchDate: "YYYY-MM-DD"              // "days on the bench" counts from this
+    }
+    nextUp: [ string, ... ]                // short upcoming-work list
+    events: [ Event, ... ]                 // order doesn't matter; sorted by date
+    gallery: [ Snapshot, ... ]             // standalone media with no log event
+                                           // (beauty shots, walkarounds). Renders
+                                           // inline in the timeline at its date
+                                           // as a media-only "snapshot" card.
+
+  Snapshot fields:
+    id            string, unique, kebab-case
+    date          "YYYY-MM-DD" (required; approx rules same as events)
+    dateDisplay   optional, as on events
+    label         optional short caption for the card, e.g. "360° walkaround".
+                  Defaults to "Snapshot".
+    media         required — same media array format as events (below)
+
+  PRIVACY RULE: no full VIN, no real names of third parties (title dispute
+  contacts etc.), no addresses. Refer to people by role ("the registered
+  owner", "the middleman"). Details live offline with Joseph.
+
+  Event fields:
+    id            string, unique, kebab-case
+    date          "YYYY-MM-DD" (used for sorting/grouping; required)
+    dateDisplay   optional string shown instead of the formatted date
+                  (use for approximate dates, e.g. "≈ early Jul 2026")
+    approx        boolean — true if the date is an estimate
+    title         short headline, sentence case
+    detail        1–4 sentences. Part numbers / model names welcome.
+    category      one of: milestone | wrenching | fabrication | purchase |
+                  tools | legal | shop | decision | logistics
+    cost          number (USD) or null
+    costNote      optional, e.g. "hammer price" / "total w/ shipping"
+    bucket        "parts" | "tools" | null — which running total the cost
+                  feeds. Bike acquisition lives in meta, not here.
+    needsReview   boolean — renders a "verify" chip; use for anything
+                  Joseph should confirm (date, amount, whether it happened)
+    media         optional array of media items attached to this event.
+                  Each item: {
+                    type:    "image" | "video" | "youtube"
+                    src:     image/video → relative path in this repo,
+                             e.g. "media/2026-07-16-tank-arrival.jpg"
+                             youtube → the video ID (e.g. "dQw4w9WgXcQ")
+                             or a full youtube.com/watch or youtu.be URL
+                    caption: one sentence describing what's going on
+                    poster:  optional, "video" only — thumbnail image path
+                  }
+                  Renders as a thumbnail strip on the event card; clicking
+                  opens the lightbox viewer (arrow keys / swipe to move,
+                  Esc to close). Keep filenames dated + kebab-case.
+
+  MEDIA FILE CONVENTIONS:
+    • All media lives in /media at the repo root, next to index.html.
+    • Name files "YYYY-MM-DD-short-description.ext" so the folder
+      self-sorts chronologically alongside the timeline.
+    • Phone videos are huge — prefer YouTube (unlisted) for anything
+      over ~20 seconds; use local .mp4 only for short clips.
+
+  RULES:
+    • Keep dates ISO. If only the month is known, pick a plausible day,
+      set approx:true, and give a dateDisplay.
+    • Never silently change a cost — if unsure, set needsReview:true and
+      say why in detail.
+    • New categories require adding a color in CSS var --cat-<name> and
+      a label in CAT_META in the script. Prefer existing categories.
+═══════════════════════════════════════════════════════════════════════════
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pit:#0a0f0d;
+    --panel:#0e1a16;
+    --emerald-deep:#0e2b24;
+    --emerald:#17453a;
+    --sheen:#3fae8c;
+    --sheen-dim:#2a7560;
+    --ivory:#efe8d6;
+    --ivory-dim:#b6ae9c;
+    --ivory-faint:#7e7a6d;
+    --brass:#d8b46a;
+    --line:#1c332c;
+
+    --cat-milestone:#3fae8c;
+    --cat-wrenching:#8fd0b8;
+    --cat-fabrication:#7fa8c9;
+    --cat-purchase:#d8b46a;
+    --cat-tools:#b58a4f;
+    --cat-legal:#cf8f6a;
+    --cat-shop:#9aa79b;
+    --cat-decision:#d9cfae;
+    --cat-logistics:#6f8f85;
+    --cat-media:#79c9b4;
+
+    --display:'Big Shoulders Display',sans-serif;
+    --body:'Archivo',sans-serif;
+    --mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--pit);
+    color:var(--ivory);
+    font-family:var(--body);
+    font-size:15.5px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--sheen-dim);color:var(--pit)}
+
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px 80px}
+
+  /* ── header: painted panel ─────────────────────────────── */
+  header{
+    position:relative;
+    margin:26px auto 0;
+    max-width:860px;
+    padding:44px 34px 38px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:
+      radial-gradient(120% 90% at 85% -10%, rgba(63,174,140,.16), transparent 55%),
+      radial-gradient(90% 120% at -5% 110%, rgba(23,69,58,.55), transparent 60%),
+      linear-gradient(158deg, var(--emerald-deep) 0%, #0b1f1a 45%, var(--pit) 100%);
+    overflow:hidden;
+  }
+  header::after{ /* metallic-flake noise */
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.68 0 0 0 0 0.55 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--sheen);margin-bottom:10px;
+  }
+  h1{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(52px,9vw,86px);line-height:.92;
+    letter-spacing:.01em;text-transform:uppercase;
+    background:linear-gradient(100deg,var(--ivory) 30%,#cfe8dc 55%,var(--ivory) 75%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .sub{
+    margin-top:12px;color:var(--ivory-dim);font-size:15px;max-width:56ch;
+  }
+  .vin{
+    margin-top:16px;font-family:var(--mono);font-size:11.5px;
+    color:var(--ivory-faint);letter-spacing:.08em;
+  }
+  .acq{
+    margin-top:4px;font-family:var(--mono);font-size:11.5px;
+    color:var(--ivory-faint);letter-spacing:.04em;
+  }
+  .acq b{color:var(--brass);font-weight:500}
+
+  /* gauges */
+  .gauges{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);
+    border-radius:8px;overflow:hidden;margin-top:30px;position:relative;z-index:1;
+  }
+  .gauge{background:rgba(10,15,13,.72);padding:16px 18px 14px}
+  .gauge .num{
+    font-family:var(--mono);font-weight:600;font-size:clamp(22px,3.4vw,30px);
+    color:var(--ivory);font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  }
+  .gauge .num.money{color:var(--brass)}
+  .gauge .lbl{
+    margin-top:4px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--ivory-faint);
+  }
+
+  /* ── filters ───────────────────────────────────────────── */
+  .filters{
+    display:flex;flex-wrap:wrap;gap:8px;margin:34px 0 6px;
+  }
+  .chip{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ivory-dim);
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:6px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+    transition:border-color .15s,color .15s;
+  }
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--dot,var(--ivory-faint))}
+  .chip:hover{border-color:var(--sheen-dim);color:var(--ivory)}
+  .chip.active{border-color:var(--sheen);color:var(--ivory);background:rgba(63,174,140,.08)}
+  .chip:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
+
+  /* ── timeline ──────────────────────────────────────────── */
+  .month{
+    position:sticky;top:0;z-index:5;
+    margin:38px 0 18px;padding:8px 0;
+    background:linear-gradient(var(--pit) 80%,transparent);
+  }
+  .month span{
+    display:inline-block;font-family:var(--display);font-weight:700;
+    font-size:22px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--sheen);border:1px solid var(--line);border-radius:6px;
+    padding:4px 16px;background:var(--panel);
+  }
+  .timeline{position:relative;padding-left:34px}
+  .timeline::before{ /* chain spine */
+    content:"";position:absolute;left:10px;top:6px;bottom:6px;width:2px;
+    background:repeating-linear-gradient(var(--sheen-dim) 0 9px,transparent 9px 16px);
+    opacity:.5;
+  }
+  .ev{
+    position:relative;margin-bottom:22px;
+    border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);padding:16px 20px 15px;
+    transition:border-color .15s;
+  }
+  .ev:hover{border-color:var(--sheen-dim)}
+  .ev::before{ /* bolt-head node */
+    content:"";position:absolute;left:-31px;top:20px;width:14px;height:14px;
+    background:var(--node,var(--sheen));
+    clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  }
+  .ev-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px;margin-bottom:6px}
+  .ev-date{font-family:var(--mono);font-size:12px;color:var(--sheen);letter-spacing:.06em}
+  .ev-date .approx{color:var(--ivory-faint);font-style:italic}
+  .ev-cat{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--catc,var(--ivory-dim));
+    border:1px solid color-mix(in srgb,var(--catc,var(--ivory-dim)) 40%,transparent);
+    border-radius:4px;padding:2px 7px;
+  }
+  .ev-cost{
+    margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:600;
+    color:var(--brass);font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .ev-cost small{font-weight:400;color:var(--ivory-faint);font-size:10px;margin-left:6px}
+  .ev h3{
+    font-family:var(--display);font-weight:700;font-size:23px;
+    letter-spacing:.02em;line-height:1.05;margin-bottom:6px;
+  }
+  .ev p{color:var(--ivory-dim);font-size:14px;max-width:64ch}
+  .verify{
+    display:inline-block;margin-top:9px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--brass);
+    border:1px dashed color-mix(in srgb,var(--brass) 55%,transparent);
+    border-radius:4px;padding:2px 8px;
+  }
+
+  /* ── media strip on event cards ────────────────────────── */
+  .media-strip{
+    display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+  }
+  .thumb{
+    position:relative;width:96px;height:72px;padding:0;border:1px solid var(--line);
+    border-radius:6px;overflow:hidden;cursor:pointer;background:var(--emerald-deep);
+    transition:border-color .15s,transform .15s;
+  }
+  .thumb:hover{border-color:var(--sheen);transform:translateY(-1px)}
+  .thumb:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+  .thumb .play{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,15,13,.35);
+  }
+  .thumb .play::before{
+    content:"";width:0;height:0;margin-left:3px;
+    border-style:solid;border-width:9px 0 9px 15px;
+    border-color:transparent transparent transparent var(--ivory);
+    filter:drop-shadow(0 1px 3px rgba(0,0,0,.6));
+  }
+  .thumb .noimg{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--sheen-dim);
+  }
+
+  /* ── lightbox ──────────────────────────────────────────── */
+  .lb{
+    position:fixed;inset:0;z-index:50;display:none;
+    background:rgba(10,15,13,.94);
+    align-items:center;justify-content:center;flex-direction:column;
+    padding:20px;
+  }
+  .lb.open{display:flex}
+  .lb-stage{
+    max-width:min(1100px,94vw);max-height:72vh;display:flex;
+    align-items:center;justify-content:center;
+  }
+  .lb-stage img,.lb-stage video{
+    max-width:100%;max-height:72vh;border:1px solid var(--line);border-radius:8px;
+    background:#000;
+  }
+  .lb-stage iframe{
+    width:min(1100px,94vw);height:min(62vh,calc(min(1100px,94vw) * 0.5625));
+    border:1px solid var(--line);border-radius:8px;background:#000;
+  }
+  .lb-meta{
+    margin-top:14px;max-width:70ch;text-align:center;
+  }
+  .lb-caption{color:var(--ivory);font-size:14.5px}
+  .lb-context{
+    margin-top:5px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    color:var(--sheen);
+  }
+  .lb-count{
+    margin-top:3px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+    color:var(--ivory-faint);
+  }
+  .lb button{
+    background:none;border:1px solid var(--line);border-radius:6px;color:var(--ivory-dim);
+    font-family:var(--mono);cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .lb button:hover{border-color:var(--sheen);color:var(--ivory)}
+  .lb button:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
+  .lb-close{
+    position:absolute;top:18px;right:18px;font-size:15px;padding:6px 12px;
+  }
+  .lb-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    font-size:20px;padding:10px 15px;
+  }
+  .lb-prev{left:14px}
+  .lb-next{right:14px}
+  @media (max-width:560px){
+    .lb-nav{top:auto;bottom:16px;transform:none}
+    .lb-prev{left:24%}
+    .lb-next{right:24%}
+    .thumb{width:84px;height:63px}
+  }
+
+  /* ── next up ───────────────────────────────────────────── */
+  .nextup{
+    margin-top:52px;border:1px solid var(--line);border-radius:10px;
+    background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
+    padding:26px 28px;
+  }
+  .nextup h2{
+    font-family:var(--display);font-weight:800;font-size:30px;
+    letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;
+  }
+  .nextup ul{list-style:none}
+  .nextup li{
+    padding:9px 0 9px 26px;position:relative;color:var(--ivory-dim);
+    font-size:14.5px;border-bottom:1px solid var(--line);
+  }
+  .nextup li:last-child{border-bottom:none}
+  .nextup li::before{
+    content:"";position:absolute;left:2px;top:15px;width:10px;height:10px;
+    background:var(--sheen);opacity:.8;
+    clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  }
+
+  footer{
+    margin-top:44px;font-family:var(--mono);font-size:11px;line-height:1.7;
+    color:var(--ivory-faint);border-top:1px solid var(--line);padding-top:18px;
+  }
+  footer b{color:var(--sheen);font-weight:500}
+
+  @media (max-width:560px){
+    header{padding:32px 22px 28px;margin:14px 10px 0;border-radius:8px}
+    .wrap{padding:0 14px 60px}
+    .ev{padding:14px 15px 13px}
+    .ev-cost{margin-left:0;width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+  }
+  @media print{
+    body{background:#fff;color:#111}
+    header{background:#f2efe6;border-color:#ccc}
+    h1{background:none;color:#12362c;-webkit-text-fill-color:#12362c}
+    .ev,.nextup{background:#fff;border-color:#ccc}
+    .ev p,.nextup li,.sub{color:#333}
+    .filters{display:none}
+    .month{position:static}
+  }
+</style>
+</head>
+<body>
+
+<script type="application/json" id="build-data">
+{
+  "meta": {
+    "title": "Midnight Emerald",
+    "subtitle": "Ground-up rebuild of a highsided 2019 Kawasaki ZX-6R 636 — mechanical restoration, CNC part fabrication, and a court-ordered title fight, headed toward a Bentley Midnight Emerald repaint.",
+    "idLine": "ZX636HKFA · 636cc · full VIN kept offline",
+    "acquisition": { "date": "2025-03-25", "cost": 8000, "note": "private sale, notarized title assignment" },
+    "benchDate": "2026-05-30"
+  },
+  "nextUp": [
+    "Tank transplant: move OEM fuel pump module to the green tank, new OEM pump flange gasket (single-use), assess strainer sock after the rusty-fuel exposure",
+    "Front brake master cylinder: order OEM reservoir hose barb, reservoir flange, and missing bracket from the Babbitts fiche",
+    "Machine rearset mounting bracket v1 on the work CNC; brake lever is next, footrest last",
+    "Certified letter to the registered owner's address of record; file for court-ordered title if he stays quiet",
+    "Bench-test the headlight LED assembly before choosing shell-only vs complete TCMT unit",
+    "Paint the replacement tank satin/gloss black, then submit Midnight Emerald reference images to Auctmarts for a render"
+  ],
+  "gallery": [],
+  "events": [
+    {
+      "id": "purchase-bike",
+      "date": "2025-03-25",
+      "title": "Bought the bike",
+      "detail": "2019 ZX-6R 636 via private sale for $8,000. Signed, notarized title assignment in hand, temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed. That detail comes back later.",
+      "category": "milestone",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "the-crash",
+      "date": "2025-05-01",
+      "dateDisplay": "≈ Spring 2025",
+      "approx": true,
+      "title": "The highside",
+      "detail": "Moderate-speed highside. Casualties: gas tank (creased and punctured, now rusting), radiator (destroyed), RH clip-on and controls (mangled), RH rearset bracket (bent), headlight housing, tail fairing and tail light bracket. Frame, forks, subframe, swingarm, and engine cases all visually intact. The bike went to my parents' place in Lawton and sat for over a year.",
+      "category": "milestone",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true
+    },
+    {
+      "id": "back-to-okc",
+      "date": "2026-05-30",
+      "title": "Back on the bench in OKC",
+      "detail": "Hauled the bike up from Lawton after a year-plus in storage. Same day: full photo documentation and a first honest damage assessment. The rebuild officially starts here.",
+      "category": "logistics",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "workbench",
+      "date": "2026-06-01",
+      "title": "Sanded and painted the workbench",
+      "detail": "Not bike work, but it counts — refinished the garage workbench so it's a place I actually want to spend the next several months.",
+      "category": "shop",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "auction-toolbox",
+      "date": "2026-06-04",
+      "title": "Won the toolbox — Canoo asset auction, day 4",
+      "detail": "Husky 52\" 9-drawer adjustable wood-top toolbox from the Canoo former-assets auction through AssetBuilt. $300 hammer.",
+      "category": "tools",
+      "cost": 300,
+      "costNote": "hammer price",
+      "bucket": "tools"
+    },
+    {
+      "id": "auction-torque",
+      "date": "2026-06-09",
+      "title": "Torque wrench trifecta — auction day 5",
+      "detail": "Two GearWrench wrenches — 3/8\" drive (10–100 ft·lb) and 1/2\" drive (30–259 ft·lb) — for $75 hammer on the pair, plus a Quinn 3/8\" digital (5–100 ft·lb) at $75 hammer. Covers every spec in the ZX-6R service manual.",
+      "category": "tools",
+      "cost": 150,
+      "costNote": "hammer prices",
+      "bucket": "tools"
+    },
+    {
+      "id": "first-start",
+      "date": "2026-06-14",
+      "title": "Said f*** it — first start since the crash",
+      "detail": "9 AM: shorted the RH control wiring to bypass the mangled switchgear and lit the engine for 5–10 seconds with a few revs. It ran. Engine's alive; the rebuild is officially worth it.",
+      "category": "milestone",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "radiator-out",
+      "date": "2026-06-14",
+      "title": "Pulled the destroyed radiator",
+      "detail": "Same day as first start — removed the crushed OEM radiator to clear the way for its replacement.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "radiator-order",
+      "date": "2026-06-14",
+      "title": "Ordered replacement radiator",
+      "detail": "Aftermarket aluminum radiator from The Sic Shop LLC (OEM ref 39061-0583). Ordered the same day the old one came out. Delivered July 10.",
+      "category": "purchase",
+      "cost": 144.98,
+      "costNote": "total",
+      "bucket": "parts"
+    },
+    {
+      "id": "amazon-tools",
+      "date": "2026-06-15",
+      "title": "Hex bits + extractor insurance",
+      "detail": "32-piece SAE/metric hex bit socket set ($54.28) and a screw extractor + left-hand drill bit set ($39.07) from Amazon. Both landed the next day. The extractors are the 'crashed-bike fasteners never come out clean' policy.",
+      "category": "tools",
+      "cost": 93.35,
+      "bucket": "tools"
+    },
+    {
+      "id": "ebay-controls-bottle",
+      "date": "2026-06-15",
+      "title": "Ordered RH controls + coolant bottle",
+      "detail": "Right clip-on / kill switch / throttle assembly ($215.51, delivered Jun 20) and a coolant overflow reservoir ($56.15, delivered Jun 29), both off eBay.",
+      "category": "purchase",
+      "cost": 271.66,
+      "costNote": "totals w/ shipping",
+      "bucket": "parts"
+    },
+    {
+      "id": "controls-installed",
+      "date": "2026-06-21",
+      "dateDisplay": "≈ late Jun 2026",
+      "approx": true,
+      "title": "RH controls installed",
+      "detail": "New right clip-on assembly on the bike shortly after delivery — real kill switch and start button again, no more hot-wiring the start circuit.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "tcmt-headlight",
+      "date": "2026-06-25",
+      "dateDisplay": "≈ late Jun 2026",
+      "approx": true,
+      "title": "Sourced TCMT front-end bundle",
+      "detail": "TCMT aftermarket ram air duct, upper fairing stay bracket, and headlight shell / chin intake grille bundle (~$114.80). Open question before committing further: bench-test the existing headlight LED assembly to decide shell-only vs a complete unit with internals.",
+      "category": "purchase",
+      "cost": 114.80,
+      "bucket": "parts",
+      "needsReview": true
+    },
+    {
+      "id": "owner-outreach",
+      "date": "2026-06-29",
+      "title": "Title hunt begins — messaged the registered owner",
+      "detail": "The title never got transferred and my copy is lost, so only the registered owner (name and address on file offline) can pull a duplicate (Form 701-7). Ran NICB VINCheck (clean), confirmed the notarized assignment photo is solid evidence, and sent him a direct message asking him to request a duplicate and sign it over. Fees and legwork all on me.",
+      "category": "legal",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "auction-pickup",
+      "date": "2026-07-06",
+      "title": "Picked up the auction haul",
+      "detail": "Collected the toolbox and torque wrenches from the Canoo auction site and got everything home.",
+      "category": "logistics",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "gridfinity",
+      "date": "2026-07-07",
+      "title": "Gridfinity-ing the new toolbox",
+      "detail": "Started printing Gridfinity organizers for the Husky 52\" — sockets, ratchets, and torque wrenches each getting a home. About a roll and a half of Bambu matte black PLA in so far.",
+      "category": "shop",
+      "cost": null,
+      "costNote": "~1.5 rolls PLA",
+      "bucket": null
+    },
+    {
+      "id": "supplies-day",
+      "date": "2026-07-10",
+      "title": "Radiator lands + CycleGear run",
+      "detail": "Sic Shop radiator delivered. Same day, CycleGear haul: 4 L Motul 7100, oil filter, crush washers, Engine Ice coolant, and an oil drain pan — $66.24 all in.",
+      "category": "purchase",
+      "cost": 66.24,
+      "bucket": "parts"
+    },
+    {
+      "id": "cooling-oil-day",
+      "date": "2026-07-11",
+      "title": "Big install day — oil + cooling system",
+      "detail": "Oil change done (Motul 7100, new filter, fresh crush washer), new radiator and overflow bottle installed, system filled with Engine Ice. Cooling system complete on paper — validation run pending.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "tank-won",
+      "date": "2026-07-11",
+      "title": "Won the replacement fuel tank",
+      "detail": "Offered $420 on a green ZX-6R tank on eBay; seller accepted. $456.23 total shipped. Plan: paint it satin or gloss black before the tank cover goes on so exposed edges read as intentional trim.",
+      "category": "purchase",
+      "cost": 456.23,
+      "costNote": "total w/ shipping",
+      "bucket": "parts"
+    },
+    {
+      "id": "battery-saga",
+      "date": "2026-07-12",
+      "dateDisplay": "≈ mid Jul 2026",
+      "approx": true,
+      "title": "Battery: murdered, then resurrected",
+      "detail": "Left the ignition on during errands and drained the Striker lead-acid battery to 6 V — deep-discharge territory. Overnight on the Battery Tender Plus looked like a failure until the fix: charger negative moved from the frame ground directly to the battery negative terminal. Full recovery, and the bike started on the button.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true
+    },
+    {
+      "id": "middleman-outreach",
+      "date": "2026-07-13",
+      "title": "Reached out to the middleman",
+      "detail": "The registered owner's gone quiet, so I contacted the middleman — the person who actually met me and handed over the bike. He said he'd try to shoot the owner a message. Fallback path is already mapped: court-ordered title through Oklahoma district court (~$160 filing DIY, ~$475 via a title service), with certified-mail notice to the address of record and my outreach screenshots as due-diligence evidence.",
+      "category": "legal",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "front-mc-diagnosis",
+      "date": "2026-07-13",
+      "dateDisplay": "≈ mid Jul 2026",
+      "approx": true,
+      "title": "Front brake MC diagnosis",
+      "detail": "Front master cylinder has three problems: broken reservoir hose barb connector, broken reservoir mounting flange, and a missing bracket. All OEM part numbers pulled from the 2019 ZX636HKFA Babbitts fiche and queued for ordering.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true
+    },
+    {
+      "id": "rearset-teardown",
+      "date": "2026-07-14",
+      "title": "Rearset teardown — and a fabrication decision",
+      "detail": "Disassembled the right rearset to assess the rear brake. Good news: master cylinder is fine. Bad news: the aluminum mounting bracket is bent to sh*t. Used OEM rearsets on eBay tend to have rotted joint boots, so the call is made — reverse-engineer it and CNC a replacement at work, using the intact left side mirrored, frame boss measurements, and the factory service manual as ground truth.",
+      "category": "fabrication",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "bracket-prints",
+      "date": "2026-07-15",
+      "title": "Bracket prototype: print, fit, revise, repeat",
+      "detail": "Test print of the reverse-engineered mounting bracket ready by morning. Test-fit, adjusted the model, reprinted, and had v2 on the bike by evening. This bracket is 1 of 3 damaged parts in the assembly — brake lever is next, footrest last (it's mostly usable for now).",
+      "category": "fabrication",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "flir-validation",
+      "date": "2026-07-15",
+      "title": "Cooling system validated — FLIR says it's alive",
+      "detail": "Night run with a FLIR aimed at the hottest part of the new radiator, letting the bike heat toward the 212°F fan threshold with occasional revs. At 210°F indicated, the fan kicked on and pushed hot air out both sides like magic. With the rear on a stand, ran through all 6 gears — clean shifts with the clutch and with the quickshifter. Still running the old rusty tank; gas was clean enough for a short run.",
+      "category": "milestone",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "tank-arrives",
+      "date": "2026-07-16",
+      "title": "Replacement tank arrives",
+      "detail": "Green eBay tank delivered. Transplant queue: move the OEM fuel pump module over, new pump flange gasket (OEM-only, single-use — never reuse), and assess the strainer sock given the old tank's rust exposure.",
+      "category": "logistics",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "cam-start",
+      "date": "2026-07-16",
+      "title": "CAM programming begins",
+      "detail": "Started CAM on the validated bracket prototype for the work CNC. Slow going — the day job is picking up — but the path from 3D print to billet aluminum is officially underway.",
+      "category": "fabrication",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "midnight-emerald",
+      "date": "2026-07-14",
+      "dateDisplay": "≈ mid Jul 2026",
+      "approx": true,
+      "title": "Aesthetic locked: Bentley Midnight Emerald",
+      "detail": "Final direction: Bentley Midnight Emerald — a dark, shimmery, blue-leaning green — with black and possibly cream/ivory accents. Explicitly not Kawasaki's Emerald Blazed Green, not teal, not military green, no heavy gold. Auctmarts (custom mockup process) and NiceCycle are the fairing vendor shortlist; a vendor render comes before any production commitment.",
+      "category": "decision",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true
+    }
+  ]
+}
+</script>
+
+<header>
+  <div class="eyebrow">Build log · 2019 Kawasaki ZX-6R 636</div>
+  <h1 id="hdr-title"></h1>
+  <p class="sub" id="hdr-sub"></p>
+  <div class="vin" id="hdr-vin"></div>
+  <div class="acq" id="hdr-acq"></div>
+  <div class="gauges">
+    <div class="gauge"><div class="num money" id="g-parts">$0</div><div class="lbl">Parts &amp; consumables</div></div>
+    <div class="gauge"><div class="num money" id="g-tools">$0</div><div class="lbl">Tools &amp; shop</div></div>
+    <div class="gauge"><div class="num" id="g-days">0</div><div class="lbl">Days on the bench</div></div>
+    <div class="gauge"><div class="num" id="g-events">0</div><div class="lbl">Events logged</div></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
+  <div id="timeline"></div>
+
+  <section class="nextup">
+    <h2>Up next</h2>
+    <ul id="nextup-list"></ul>
+  </section>
+
+  <footer>
+    <b>Living document.</b> Everything above renders from a JSON block inside this file
+    (<span style="color:var(--ivory)">#build-data</span>) — any AI agent or human can edit
+    the data and the page rebuilds itself on refresh. Editing rules and the full schema live
+    in the HTML comment at the top of the source. Approximate dates are marked ≈ and items
+    flagged <b>verify</b> are awaiting Joseph's confirmation.
+  </footer>
+</div>
+
+<script>
+(function(){
+  var CAT_META = {
+    milestone:   {label:"Milestone"},
+    wrenching:   {label:"Wrenching"},
+    fabrication: {label:"Fabrication"},
+    purchase:    {label:"Parts buy"},
+    tools:       {label:"Tools"},
+    legal:       {label:"Title / legal"},
+    shop:        {label:"Shop"},
+    decision:    {label:"Decision"},
+    logistics:   {label:"Logistics"},
+    media:       {label:"Media"}
+  };
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  var data;
+  try { data = JSON.parse(document.getElementById("build-data").textContent); }
+  catch(e){
+    document.getElementById("timeline").innerHTML =
+      "<p style='color:var(--brass);font-family:var(--mono);font-size:13px'>The JSON in #build-data is invalid — fix it and refresh. ("+e.message+")</p>";
+    return;
+  }
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function moneyRound(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+  function fmtDate(iso){
+    var p = iso.split("-");
+    return MONTHS[+p[1]-1].slice(0,3) + " " + (+p[2]) + ", " + p[0];
+  }
+  function esc(s){ var d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+  /* header */
+  document.getElementById("hdr-title").textContent = data.meta.title;
+  document.getElementById("hdr-sub").textContent = data.meta.subtitle;
+  document.getElementById("hdr-vin").textContent = data.meta.idLine || data.meta.vin || "";
+  var acq = data.meta.acquisition;
+  document.getElementById("hdr-acq").innerHTML =
+    "Acquired " + fmtDate(acq.date) + " · <b>" + moneyRound(acq.cost) + "</b> · " + esc(acq.note);
+
+  /* totals — gallery snapshots join the timeline but not the log-entry count */
+  var snapshots = (data.gallery||[]).map(function(s){
+    return {
+      id: s.id, date: s.date, dateDisplay: s.dateDisplay, approx: s.approx,
+      title: s.label || "Snapshot", detail: "", category: "media",
+      cost: null, bucket: null, media: s.media || [], isSnapshot: true
+    };
+  });
+  var events = data.events.concat(snapshots).sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  var partsTotal = 0, toolsTotal = 0, logCount = 0;
+  events.forEach(function(ev){
+    if (!ev.isSnapshot) logCount++;
+    if (typeof ev.cost === "number") {
+      if (ev.bucket === "parts") partsTotal += ev.cost;
+      else if (ev.bucket === "tools") toolsTotal += ev.cost;
+    }
+  });
+  var days = Math.max(0, Math.floor((Date.now() - new Date(data.meta.benchDate+"T00:00:00")) / 86400000));
+
+  function countUp(el, target, fmt, dur){
+    if (reduceMotion){ el.textContent = fmt(target); return; }
+    var start = null;
+    function step(t){
+      if (!start) start = t;
+      var k = Math.min(1,(t-start)/dur);
+      k = 1 - Math.pow(1-k, 3); /* easeOutCubic — odometer settling */
+      el.textContent = fmt(target * k);
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  countUp(document.getElementById("g-parts"), partsTotal, money, 1300);
+  countUp(document.getElementById("g-tools"), toolsTotal, money, 1300);
+  countUp(document.getElementById("g-days"), days, function(n){return Math.round(n).toString();}, 900);
+  countUp(document.getElementById("g-events"), logCount, function(n){return Math.round(n).toString();}, 900);
+
+  /* filters */
+  var activeCat = null;
+  var filtersEl = document.getElementById("filters");
+  var cats = [];
+  events.forEach(function(ev){ if (cats.indexOf(ev.category) < 0) cats.push(ev.category); });
+  function chip(label, cat){
+    var b = document.createElement("button");
+    b.className = "chip" + (cat === activeCat ? " active" : "");
+    b.setAttribute("type","button");
+    if (cat) b.style.setProperty("--dot", "var(--cat-"+cat+")");
+    b.innerHTML = (cat ? "<span class='dot'></span>" : "") + esc(label);
+    b.addEventListener("click", function(){
+      activeCat = (activeCat === cat) ? null : cat;
+      renderFilters(); renderTimeline();
+    });
+    return b;
+  }
+  function renderFilters(){
+    filtersEl.innerHTML = "";
+    var all = chip("All events", null);
+    if (activeCat === null) all.classList.add("active");
+    filtersEl.appendChild(all);
+    cats.forEach(function(c){
+      filtersEl.appendChild(chip((CAT_META[c]||{label:c}).label, c));
+    });
+  }
+
+  /* media helpers */
+  var gallery = []; /* flat list of visible media, rebuilt on each renderTimeline */
+  function ytId(src){
+    if (!src) return null;
+    if (/^[\w-]{6,20}$/.test(src) && src.indexOf("/") < 0) return src; /* raw ID */
+    var m = src.match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{6,20})/);
+    return m ? m[1] : null;
+  }
+
+  /* lightbox */
+  var lb = document.createElement("div");
+  lb.className = "lb";
+  lb.setAttribute("role","dialog");
+  lb.setAttribute("aria-modal","true");
+  lb.setAttribute("aria-label","Media viewer");
+  lb.innerHTML =
+    "<button type='button' class='lb-close' aria-label='Close viewer'>ESC ✕</button>" +
+    "<button type='button' class='lb-nav lb-prev' aria-label='Previous'>‹</button>" +
+    "<div class='lb-stage'></div>" +
+    "<div class='lb-meta'>" +
+      "<div class='lb-caption'></div>" +
+      "<div class='lb-context'></div>" +
+      "<div class='lb-count'></div>" +
+    "</div>" +
+    "<button type='button' class='lb-nav lb-next' aria-label='Next'>›</button>";
+  document.body.appendChild(lb);
+  var lbStage = lb.querySelector(".lb-stage"),
+      lbCap = lb.querySelector(".lb-caption"),
+      lbCtx = lb.querySelector(".lb-context"),
+      lbCount = lb.querySelector(".lb-count"),
+      lbIdx = 0;
+
+  function showLightboxItem(){
+    var g = gallery[lbIdx];
+    if (!g) return;
+    var m = g.m;
+    lbStage.innerHTML = "";
+    if (m.type === "image"){
+      var img = document.createElement("img");
+      img.src = m.src; img.alt = m.caption || "";
+      lbStage.appendChild(img);
+    } else if (m.type === "youtube"){
+      var yid = ytId(m.src);
+      var fr = document.createElement("iframe");
+      fr.src = "https://www.youtube-nocookie.com/embed/" + yid;
+      fr.allow = "encrypted-media; picture-in-picture; fullscreen";
+      fr.setAttribute("allowfullscreen","");
+      lbStage.appendChild(fr);
+    } else {
+      var v = document.createElement("video");
+      v.src = m.src; v.controls = true; v.playsInline = true;
+      if (m.poster) v.poster = m.poster;
+      lbStage.appendChild(v);
+    }
+    lbCap.textContent = m.caption || "";
+    lbCtx.textContent = g.evTitle + " · " + g.evDate;
+    lbCount.textContent = (lbIdx+1) + " / " + gallery.length;
+  }
+  function openLightbox(i){
+    lbIdx = i;
+    showLightboxItem();
+    lb.classList.add("open");
+    lb.querySelector(".lb-close").focus();
+    document.body.style.overflow = "hidden";
+  }
+  function closeLightbox(){
+    lb.classList.remove("open");
+    lbStage.innerHTML = ""; /* stops any playing video */
+    document.body.style.overflow = "";
+  }
+  function stepLightbox(d){
+    if (!gallery.length) return;
+    lbIdx = (lbIdx + d + gallery.length) % gallery.length;
+    showLightboxItem();
+  }
+  lb.querySelector(".lb-close").addEventListener("click", closeLightbox);
+  lb.querySelector(".lb-prev").addEventListener("click", function(){ stepLightbox(-1); });
+  lb.querySelector(".lb-next").addEventListener("click", function(){ stepLightbox(1); });
+  lb.addEventListener("click", function(e){ if (e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", function(e){
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowLeft") stepLightbox(-1);
+    else if (e.key === "ArrowRight") stepLightbox(1);
+  });
+  var touchX = null;
+  lb.addEventListener("touchstart", function(e){ touchX = e.changedTouches[0].clientX; }, {passive:true});
+  lb.addEventListener("touchend", function(e){
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) > 55) stepLightbox(dx < 0 ? 1 : -1);
+  }, {passive:true});
+
+  /* timeline */
+  var tlEl = document.getElementById("timeline");
+  function renderTimeline(){
+    tlEl.innerHTML = "";
+    gallery = [];
+    var shown = events.filter(function(ev){ return !activeCat || ev.category === activeCat; });
+    var curMonth = "", curList = null;
+    shown.forEach(function(ev){
+      var mk = ev.date.slice(0,7);
+      if (mk !== curMonth){
+        curMonth = mk;
+        var m = document.createElement("div");
+        m.className = "month";
+        var p = mk.split("-");
+        m.innerHTML = "<span>" + MONTHS[+p[1]-1] + " " + p[0] + "</span>";
+        tlEl.appendChild(m);
+        curList = document.createElement("div");
+        curList.className = "timeline";
+        tlEl.appendChild(curList);
+      }
+      var card = document.createElement("article");
+      card.className = "ev";
+      card.style.setProperty("--node", "var(--cat-"+ev.category+")");
+      card.style.setProperty("--catc", "var(--cat-"+ev.category+")");
+      var dateHtml = ev.dateDisplay
+        ? "<span class='approx'>" + esc(ev.dateDisplay) + "</span>"
+        : esc(fmtDate(ev.date));
+      var costHtml = (typeof ev.cost === "number")
+        ? "<span class='ev-cost'>" + money(ev.cost) + (ev.costNote ? "<small>" + esc(ev.costNote) + "</small>" : "") + "</span>"
+        : (ev.costNote ? "<span class='ev-cost'><small>" + esc(ev.costNote) + "</small></span>" : "");
+      card.innerHTML =
+        "<div class='ev-top'>" +
+          "<span class='ev-date'>" + dateHtml + "</span>" +
+          "<span class='ev-cat'>" + esc((CAT_META[ev.category]||{label:ev.category}).label) + "</span>" +
+          costHtml +
+        "</div>" +
+        "<h3>" + esc(ev.title) + "</h3>" +
+        (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
+        (ev.needsReview ? "<span class='verify'>verify</span>" : "");
+      if (ev.media && ev.media.length){
+        var strip = document.createElement("div");
+        strip.className = "media-strip";
+        ev.media.forEach(function(m){
+          var gIdx = gallery.length;
+          gallery.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
+          var t = document.createElement("button");
+          t.className = "thumb";
+          t.setAttribute("type","button");
+          t.setAttribute("aria-label", (m.caption || m.type) + " — open viewer");
+          var thumbSrc = null;
+          if (m.type === "image") thumbSrc = m.src;
+          else if (m.type === "video" && m.poster) thumbSrc = m.poster;
+          else if (m.type === "youtube"){
+            var yid = ytId(m.src);
+            if (yid) thumbSrc = "https://img.youtube.com/vi/" + yid + "/hqdefault.jpg";
+          }
+          t.innerHTML =
+            (thumbSrc ? "<img src='" + esc(thumbSrc) + "' alt='' loading='lazy'>"
+                      : "<span class='noimg'>video</span>") +
+            (m.type !== "image" ? "<span class='play' aria-hidden='true'></span>" : "");
+          t.addEventListener("click", function(){ openLightbox(gIdx); });
+          strip.appendChild(t);
+        });
+        card.appendChild(strip);
+      }
+      curList.appendChild(card);
+    });
+    if (!shown.length){
+      tlEl.innerHTML = "<p style='color:var(--ivory-faint);font-family:var(--mono);font-size:13px;margin-top:20px'>No events in this category yet.</p>";
+    }
+  }
+
+  /* next up */
+  var nu = document.getElementById("nextup-list");
+  (data.nextUp||[]).forEach(function(item){
+    var li = document.createElement("li");
+    li.textContent = item;
+    nu.appendChild(li);
+  });
+
+  renderFilters();
+  renderTimeline();
+})();
+</script>
+</body>
+</html>

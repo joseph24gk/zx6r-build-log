@@ -1,0 +1,24 @@
+# OS cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Unprocessed phone originals never belong in the repo — the iCloud inbox
+# stays outside it, and only converted/renamed files go in /media.
+*.heic
+*.HEIC
+*.mov
+*.MOV
+
+# Scratch
+*.tmp
+~$*
