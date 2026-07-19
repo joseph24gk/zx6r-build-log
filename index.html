@@ -29,6 +29,18 @@
                                            // inline in the timeline at its date
                                            // as a media-only "snapshot" card.
 
+  tracker: [ Item, ... ]                 // optional — CURRENT damage/repair
+                                         // state, rendered as a pinned panel
+                                         // between the filters and timeline.
+    label    short part name ("Gas tank")
+    status   "broken" | "in-progress" | "fixed"
+    note     optional one-liner of current state ("parts ordered")
+                                         // Events are the history; the tracker
+                                         // is now. New damage found later gets
+                                         // logged in that day's event AND
+                                         // appended here. Update statuses
+                                         // whenever an event changes reality.
+
   Snapshot fields:
     id            string, unique, kebab-case
     date          "YYYY-MM-DD" (required; approx rules same as events)
@@ -384,6 +396,28 @@
     clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
   }
 
+  .tracker{
+    margin:30px 0 4px;border:1px solid var(--line);border-radius:10px;
+    background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
+    padding:22px 24px 18px;
+  }
+  .trk-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .tracker h2{
+    font-family:var(--display);font-weight:800;font-size:24px;
+    letter-spacing:.05em;text-transform:uppercase;
+  }
+  .trk-count{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ivory-faint)}
+  .trk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:0 30px}
+  .trk-item{display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .trk-dot{
+    flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;
+    background:var(--trk-c);
+    box-shadow:0 0 8px color-mix(in srgb,var(--trk-c) 45%,transparent);
+  }
+  .trk-label{color:var(--ivory);font-weight:600;font-size:13.5px;margin-right:8px}
+  .trk-state{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--trk-c)}
+  .trk-note{display:block;color:var(--ivory-faint);font-size:12.5px;line-height:1.5;margin-top:2px}
+
   footer{
     margin-top:44px;font-family:var(--mono);font-size:11px;line-height:1.7;
     color:var(--ivory-faint);border-top:1px solid var(--line);padding-top:18px;
@@ -403,7 +437,7 @@
     body{background:#fff;color:#111}
     header{background:#f2efe6;border-color:#ccc}
     h1{background:none;color:#12362c;-webkit-text-fill-color:#12362c}
-    .ev,.nextup{background:#fff;border-color:#ccc}
+    .ev,.nextup,.tracker{background:#fff;border-color:#ccc}
     .ev p,.nextup li,.sub{color:#333}
     .filters{display:none}
     .month{position:static}
@@ -428,6 +462,18 @@
     "Certified letter to the registered owner's address of record; file for court-ordered title if he stays quiet",
     "Bench-test the headlight LED assembly before choosing shell-only vs complete TCMT unit",
     "Paint the replacement tank satin/gloss black, then submit Midnight Emerald reference images to Auctmarts for a render"
+  ],
+  "tracker": [
+    { "label": "Gas tank", "status": "in-progress", "note": "Replacement green tank arrived Jul 16; pump transplant + new flange gasket pending." },
+    { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash." },
+    { "label": "Fairings", "status": "broken", "note": "TCMT nose bundle sourced; full set waits on the repaint direction." },
+    { "label": "The sliders", "status": "broken", "note": "Did their job." },
+    { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun." },
+    { "label": "Front brakes", "status": "in-progress", "note": "MC itself fine; reservoir, hose barb, and brackets on the OEM order list." },
+    { "label": "Front air intake and fairing stay", "status": "in-progress", "note": "TCMT duct + stay bundle sourced; install pending headlight bench-test." },
+    { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho." },
+    { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way." },
+    { "label": "Tires and wheels", "status": "broken", "note": "Rear tire on the buy list; wheels queued for powder coat." }
   ],
   "gallery": [],
   "events": [
@@ -774,6 +820,7 @@
 
 <div class="wrap">
   <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
+  <section class="tracker" id="tracker" aria-label="Damage tracker"></section>
   <div id="timeline"></div>
 
   <section class="nextup">
@@ -1068,6 +1115,32 @@
     if (!shown.length){
       tlEl.innerHTML = "<p style='color:var(--ivory-faint);font-family:var(--mono);font-size:13px;margin-top:20px'>No events in this category yet.</p>";
     }
+  }
+
+  /* damage tracker — current state; the timeline stays the history */
+  var TRK_STATUS = {
+    "broken":      { word:"broken",      c:"#c96f63" },
+    "in-progress": { word:"in progress", c:"var(--brass)" },
+    "fixed":       { word:"fixed",       c:"var(--sheen)" }
+  };
+  var trkEl = document.getElementById("tracker");
+  var trkItems = data.tracker || [];
+  if (!trkItems.length){ trkEl.style.display = "none"; }
+  else {
+    var tc = { "broken":0, "in-progress":0, "fixed":0 };
+    trkItems.forEach(function(t){ if (tc[t.status] != null) tc[t.status]++; });
+    trkEl.innerHTML =
+      "<div class='trk-head'><h2>Damage tracker</h2>" +
+      "<span class='trk-count'>" + tc["fixed"] + " fixed · " + tc["in-progress"] + " in progress · " + tc["broken"] + " broken</span></div>" +
+      "<div class='trk-grid'>" + trkItems.map(function(t){
+        var s = TRK_STATUS[t.status] || TRK_STATUS["broken"];
+        return "<div class='trk-item' style='--trk-c:" + s.c + "'>" +
+          "<span class='trk-dot' aria-hidden='true'></span>" +
+          "<div><span class='trk-label'>" + esc(t.label) + "</span>" +
+          "<span class='trk-state'>" + s.word + "</span>" +
+          (t.note ? "<span class='trk-note'>" + esc(t.note) + "</span>" : "") +
+          "</div></div>";
+      }).join("") + "</div>";
   }
 
   /* next up */
