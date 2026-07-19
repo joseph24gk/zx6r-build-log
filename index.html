@@ -57,6 +57,10 @@
                   feeds. Bike acquisition lives in meta, not here.
     needsReview   boolean — renders a "verify" chip; use for anything
                   Joseph should confirm (date, amount, whether it happened)
+    bullets       optional array rendered as a list under detail. Items are
+                  plain strings, or { label, note } — label is the bold lead
+                  line, note is optional smaller text beneath it. Use
+                  sparingly; most events read better as 1–3 plain sentences.
     media         optional array of media items attached to this event.
                   Each item: {
                     type:    "image" | "video" | "youtube"
@@ -257,6 +261,18 @@
     letter-spacing:.02em;line-height:1.05;margin-bottom:6px;
   }
   .ev p{color:var(--ivory-dim);font-size:14px;max-width:64ch}
+  .ev-bullets{margin:8px 0 2px;padding:0;list-style:none;max-width:64ch}
+  .ev-bullets li{
+    position:relative;padding-left:16px;margin-top:6px;
+    color:var(--ivory-dim);font-size:14px;
+  }
+  .ev-bullets li::before{
+    content:"";position:absolute;left:2px;top:.52em;
+    width:5px;height:5px;border-radius:1px;
+    background:var(--catc);opacity:.75;
+  }
+  .b-label{color:var(--ivory);font-weight:600}
+  .b-note{display:block;color:var(--ivory-dim);font-size:13.5px;margin-top:1px}
   .verify{
     display:inline-block;margin-top:9px;font-family:var(--mono);font-size:9.5px;
     letter-spacing:.14em;text-transform:uppercase;color:var(--brass);
@@ -419,31 +435,40 @@
       "id": "purchase-bike",
       "date": "2025-03-25",
       "title": "Bought the bike",
-      "detail": "2019 ZX-6R 636 via private sale for $8,000. Signed, notarized title assignment in hand, temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed. That detail comes back later.",
+      "detail": "2019 ZX-6R 636 via private sale for $8,000. Signed, notarized title assignment in hand, temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed.",
       "category": "milestone",
       "cost": null,
       "bucket": null
     },
     {
       "id": "the-crash",
-      "date": "2025-05-01",
-      "dateDisplay": "≈ Spring 2025",
-      "approx": true,
+      "date": "2025-05-12",
       "title": "The highside",
-      "detail": "Moderate-speed highside. Casualties: gas tank (creased and punctured, now rusting), radiator (destroyed), RH clip-on and controls (mangled), RH rearset bracket (bent), headlight housing, tail fairing and tail light bracket. Frame, forks, subframe, swingarm, and engine cases all visually intact. The bike went to my parents' place in Lawton and sat for over a year.",
+      "detail": "Highsided at 35ish mph. The bike went to my parents' place in Lawton and sat for over a year.",
       "category": "milestone",
       "cost": null,
-      "bucket": null,
-      "needsReview": true
+      "bucket": null
     },
     {
       "id": "back-to-okc",
       "date": "2026-05-30",
       "title": "Back on the bench in OKC",
-      "detail": "Hauled the bike up from Lawton after a year-plus in storage. Same day: full photo documentation and a first honest damage assessment. The rebuild officially starts here.",
+      "detail": "Hauled the bike up from Lawton after a year-plus in storage. Frame, forks, subframe, swingarm, and engine cases are all visually good, minus some scuffs on the frame and swingarm. Here's what got f***ed:",
       "category": "logistics",
       "cost": null,
       "bucket": null,
+      "bullets": [
+        { "label": "Gas tank", "note": "Dented to a crease and punctured, now rusting." },
+        { "label": "Radiator", "note": "Destroyed, same with the radiator bottle. The radiator fan survived." },
+        "Most to all of the fairings",
+        { "label": "The sliders", "note": "Did their job." },
+        { "label": "RH clip-on and controls", "note": "The clip-on was torn from its mount, which completely f***ed the throttle body and the starter switch assembly, and scratched the brake lever up a bunch." },
+        { "label": "Front brakes", "note": "The brake fluid reservoir got slightly f***ed; its mounting bracket and the tube fitting on the master cylinder got it too. The master cylinder itself is fine, as are the hose and clamps between the reservoir and the cylinder, and the bracket that holds the lid on the reservoir. Took the brake lever off, filed down the burrs from the scuffs, and shaped what I could before putting it back on." },
+        { "label": "Front air intake and fairing stay", "note": "F***ed up in multiple places, but the dash display survived, so that's good." },
+        { "label": "Exhaust", "note": "The Two Brothers can is still attached, but with a huge fracture in the carbon fiber almost 270° around its body. Still kinda sounds good tho." },
+        { "label": "Right rearset", "note": "The whole right rearset got bent and scraped to sh*t. The rear master cylinder piston was seized, but after disassembling the rearset it traveled fine. Disassembled the rear master cylinder just in case — it still seems healthy." },
+        { "label": "Tires and wheels", "note": "The front wheel is scratched in several places, and the rear tire has several punctures." }
+      ],
       "media": [
         { "type": "image", "src": "media/2026-05-30-damage-assessment-01.jpg", "caption": "The crash's biggest casualty up close — tank creased, punctured, and rusting." },
         { "type": "image", "src": "media/2026-05-30-damage-assessment-02.jpg", "caption": "First look under the nose: forks and triple visually straight, everything around them chewed up." },
@@ -498,7 +523,7 @@
       "id": "first-start",
       "date": "2026-06-14",
       "title": "Said f*** it — first start since the crash",
-      "detail": "9 AM: shorted the RH control wiring to bypass the mangled switchgear and lit the engine for 5–10 seconds with a few revs. It ran. Engine's alive; the rebuild is officially worth it.",
+      "detail": "9 AM: shorted the RH control wiring to bypass the mangled switchgear and lit the engine for 5–10 seconds with a few revs. It ran.",
       "category": "milestone",
       "cost": null,
       "bucket": null,
@@ -533,7 +558,7 @@
       "id": "amazon-tools",
       "date": "2026-06-15",
       "title": "Hex bits + extractor insurance",
-      "detail": "32-piece SAE/metric hex bit socket set ($54.28) and a screw extractor + left-hand drill bit set ($39.07) from Amazon. Both landed the next day. The extractors are the 'crashed-bike fasteners never come out clean' policy.",
+      "detail": "32-piece SAE/metric hex bit socket set ($54.28) and a screw extractor + left-hand drill bit set ($39.07) from Amazon. Both landed the next day. Extractors because crashed-bike fasteners never come out clean.",
       "category": "tools",
       "cost": 93.35,
       "bucket": "tools"
@@ -600,7 +625,7 @@
       "id": "gridfinity",
       "date": "2026-07-07",
       "title": "Gridfinity-ing the new toolbox",
-      "detail": "Started printing Gridfinity organizers for the Husky 52\" — sockets, ratchets, and torque wrenches each getting a home. About a roll and a half of Bambu matte black PLA in so far.",
+      "detail": "Started printing Gridfinity organizers for the Husky 52\" — sockets, ratchets, and torque wrenches so far. About a roll and a half of Bambu matte black PLA in.",
       "category": "shop",
       "cost": null,
       "costNote": "~1.5 rolls PLA",
@@ -689,10 +714,15 @@
       "id": "flir-validation",
       "date": "2026-07-15",
       "title": "Cooling system validated — FLIR says it's alive",
-      "detail": "Night run with a FLIR aimed at the hottest part of the new radiator, letting the bike heat toward the 212°F fan threshold with occasional revs. At 210°F indicated, the fan kicked on and pushed hot air out both sides like magic. With the rear on a stand, ran through all 6 gears — clean shifts with the clutch and with the quickshifter. Still running the old rusty tank; gas was clean enough for a short run.",
+      "detail": "Night run with a FLIR aimed at the hottest part of the new radiator, letting the bike heat toward the 212°F fan threshold with occasional revs.",
       "category": "milestone",
       "cost": null,
-      "bucket": null
+      "bucket": null,
+      "bullets": [
+        { "label": "Fan", "note": "Kicked on at 210°F indicated and pushed hot air out both sides." },
+        { "label": "Gearbox", "note": "Rear on a stand, ran through all 6 gears — clean shifts with the clutch and with the quickshifter." },
+        { "label": "Fuel", "note": "Still the old rusty tank; gas was clean enough for a short run." }
+      ]
     },
     {
       "id": "tank-arrives",
@@ -707,7 +737,7 @@
       "id": "cam-start",
       "date": "2026-07-16",
       "title": "CAM programming begins",
-      "detail": "Started CAM on the validated bracket prototype for the work CNC. Slow going — the day job is picking up — but the path from 3D print to billet aluminum is officially underway.",
+      "detail": "Started CAM on the validated bracket prototype for the work CNC. Slow going — the day job is picking up.",
       "category": "fabrication",
       "cost": null,
       "bucket": null
@@ -960,6 +990,14 @@
   }, {passive:true});
 
   /* timeline */
+  function bulletsHtml(ev){
+    if (!ev.bullets || !ev.bullets.length) return "";
+    return "<ul class='ev-bullets'>" + ev.bullets.map(function(b){
+      if (typeof b === "string") return "<li><span class='b-label'>" + esc(b) + "</span></li>";
+      return "<li><span class='b-label'>" + esc(b.label || "") + "</span>" +
+             (b.note ? "<span class='b-note'>" + esc(b.note) + "</span>" : "") + "</li>";
+    }).join("") + "</ul>";
+  }
   var tlEl = document.getElementById("timeline");
   function renderTimeline(){
     tlEl.innerHTML = "";
@@ -997,6 +1035,7 @@
         "</div>" +
         "<h3>" + esc(ev.title) + "</h3>" +
         (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
+        bulletsHtml(ev) +
         (ev.needsReview ? "<span class='verify'>verify</span>" : "");
       if (ev.media && ev.media.length){
         var strip = document.createElement("div");
