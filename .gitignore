@@ -9,8 +9,8 @@ $RECYCLE.BIN/
 .vscode/
 .idea/
 
-# Claude Code local settings
-.claude/settings.local.json
+# Claude Code local files (settings, launch config)
+.claude/
 
 # Unprocessed phone originals never belong in the repo — the iCloud inbox
 # stays outside it, and only converted/renamed files go in /media.

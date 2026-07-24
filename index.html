@@ -73,6 +73,14 @@
                   plain strings, or { label, note } — label is the bold lead
                   line, note is optional smaller text beneath it. Use
                   sparingly; most events read better as 1–3 plain sentences.
+    system        optional spend tag used by the money-breakdown modal
+                  (opened by clicking the Parts & consumables gauge). One of:
+                  cooling | fuel | brakes | controls | bodywork | wheels |
+                  consumables | fees. Only meaningful with cost + bucket.
+    spendItems    optional itemization of a mixed-system purchase for that
+                  modal: [{ label, cost, system }]. Item costs must sum to
+                  the event's cost. Without it, the event appears as one
+                  line under its own system.
     media         optional array of media items attached to this event.
                   Each item: {
                     type:    "image" | "video" | "youtube"
@@ -418,6 +426,64 @@
   .trk-state{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--trk-c)}
   .trk-note{display:block;color:var(--ivory-faint);font-size:12.5px;line-height:1.5;margin-top:2px}
 
+  /* ── spend breakdown modal ────────────────────────────── */
+  .gauge-btn{cursor:pointer;border-radius:8px;transition:background .15s}
+  .gauge-btn:hover{background:rgba(63,174,140,.08)}
+  .gauge-btn:focus-visible{outline:1px dashed var(--sheen);outline-offset:3px}
+  .spend{
+    position:fixed;inset:0;z-index:60;display:none;
+    background:rgba(6,10,9,.88);backdrop-filter:blur(4px);
+    align-items:center;justify-content:center;padding:18px;
+  }
+  .spend.open{display:flex}
+  .sp-panel{
+    width:min(760px,100%);max-height:92vh;overflow-y:auto;
+    border:1px solid var(--line);border-radius:12px;
+    background:linear-gradient(160deg,var(--emerald-deep),var(--pit) 75%);
+    padding:24px 26px 22px;position:relative;
+  }
+  .sp-close{
+    position:absolute;top:14px;right:14px;
+    background:none;border:1px solid var(--line);border-radius:6px;
+    color:var(--ivory-dim);font-family:var(--mono);font-size:10px;
+    letter-spacing:.12em;padding:5px 9px;cursor:pointer;
+  }
+  .sp-close:hover{color:var(--ivory);border-color:var(--sheen-dim)}
+  .sp-panel h2{
+    font-family:var(--display);font-weight:800;font-size:26px;
+    letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px;
+  }
+  .sp-total{font-family:var(--mono);font-size:12px;color:var(--brass);margin-bottom:14px}
+  .sp-tabs{display:flex;gap:8px;margin-bottom:16px}
+  .sp-tab{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    color:var(--ivory-dim);padding:6px 14px;cursor:pointer;
+  }
+  .sp-tab.active{color:var(--pit);background:var(--sheen);border-color:var(--sheen)}
+  .sp-view{display:none}
+  .sp-view.active{display:block}
+  .sp-donut-wrap{display:flex;justify-content:center}
+  .sp-donut-wrap svg{width:min(370px,86vw);height:auto}
+  .sp-chart-wrap svg{width:100%;height:auto}
+  .spend svg path,.spend svg circle{cursor:pointer}
+  .sp-readout{
+    min-height:40px;margin-top:12px;padding:8px 12px;
+    border:1px dashed var(--line);border-radius:8px;
+    font-size:13px;color:var(--ivory-dim);
+  }
+  .sp-readout b{color:var(--ivory);font-weight:600}
+  .sp-readout .sys{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  .sp-legend{
+    margin-top:14px;display:grid;gap:5px 22px;
+    grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  }
+  .sp-leg{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--ivory-dim)}
+  .sp-leg .dot{width:8px;height:8px;border-radius:2px;flex:none;align-self:center}
+  .sp-leg .amt{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ivory)}
+  .sp-axis{font-family:var(--mono);font-size:9px;fill:var(--ivory-faint)}
+  .sp-grid{stroke:var(--line);stroke-width:1}
+
   footer{
     margin-top:44px;font-family:var(--mono);font-size:11px;line-height:1.7;
     color:var(--ivory-faint);border-top:1px solid var(--line);padding-top:18px;
@@ -606,7 +672,8 @@
       "category": "purchase",
       "cost": 144.98,
       "costNote": "total",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "cooling"
     },
     {
       "id": "amazon-tools",
@@ -629,6 +696,11 @@
       "cost": 271.66,
       "costNote": "totals w/ shipping",
       "bucket": "parts",
+      "system": "controls",
+      "spendItems": [
+        { "label": "RH clip-on / switchgear assembly", "cost": 215.51, "system": "controls" },
+        { "label": "Coolant overflow reservoir", "cost": 56.15, "system": "cooling" }
+      ],
       "media": [
         { "type": "image", "src": "media/2026-06-14-busted-rh-controls-1.jpg", "caption": "Why we're shopping: RH clip-on area stripped bare, front MC reservoir flange snapped at the tab." },
         { "type": "image", "src": "media/2026-06-14-busted-rh-controls-2.jpg", "caption": "Second angle on the break — raw aluminum where the reservoir bracket used to live." },
@@ -698,6 +770,7 @@
       "category": "purchase",
       "cost": 66.24,
       "bucket": "parts",
+      "system": "consumables",
       "media": [
         { "type": "image", "src": "media/2026-07-10-new-radiator-arrived.jpg", "caption": "Sic Shop aluminum radiator out of the box — straight fins, ready to go on." }
       ]
@@ -723,7 +796,8 @@
       "category": "purchase",
       "cost": 456.23,
       "costNote": "total w/ shipping",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "fuel"
     },
     {
       "id": "battery-saga",
@@ -829,7 +903,8 @@
       "category": "purchase",
       "cost": 466.52,
       "costNote": "total",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "wheels"
     },
     {
       "id": "reservoir-kit",
@@ -839,7 +914,8 @@
       "category": "purchase",
       "cost": 31.99,
       "costNote": "pre-tax",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "brakes"
     },
     {
       "id": "duct-stay-purchase",
@@ -849,7 +925,8 @@
       "category": "purchase",
       "cost": 112.97,
       "costNote": "total",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "bodywork"
     },
     {
       "id": "seat-purchase",
@@ -859,7 +936,8 @@
       "category": "purchase",
       "cost": 70.60,
       "costNote": "total",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "bodywork"
     },
     {
       "id": "tank-swap",
@@ -878,7 +956,17 @@
       "category": "purchase",
       "cost": 94.68,
       "costNote": "total w/ shipping + tax",
-      "bucket": "parts"
+      "bucket": "parts",
+      "system": "brakes",
+      "spendItems": [
+        { "label": "MC hose barb 13159-1061", "cost": 9.85, "system": "brakes" },
+        { "label": "MC O-ring 92055-0741", "cost": 2.82, "system": "brakes" },
+        { "label": "Brake breather 43056-1056", "cost": 10.86, "system": "brakes" },
+        { "label": "Breather cap 43057-1001", "cost": 3.73, "system": "brakes" },
+        { "label": "EBC FA436HH rear pads", "cost": 39.90, "system": "brakes" },
+        { "label": "RH tank cover 14092-1088", "cost": 9.00, "system": "bodywork" },
+        { "label": "Shipping + tax", "cost": 18.52, "system": "fees" }
+      ]
     },
     {
       "id": "form-777-pivot",
@@ -1261,6 +1349,257 @@
           "</div></div>";
       }).join("") + "</div>";
   }
+
+  /* ── spend breakdown modal (click the Parts gauge) ────── */
+  var SYS_META = {
+    cooling:     { label:"Cooling",              c:"#7fa8c9" },
+    fuel:        { label:"Fuel & tank",          c:"#d8b46a" },
+    brakes:      { label:"Brakes",               c:"#cf8f6a" },
+    controls:    { label:"Controls",             c:"#8fd0b8" },
+    bodywork:    { label:"Bodywork & front end", c:"#9aa79b" },
+    wheels:      { label:"Wheels & tires",       c:"#b58a4f" },
+    consumables: { label:"Fluids & consumables", c:"#d9cfae" },
+    fees:        { label:"Shipping & fees",      c:"#6f8f85" },
+    other:       { label:"Other",                c:"#7e7a6d" }
+  };
+  function spendEntries(){
+    var out = [];
+    data.events.forEach(function(ev){
+      if (ev.bucket !== "parts" || typeof ev.cost !== "number") return;
+      if (ev.spendItems && ev.spendItems.length){
+        ev.spendItems.forEach(function(it){
+          out.push({ label: it.label, cost: it.cost, system: it.system || ev.system || "other", date: ev.date, ev: ev.title });
+        });
+      } else {
+        out.push({ label: ev.title, cost: ev.cost, system: ev.system || "other", date: ev.date, ev: ev.title });
+      }
+    });
+    return out;
+  }
+  function shade(base, i, n){
+    var t = n <= 1 ? 0 : i / (n - 1);
+    var pct = Math.round(96 - t * 44);
+    return "color-mix(in srgb, " + base + " " + pct + "%, #0a0f0d)";
+  }
+  function arcPath(cx, cy, r0, r1, a0, a1){
+    var s0=Math.sin(a0), c0=Math.cos(a0), s1=Math.sin(a1), c1=Math.cos(a1);
+    var big = (a1 - a0) > Math.PI ? 1 : 0;
+    return "M" + (cx+r1*s0).toFixed(2) + " " + (cy-r1*c0).toFixed(2) +
+      "A" + r1 + " " + r1 + " 0 " + big + " 1 " + (cx+r1*s1).toFixed(2) + " " + (cy-r1*c1).toFixed(2) +
+      "L" + (cx+r0*s1).toFixed(2) + " " + (cy-r0*c1).toFixed(2) +
+      "A" + r0 + " " + r0 + " 0 " + big + " 0 " + (cx+r0*s0).toFixed(2) + " " + (cy-r0*c0).toFixed(2) + "Z";
+  }
+  var spendEl = null, spReadout = null;
+  function readout(html){ if (spReadout) spReadout.innerHTML = html; }
+  function entryReadout(e){
+    var m = SYS_META[e.system] || SYS_META.other;
+    readout("<b>" + esc(e.label) + "</b> — <b>" + money(e.cost) + "</b> · " +
+      "<span class='sys' style='color:" + m.c + "'>" + esc(m.label) + "</span> · " +
+      esc(fmtDate(e.date)) + (e.ev !== e.label ? " · " + esc(e.ev) : ""));
+  }
+  function buildSpend(){
+    var entries = spendEntries();
+    var total = 0; entries.forEach(function(e){ total += e.cost; });
+    var bySys = {};
+    entries.forEach(function(e){
+      bySys[e.system] = bySys[e.system] || { total:0, items:[] };
+      bySys[e.system].total += e.cost;
+      bySys[e.system].items.push(e);
+    });
+    var sysKeys = Object.keys(bySys).sort(function(a,b){ return bySys[b].total - bySys[a].total; });
+
+    spendEl = document.createElement("div");
+    spendEl.className = "spend";
+    spendEl.setAttribute("role","dialog");
+    spendEl.setAttribute("aria-modal","true");
+    spendEl.setAttribute("aria-label","Parts spend breakdown");
+    var panel = document.createElement("div");
+    panel.className = "sp-panel";
+    panel.innerHTML =
+      "<button type='button' class='sp-close'>ESC ✕</button>" +
+      "<h2>Where the money went</h2>" +
+      "<div class='sp-total'>" + money(total) + " in parts &amp; consumables · " + entries.length + " line items</div>" +
+      "<div class='sp-tabs'>" +
+        "<button type='button' class='sp-tab active' data-v='donut'>Breakdown</button>" +
+        "<button type='button' class='sp-tab' data-v='time'>Over time</button>" +
+      "</div>" +
+      "<div class='sp-view active' data-v='donut'><div class='sp-donut-wrap'></div></div>" +
+      "<div class='sp-view' data-v='time'><div class='sp-chart-wrap'></div></div>" +
+      "<div class='sp-readout'></div>" +
+      "<div class='sp-legend'></div>";
+    spendEl.appendChild(panel);
+    document.body.appendChild(spendEl);
+    spReadout = panel.querySelector(".sp-readout");
+
+    function sysReadout(k){
+      var m = SYS_META[k] || SYS_META.other, sys = bySys[k];
+      readout("<span class='sys' style='color:" + m.c + "'>" + esc(m.label) + "</span> — <b>" +
+        money(sys.total) + "</b> across " + sys.items.length + (sys.items.length === 1 ? " item" : " items") +
+        " (" + Math.round(sys.total/total*100) + "% of spend)");
+    }
+
+    /* donut — inner ring: systems; outer ring: every line item */
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox","0 0 340 340");
+    var TAU = Math.PI * 2, a = 0;
+    sysKeys.forEach(function(k){
+      var sys = bySys[k], m = SYS_META[k] || SYS_META.other;
+      var span = sys.total / total * TAU;
+      var p = document.createElementNS(NS, "path");
+      p.setAttribute("d", arcPath(170,170,80,112, a+0.009, Math.max(a+0.009, a+span-0.009)));
+      p.setAttribute("fill", m.c);
+      p.setAttribute("opacity",".92");
+      var t1 = document.createElementNS(NS, "title");
+      t1.textContent = m.label + " — " + money(sys.total);
+      p.appendChild(t1);
+      p.addEventListener("mouseenter", function(){ sysReadout(k); });
+      p.addEventListener("click", function(){ sysReadout(k); });
+      svg.appendChild(p);
+      /* floor tiny slices so every line item stays visible; tooltips carry real $ */
+      sys.items.sort(function(x,y){ return y.cost - x.cost; });
+      var minS = Math.min(0.02, span / sys.items.length);
+      var rem = Math.max(0, span - minS * sys.items.length);
+      var ia = a;
+      sys.items.forEach(function(e, i){
+        var ispan = minS + (sys.total > 0 ? rem * (e.cost / sys.total) : 0);
+        var op = document.createElementNS(NS, "path");
+        op.setAttribute("d", arcPath(170,170,116,154, ia+0.004, Math.max(ia+0.004, ia+ispan-0.004)));
+        op.setAttribute("fill", shade(m.c, i, sys.items.length));
+        var t2 = document.createElementNS(NS, "title");
+        t2.textContent = e.label + " — " + money(e.cost);
+        op.appendChild(t2);
+        op.addEventListener("mouseenter", function(){ entryReadout(e); });
+        op.addEventListener("click", function(){ entryReadout(e); });
+        svg.appendChild(op);
+        ia += ispan;
+      });
+      a += span;
+    });
+    var ct = document.createElementNS(NS,"text");
+    ct.setAttribute("x","170"); ct.setAttribute("y","164"); ct.setAttribute("text-anchor","middle");
+    ct.setAttribute("style","font-family:var(--mono);font-size:19px;fill:var(--ivory)");
+    ct.textContent = moneyRound(total);
+    svg.appendChild(ct);
+    var cs = document.createElementNS(NS,"text");
+    cs.setAttribute("x","170"); cs.setAttribute("y","184"); cs.setAttribute("text-anchor","middle");
+    cs.setAttribute("style","font-family:var(--mono);font-size:9px;letter-spacing:.14em;fill:var(--ivory-faint)");
+    cs.textContent = "PARTS TOTAL";
+    svg.appendChild(cs);
+    panel.querySelector(".sp-donut-wrap").appendChild(svg);
+
+    /* cumulative spend over time */
+    var sorted = entries.slice().sort(function(x,y){ return x.date < y.date ? -1 : x.date > y.date ? 1 : 0; });
+    var t0 = new Date(sorted[0].date + "T00:00:00").getTime();
+    var tEnd = new Date(sorted[sorted.length-1].date + "T00:00:00").getTime();
+    if (tEnd === t0) tEnd = t0 + 86400000;
+    var W=640, H=300, L=58, R=18, T=20, B=36;
+    function X(t){ return L + (t - t0) / (tEnd - t0) * (W - L - R); }
+    function Yv(v){ return H - B - v / (total * 1.06) * (H - T - B); }
+    var svg2 = document.createElementNS(NS, "svg");
+    svg2.setAttribute("viewBox","0 0 " + W + " " + H);
+    var step = total > 1200 ? 500 : 250;
+    for (var gv = 0; gv <= total; gv += step){
+      var gl = document.createElementNS(NS,"line");
+      gl.setAttribute("x1",L); gl.setAttribute("x2",W-R);
+      gl.setAttribute("y1",Yv(gv)); gl.setAttribute("y2",Yv(gv));
+      gl.setAttribute("class","sp-grid"); gl.setAttribute("opacity",".6");
+      svg2.appendChild(gl);
+      var glt = document.createElementNS(NS,"text");
+      glt.setAttribute("x",L-8); glt.setAttribute("y",Yv(gv)+3);
+      glt.setAttribute("text-anchor","end"); glt.setAttribute("class","sp-axis");
+      glt.textContent = "$" + gv.toLocaleString("en-US");
+      svg2.appendChild(glt);
+    }
+    var mt = new Date(t0); mt.setDate(1); mt.setHours(0,0,0,0);
+    for (var d = new Date(mt); d.getTime() <= tEnd; d.setMonth(d.getMonth()+1)){
+      var tl = document.createElementNS(NS,"text");
+      tl.setAttribute("x",X(Math.max(d.getTime(), t0))); tl.setAttribute("y",H-14);
+      tl.setAttribute("text-anchor","middle"); tl.setAttribute("class","sp-axis");
+      tl.textContent = MONTHS[d.getMonth()].slice(0,3) + " " + d.getFullYear();
+      svg2.appendChild(tl);
+    }
+    var cum = 0, dPath = "M" + X(t0).toFixed(1) + " " + Yv(0).toFixed(1), dots = [];
+    sorted.forEach(function(e){
+      var x = X(new Date(e.date + "T00:00:00").getTime());
+      dPath += "L" + x.toFixed(1) + " " + Yv(cum).toFixed(1);
+      cum += e.cost;
+      dPath += "L" + x.toFixed(1) + " " + Yv(cum).toFixed(1);
+      dots.push({ x:x, y:Yv(cum), e:e });
+    });
+    var area = document.createElementNS(NS,"path");
+    area.setAttribute("d", dPath + "L" + X(tEnd).toFixed(1) + " " + Yv(cum).toFixed(1) +
+      "L" + X(tEnd).toFixed(1) + " " + Yv(0).toFixed(1) + "Z");
+    area.setAttribute("fill","rgba(63,174,140,.12)");
+    svg2.appendChild(area);
+    var line = document.createElementNS(NS,"path");
+    line.setAttribute("d", dPath + "L" + X(tEnd).toFixed(1) + " " + Yv(cum).toFixed(1));
+    line.setAttribute("fill","none");
+    line.setAttribute("stroke","var(--sheen)");
+    line.setAttribute("stroke-width","1.6");
+    svg2.appendChild(line);
+    dots.forEach(function(dt){
+      var m = SYS_META[dt.e.system] || SYS_META.other;
+      var c = document.createElementNS(NS,"circle");
+      c.setAttribute("cx",dt.x); c.setAttribute("cy",dt.y); c.setAttribute("r","4.5");
+      c.setAttribute("fill",m.c);
+      c.setAttribute("stroke","#0a0f0d"); c.setAttribute("stroke-width","1.5");
+      var t3 = document.createElementNS(NS,"title");
+      t3.textContent = dt.e.label + " — " + money(dt.e.cost);
+      c.appendChild(t3);
+      c.addEventListener("mouseenter", function(){ entryReadout(dt.e); });
+      c.addEventListener("click", function(){ entryReadout(dt.e); });
+      svg2.appendChild(c);
+    });
+    panel.querySelector(".sp-chart-wrap").appendChild(svg2);
+
+    /* legend */
+    var leg = panel.querySelector(".sp-legend");
+    sysKeys.forEach(function(k){
+      var m = SYS_META[k] || SYS_META.other;
+      var row = document.createElement("div");
+      row.className = "sp-leg";
+      row.innerHTML = "<span class='dot' style='background:" + m.c + "'></span>" +
+        esc(m.label) + "<span class='amt'>" + money(bySys[k].total) + "</span>";
+      leg.appendChild(row);
+    });
+
+    Array.prototype.forEach.call(panel.querySelectorAll(".sp-tab"), function(tb){
+      tb.addEventListener("click", function(){
+        Array.prototype.forEach.call(panel.querySelectorAll(".sp-tab"), function(x){ x.classList.remove("active"); });
+        Array.prototype.forEach.call(panel.querySelectorAll(".sp-view"), function(x){ x.classList.remove("active"); });
+        tb.classList.add("active");
+        panel.querySelector(".sp-view[data-v='" + tb.getAttribute("data-v") + "']").classList.add("active");
+      });
+    });
+    panel.querySelector(".sp-close").addEventListener("click", closeSpend);
+    spendEl.addEventListener("click", function(e){ if (e.target === spendEl) closeSpend(); });
+    readout("Hover or tap a slice for details — inner ring is systems, outer ring is every line item.");
+  }
+  function openSpend(){
+    if (!spendEl) buildSpend();
+    spendEl.classList.add("open");
+    spendEl.querySelector(".sp-close").focus();
+    document.body.style.overflow = "hidden";
+  }
+  function closeSpend(){
+    if (!spendEl) return;
+    spendEl.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && spendEl && spendEl.classList.contains("open")) closeSpend();
+  });
+  var partsGauge = document.getElementById("g-parts").parentElement;
+  partsGauge.classList.add("gauge-btn");
+  partsGauge.setAttribute("role","button");
+  partsGauge.setAttribute("tabindex","0");
+  partsGauge.setAttribute("aria-label","Open the parts spend breakdown");
+  partsGauge.title = "Click for the spend breakdown";
+  partsGauge.addEventListener("click", openSpend);
+  partsGauge.addEventListener("keydown", function(e){
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openSpend(); }
+  });
 
   /* next up */
   var nu = document.getElementById("nextup-list");
