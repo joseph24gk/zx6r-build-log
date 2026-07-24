@@ -452,23 +452,23 @@
     "title": "ZX-6R Rebuild",
     "subtitle": "Ground-up rebuild of a highsided 2019 Kawasaki ZX-6R 636 — mechanical restoration, CNC part fabrication, and a court-ordered title fight, logged as it happens.",
     "idLine": "ZX636HKFA · 636cc · full VIN kept offline",
-    "acquisition": { "date": "2025-04-08", "cost": 8000, "note": "private sale Apr 8–9, 2025; title assignment notarized earlier (notary date Mar 25, year illegible)" },
+    "acquisition": { "date": "2025-04-09", "cost": 8000, "note": "private sale Apr 9, 2025 (cash pulled Apr 8); title assignment notarized earlier (notary date Mar 25, year illegible)" },
     "benchDate": "2026-05-30"
   },
   "nextUp": [
-    "Front brake master cylinder: order the OEM hose barb (13159-1061) and its O-ring — the universal reservoir kit covers the bottle and brackets",
+    "Front brake MC: assemble the reservoir kit with the OEM barb + O-ring when everything lands, then bleed both ends (rear gets the new EBC pads)",
     "Machine rearset mounting bracket v1 on the work CNC; brake lever is next, footrest last",
     "Title endgame: Service Oklahoma N Classen visit to rule on 777-with-photo, court appointment held in parallel; whichever clears first wins. Packet is print-ready and travels to both.",
     "Order the TCMT headlight shell only — bench test confirmed the LED internals are healthy",
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
   "tracker": [
-    { "label": "Gas tank", "status": "fixed", "note": "Green tank swapped on with the pump module moved over; flange O-ring reused — replacement is on the end-of-build punch list." },
+    { "label": "Gas tank", "status": "fixed", "note": "Swapped on Jul 20 — pump module moved over; flange O-ring reused, replacement on the end-of-build punch list." },
     { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash." },
     { "label": "Fairings", "status": "broken", "note": "Nose hardware being replaced piecemeal; full fairing set waits on the repaint direction." },
     { "label": "The sliders", "status": "broken", "note": "Did their job." },
     { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun." },
-    { "label": "Front brakes", "status": "in-progress", "note": "Universal reservoir kit ordered Jul 22; OEM hose barb + O-ring still to order, then bleed." },
+    { "label": "Front brakes", "status": "in-progress", "note": "Reservoir kit and OEM barb + O-ring all ordered; assemble and bleed when parts land." },
     { "label": "Front air intake and fairing stay", "status": "in-progress", "note": "Duct + fairing/gauge stay bought Jul 22; headlight shell-only order is next." },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho." },
     { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way." },
@@ -487,9 +487,9 @@
   "events": [
     {
       "id": "purchase-bike",
-      "date": "2025-04-08",
+      "date": "2025-04-09",
       "title": "Bought the bike",
-      "detail": "2019 ZX-6R 636 via private sale for $8,000, completed April 8–9. Signed, notarized title assignment in hand (the notary stamp reads March 25 with the year illegible — likely pre-signed before it was listed), temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed.",
+      "detail": "2019 ZX-6R 636 via private sale for $8,000 — cash pulled April 8, met and completed April 9 (the Marketplace chats confirm the date). Signed, notarized title assignment in hand (the notary stamp reads March 25 with the year illegible — likely pre-signed before it was listed), temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed.",
       "category": "milestone",
       "cost": null,
       "bucket": null
@@ -860,6 +860,28 @@
       "cost": 70.60,
       "costNote": "total",
       "bucket": "parts"
+    },
+    {
+      "id": "tank-swap",
+      "date": "2026-07-20",
+      "title": "Tank swap done",
+      "detail": "Moved the fuel pump module over to the green tank and buttoned it all up. Reused the flange O-ring — knowingly against the single-use rule — so a fresh one is on the end-of-build punch list. Never located the strainer sock to inspect it, but there was no built-up grime, dirt, or rust anywhere; everything looked clean.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "partzilla-oem-order",
+      "date": "2026-07-23",
+      "dateDisplay": "≈ Jul 22–24, 2026",
+      "approx": true,
+      "title": "Partzilla OEM order + rear pads",
+      "detail": "OEM odds and ends from Partzilla: the front MC hose barb (13159-1061) and O-ring (92055-0741) that finish the reservoir hookup, the RH tank cover (14092-1088), and a brake breather + cap (43056-1056 / 43057-1001). Plus EBC FA436HH sintered rear pads — listed under Honda CBR600RR, but it's a shared pad shape: EBC fits it to the 2013–25 ZX636 non-ABS rear, which this bike is. $94.68 shipped.",
+      "category": "purchase",
+      "cost": 94.68,
+      "costNote": "total w/ shipping + tax",
+      "bucket": "parts",
+      "needsReview": true
     },
     {
       "id": "form-777-pivot",
