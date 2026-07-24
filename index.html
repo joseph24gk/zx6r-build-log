@@ -452,28 +452,27 @@
     "title": "ZX-6R Rebuild",
     "subtitle": "Ground-up rebuild of a highsided 2019 Kawasaki ZX-6R 636 — mechanical restoration, CNC part fabrication, and a court-ordered title fight, logged as it happens.",
     "idLine": "ZX636HKFA · 636cc · full VIN kept offline",
-    "acquisition": { "date": "2025-03-25", "cost": 8000, "note": "private sale, notarized title assignment" },
+    "acquisition": { "date": "2025-04-08", "cost": 8000, "note": "private sale Apr 8–9, 2025; title assignment notarized earlier (notary date Mar 25, year illegible)" },
     "benchDate": "2026-05-30"
   },
   "nextUp": [
-    "Tank transplant: move OEM fuel pump module to the green tank, new OEM pump flange gasket (single-use), assess strainer sock after the rusty-fuel exposure",
-    "Front brake master cylinder: order OEM reservoir hose barb, reservoir flange, and missing bracket from the Babbitts fiche",
+    "Front brake master cylinder: order the OEM hose barb (13159-1061) and its O-ring — the universal reservoir kit covers the bottle and brackets",
     "Machine rearset mounting bracket v1 on the work CNC; brake lever is next, footrest last",
-    "Certified letter to the registered owner's address of record; file for court-ordered title if he stays quiet",
-    "Bench-test the headlight LED assembly before choosing shell-only vs complete TCMT unit",
+    "Title endgame: Service Oklahoma N Classen visit to rule on 777-with-photo, court appointment held in parallel; whichever clears first wins. Packet is print-ready and travels to both.",
+    "Order the TCMT headlight shell only — bench test confirmed the LED internals are healthy",
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
   "tracker": [
-    { "label": "Gas tank", "status": "in-progress", "note": "Replacement green tank arrived Jul 16; pump transplant + new flange gasket pending." },
+    { "label": "Gas tank", "status": "fixed", "note": "Green tank swapped on with the pump module moved over; flange O-ring reused — replacement is on the end-of-build punch list." },
     { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash." },
-    { "label": "Fairings", "status": "broken", "note": "TCMT nose bundle sourced; full set waits on the repaint direction." },
+    { "label": "Fairings", "status": "broken", "note": "Nose hardware being replaced piecemeal; full fairing set waits on the repaint direction." },
     { "label": "The sliders", "status": "broken", "note": "Did their job." },
     { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun." },
-    { "label": "Front brakes", "status": "in-progress", "note": "MC itself fine; reservoir, hose barb, and brackets on the OEM order list." },
-    { "label": "Front air intake and fairing stay", "status": "broken", "note": "TCMT bundle found and priced, not ordered — headlight bench-test comes first." },
+    { "label": "Front brakes", "status": "in-progress", "note": "Universal reservoir kit ordered Jul 22; OEM hose barb + O-ring still to order, then bleed." },
+    { "label": "Front air intake and fairing stay", "status": "in-progress", "note": "Duct + fairing/gauge stay bought Jul 22; headlight shell-only order is next." },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho." },
     { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way." },
-    { "label": "Tires and wheels", "status": "broken", "note": "Two new tires planned — maybe mounted on the current rims for the interim; powder coat someday." }
+    { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IV pair ordered Jul 22 — mounting on the current rims for now; powder coat in the final cosmetic phase." }
   ],
   "gallery": [
     {
@@ -488,9 +487,9 @@
   "events": [
     {
       "id": "purchase-bike",
-      "date": "2025-03-25",
+      "date": "2025-04-08",
       "title": "Bought the bike",
-      "detail": "2019 ZX-6R 636 via private sale for $8,000. Signed, notarized title assignment in hand, temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed.",
+      "detail": "2019 ZX-6R 636 via private sale for $8,000, completed April 8–9. Signed, notarized title assignment in hand (the notary stamp reads March 25 with the year illegible — likely pre-signed before it was listed), temp plate from a tag agency, liability through Progressive — but the final title transfer never got completed.",
       "category": "milestone",
       "cost": null,
       "bucket": null
@@ -812,6 +811,83 @@
       "category": "fabrication",
       "cost": null,
       "bucket": null
+    },
+    {
+      "id": "headlight-bench-test",
+      "date": "2026-07-21",
+      "title": "Headlight bench test — internals healthy",
+      "detail": "Bench-tested the LED headlight assembly and the internals are healthy, so a complete unit is off the shopping list — the shell is all it needs.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "tires-rosso-iv",
+      "date": "2026-07-22",
+      "title": "Ordered Pirelli Diablo Rosso IV tire set",
+      "detail": "Front 120/70ZR17 and rear 180/55ZR17 Pirelli Diablo Rosso IV from CycleGear, $466.52 total. Plan: mount and balance on the current wheels at Real Fast Performance, ride now, powder coat the wheels in the final cosmetic phase. Check DOT date codes on delivery.",
+      "category": "purchase",
+      "cost": 466.52,
+      "costNote": "total",
+      "bucket": "parts"
+    },
+    {
+      "id": "reservoir-kit",
+      "date": "2026-07-22",
+      "title": "Front MC reservoir kit ordered",
+      "detail": "Universal brake reservoir kit off Amazon: reservoir with internals and cap, hose and clamps, mounting bracket with hardware, and a 6mm bolt to the MC. Replaces three OEM line items (43078-1099 bottle, 11056-2050 and 11057-3730 brackets). Still needs the OEM hose barb 13159-1061 and O-ring 92055-0741 to connect. Verify hose ID against the barb on arrival.",
+      "category": "purchase",
+      "cost": 31.99,
+      "costNote": "pre-tax",
+      "bucket": "parts"
+    },
+    {
+      "id": "duct-stay-purchase",
+      "date": "2026-07-22",
+      "title": "Bought ram air duct and upper fairing stay",
+      "detail": "Aftermarket ram air duct and upper fairing / gauges stay bracket off eBay, $112.97 for the pair. Replaces crash-damaged OEM 39045-0047 and 25008-0047. The Jul 21 bench test confirmed the headlight LED internals are healthy, so no complete headlight unit was needed with this order.",
+      "category": "purchase",
+      "cost": 112.97,
+      "costNote": "total",
+      "bucket": "parts"
+    },
+    {
+      "id": "seat-purchase",
+      "date": "2026-07-22",
+      "title": "Bought a rider seat",
+      "detail": "Replacement rider seat off eBay, $70.60 total. Closes out the seat line item on the parts list.",
+      "category": "purchase",
+      "cost": 70.60,
+      "costNote": "total",
+      "bucket": "parts"
+    },
+    {
+      "id": "form-777-pivot",
+      "date": "2026-07-24",
+      "title": "Title fight rerouted: Form 777, no court needed",
+      "detail": "Discovered Oklahoma Form 777 (Affidavit for Transfer of Ownership Following Loss of Assigned Title) fits the exact situation: a properly assigned, notarized title was delivered and then lost. Replaces court-ordered title (~$150 filing + weeks) and paid title service (~$400–475) as the primary path — the registered owner's cooperation is no longer required. Expected counter cost roughly $800–900: excise 3.25% (~$260) + 1.25% sales tax + $11 title + $17 transfer + ~$96 registration + maxed late penalties (excise penalty capped at matching excise, registration penalty capped at $100). Evidence stack assembled: notarized title assignment photo with odometer filled in (EXIF dated Apr 9, 2025), $9k withdrawal statement from Apr 8, 2025, the Marketplace listing and message thread recovered from my girlfriend's account (the listing was the middleman's, not the registered owner's), Progressive policy-change email dated Apr 11, 2025, and the metal temp plate plus tag agency VIN record naming me as pending purchaser.",
+      "category": "legal",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "title-packet-assembled",
+      "date": "2026-07-24",
+      "title": "Evidence packet built",
+      "detail": "Assembled and printed the full Form 777 packet: typed Form 777 (the registered owner named as record owner, me as 1st ownership assignment dated April 8, 2025, N/A in assignments 2–3, unsigned pending notary), the three-image title photo proof set (original, timestamp screenshot with the photo in the background, Adjust-menu screenshot proving the April 9, 2025 EXIF is unmodified), the Apr 8, 2025 $9k bank withdrawal statement, Marketplace listing and thread screenshots, the Progressive coverage-change email from Apr 11, 2025, and the wreck claim paperwork (liability policy; the claim paid my medical/gear and the other party's medical — no total-loss inspection was ever done). Also re-added the ZX6R to the current Progressive policy via the app and saved the new ID card; old policy declarations page requested by phone.",
+      "category": "legal",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "form-777-rejected",
+      "date": "2026-07-24",
+      "title": "Tag agency bounces the 777 — format, not facts",
+      "detail": "Tag agency declined to process Form 777 with an iPhone photo of the assigned title. Their standard: a stamped true photocopy of the certificate — per the agent, a dealership-scan artifact (dealers scan and stamp titles, so a lost dealer title has a certified copy). The evidence wasn't disputed; the documentation format was. Next moves: escalate to Service Oklahoma's state-run licensing office on N Classen to ask whether certified-copy is statewide policy or operator interpretation, and book the court-ordered title appointment in parallel through the county court clerk ($151.64 filing fee, appointment-only, fee due only at filing).",
+      "category": "legal",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true
     },
     {
       "id": "midnight-emerald",
