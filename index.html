@@ -488,13 +488,6 @@
   }
   .sec-head .rail-listtoggle{order:2;margin-left:0}
   .railwrap{margin:4px 0 0;position:relative}
-  .rail-viewport{position:relative}
-  .rail-curve{
-    position:absolute;left:0;right:0;top:43px;height:4px;z-index:0;pointer-events:none;
-    background:repeating-linear-gradient(90deg,var(--sheen-dim) 0 7px,transparent 7px 13px);
-    opacity:.62;
-    clip-path:ellipse(50% 50% at 50% 50%);
-  }
   .rail-listtoggle{
     background:none;border:1px solid var(--line);border-radius:999px;
     color:var(--ivory-dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
@@ -504,67 +497,58 @@
   .rail-listtoggle .chev{display:inline-block;transition:transform .25s ease}
   .rail-listtoggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
   .tl-hidden{display:none}
-  .rail-scroll{
-    overflow-x:auto;overflow-y:hidden;padding:0 2px;
-    scrollbar-width:none;-ms-overflow-style:none;
-    position:relative;z-index:1;
-    --fl:0px;--fr:0px;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
+  .rail{
+    position:relative;height:120px;outline:none;
+    cursor:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><circle cx='10' cy='10' r='4' fill='%23efe8d6' fill-opacity='.92'/></svg>") 10 10, pointer;
   }
-  .rail-scroll::-webkit-scrollbar{width:0;height:0;display:none}
-  .rail-scroll.f-l{--fl:30px}
-  .rail-scroll.f-r{--fr:30px}
-  @media (hover:hover) and (pointer:fine){
-    .rail-scroll{cursor:grab}
-    .rail-scroll.dragging{cursor:grabbing}
-    .rail-scroll.dragging .rail-dot{transition:none}
-  }
-  .rail-edge{
-    position:absolute;top:0;bottom:0;width:30px;pointer-events:none;z-index:2;
-    display:flex;align-items:center;opacity:0;transition:opacity .25s ease;
-    font-family:var(--mono);font-size:13px;color:var(--sheen-dim);
-  }
-  .rail-edge.on{opacity:1}
-  .rail-edge.l{left:0;justify-content:flex-start}
-  .rail-edge.r{right:0;justify-content:flex-end}
-  .rail{position:relative;height:94px;min-width:100%;outline:none}
   .rail:focus-visible{outline:1px dashed var(--sheen-dim);outline-offset:3px;border-radius:6px}
-  .rail-tick{position:absolute;top:52px;transform:translateX(-50%);text-align:center;pointer-events:none}
-  .rail-tick i{display:block;width:1px;height:7px;background:var(--line);margin:0 auto 3px}
-  .rail-tick span{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--ivory-faint);white-space:nowrap}
-  .rail-dot{
-    position:absolute;top:45px;width:11px;height:11px;padding:0;
-    border:none;border-radius:50%;cursor:pointer;
-    background:var(--dc,var(--sheen));
-    transform:translate(-50%,-50%);transform-origin:50% 50%;
-    box-shadow:0 0 0 3px var(--pit);
+  .rail-base{
+    position:absolute;left:0;right:0;bottom:33px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--line) 4%,var(--line) 96%,transparent);
   }
-  .rail-dot::after{content:"";position:absolute;inset:-9px}
-  .rail-dot.sel{box-shadow:0 0 0 2px var(--pit),0 0 0 3.5px var(--dc,var(--sheen)),0 0 14px color-mix(in srgb,var(--dc,var(--sheen)) 60%,transparent)}
-  .rail-dot.hero{width:15px;height:15px}
-  .rail-detail{
-    margin-top:8px;border:1px solid var(--line);border-radius:10px;
-    background:radial-gradient(120% 150% at 0% 0%, color-mix(in srgb,var(--catc,var(--sheen)) 11%,transparent) 0%, transparent 62%), var(--panel);
-    padding:16px 20px 15px;position:relative;min-height:96px;
+  .rail-yr{
+    position:absolute;bottom:20px;width:1px;height:78px;pointer-events:none;
+    background:repeating-linear-gradient(180deg,var(--line) 0 3px,transparent 3px 7px);
   }
-  .rail-detail::before{
-    content:"";position:absolute;left:0;right:0;top:0;height:2px;border-radius:10px 10px 0 0;
-    background:linear-gradient(90deg,var(--catc,var(--sheen)),transparent 78%);opacity:.75;
+  .rk{
+    position:absolute;bottom:34px;width:1px;background:#43594f;z-index:1;
+    transition:height .17s cubic-bezier(.22,.9,.28,1),background .17s ease,opacity .22s ease;
   }
-  .rail-nav{
-    position:absolute;top:12px;right:14px;display:flex;gap:5px;
+  .rk.cap{background:var(--ivory-dim)}
+  .rk-dot{
+    position:absolute;width:3px;height:3px;border-radius:50%;background:var(--ivory-dim);
+    margin-left:-1px;pointer-events:none;z-index:1;
+    transition:bottom .17s cubic-bezier(.22,.9,.28,1);
   }
-  .rail-nav button{
-    background:none;border:1px solid var(--line);border-radius:5px;color:var(--ivory-dim);
-    font-family:var(--mono);font-size:12px;line-height:1;padding:4px 8px;cursor:pointer;
-    transition:color .2s,border-color .2s;
+  .rl-lb{
+    position:absolute;bottom:10px;font-size:8px;letter-spacing:.16em;font-family:var(--mono);
+    white-space:nowrap;pointer-events:none;color:var(--ivory-faint);
   }
-  .rail-nav button:hover:not(:disabled){color:var(--ivory);border-color:var(--sheen-dim)}
-  .rail-nav button:disabled{opacity:.3;cursor:default}
-  .rail-detail .rd-body{animation:rdIn .28s cubic-bezier(.22,.9,.28,1)}
-  @keyframes rdIn{from{opacity:0;transform:translateY(6px)}}
-  .rd-pos{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--ivory-faint);margin-right:64px}
+  .rl-lb.end{color:var(--ivory-dim);font-size:8.5px;letter-spacing:.2em;font-weight:600}
+  .rail-flag{
+    position:absolute;top:2px;transform:translateX(-50%);pointer-events:none;
+    text-align:center;opacity:0;transition:opacity .16s ease;z-index:2;
+  }
+  .rail-flag.on{opacity:1}
+  .rail-flag .t{
+    display:block;font-size:12.5px;color:var(--ivory);white-space:nowrap;font-weight:500;
+    line-height:1.25;max-width:min(340px,60vw);overflow:hidden;text-overflow:ellipsis;
+  }
+  .rail-flag .d{
+    display:block;font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;
+    font-family:var(--mono);margin-top:3px;
+  }
+  .rail-dayhead{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ivory-faint);margin:4px 0 9px;display:flex;align-items:center;gap:10px;
+  }
+  .rail-dayhead::after{content:"";flex:1;height:1px;background:var(--line)}
+  .rail-detail{min-height:168px}
+  .rail-detail .ev{margin-bottom:10px;animation:rdIn .3s cubic-bezier(.22,.9,.28,1)}
+  .rail-detail .ev:last-child{margin-bottom:0}
+  .rail-detail .ev::before{display:none}
+  @keyframes rdIn{from{opacity:0;transform:translateY(7px)}}
+  @media (max-width:560px){ .rail{height:108px} .rail-flag .t{font-size:11.5px} }
 
   /* ── next up ───────────────────────────────────────────── */
   .nextup{
@@ -1364,15 +1348,11 @@
     <div class="filter-note" id="filter-note" aria-live="polite"></div>
 
     <div class="railwrap" id="railwrap">
-      <div class="rail-viewport">
-        <div class="rail-curve" aria-hidden="true"></div>
-        <div class="rail-scroll" id="rail-scroll">
-          <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
-            <div class="rail-ticks" id="rail-ticks" aria-hidden="true"></div>
-            <div class="rail-dots" id="rail-dots"></div>
-          </div>
-        </div>
+      <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Build timeline — arrow keys to step through days">
+        <div class="rail-base" aria-hidden="true"></div>
+        <div class="rail-flag" id="rail-flag" aria-hidden="true"><span class="t"></span><span class="d"></span></div>
       </div>
+      <div class="rail-dayhead" id="rail-dayhead"></div>
       <div class="rail-detail" id="rail-detail"></div>
     </div>
 
@@ -1746,7 +1726,7 @@
     if (!shown.length){
       tlEl.innerHTML = "<p style='color:var(--ivory-faint);font-family:var(--mono);font-size:13px;margin-top:20px'>No events in this category yet.</p>";
     }
-    buildRail(shown);
+    railFilter();
     var fn = document.getElementById("filter-note");
     if (fn){
       if (activeCat || activeTrack){
@@ -2184,168 +2164,168 @@
     nu.appendChild(li);
   });
 
-  /* ── horizontal rail: dock-magnified dots, click/arrow to read ── */
+  /* ── horizontal rail: one hairline tick per day ─────────── */
   var railEl = document.getElementById("rail"),
-      railDotsEl = document.getElementById("rail-dots"),
-      railTicksEl = document.getElementById("rail-ticks"),
+      railFlagEl = document.getElementById("rail-flag"),
+      railHeadEl = document.getElementById("rail-dayhead"),
       railDetailEl = document.getElementById("rail-detail"),
-      railScrollEl = document.getElementById("rail-scroll"),
-      railDots = [], railShown = [], railSel = -1, railGalStart = 0, railRaf = 0;
+      railDays = [], railTicks = [], railActive = [],
+      railSel = -1, railHov = -1, railGalStart = 0;
 
-  function railWidthFor(n){
-    var avail = railScrollEl ? railScrollEl.clientWidth : 800;
-    return Math.max(avail, n * 26);
+  (function(){ /* group every event by day, once */
+    var m = {};
+    events.forEach(function(ev){
+      if (!m[ev.date]){ m[ev.date] = { d: ev.date, ev: [] }; railDays.push(m[ev.date]); }
+      m[ev.date].ev.push(ev);
+    });
+  })();
+
+  function railRestH(n){ return 8 + Math.min(n - 1, 3) * 3; }
+  function railX(i){
+    var pad = 26, n = railDays.length;
+    return pad + (n < 2 ? 0 : (i / (n - 1)) * (railEl.clientWidth - pad * 2));
   }
-  function buildRail(shown){
-    if (!railEl) return;
-    railShown = shown;
-    railDots = [];
-    railDotsEl.innerHTML = "";
-    railTicksEl.innerHTML = "";
-    if (!shown.length){
-      railDetailEl.innerHTML = "<div class='rd-pos'>nothing in this filter</div>";
-      return;
-    }
-    var w = railWidthFor(shown.length);
-    railEl.style.width = w + "px";
-    var pad = 16, span = Math.max(1, w - pad * 2), lastMonth = "";
-    shown.forEach(function(ev, i){
-      var x = pad + (shown.length === 1 ? span / 2 : span * (i / (shown.length - 1)));
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "rail-dot" + (ev.category === "milestone" ? " hero" : "");
-      b.style.left = x + "px";
-      b.style.setProperty("--dc", "var(--cat-" + ev.category + ")");
-      b.setAttribute("role", "option");
-      b.setAttribute("aria-selected", "false");
-      b.setAttribute("aria-label", (ev.dateDisplay || fmtDate(ev.date)) + " — " + ev.title);
-      b.title = (ev.dateDisplay || fmtDate(ev.date)) + " · " + ev.title;
-      b.addEventListener("click", function(){ selectRail(i); });
-      railDotsEl.appendChild(b);
-      railDots.push({ el: b, x: x });
-      var mk = ev.date.slice(0, 7);
-      if (mk !== lastMonth){
-        lastMonth = mk;
-        var p = mk.split("-");
-        var t = document.createElement("div");
-        t.className = "rail-tick";
-        t.style.left = x + "px";
-        t.innerHTML = "<i></i><span>" + MONTHS[+p[1] - 1].slice(0, 3).toUpperCase() + " " + p[0].slice(2) + "</span>";
-        railTicksEl.appendChild(t);
+  function railMY(d){
+    var p = d.split("-");
+    return MONTHS[+p[1] - 1].slice(0, 3).toUpperCase() + " '" + p[0].slice(2);
+  }
+  function buildRail(){
+    if (!railEl || !railDays.length) return;
+    Array.prototype.forEach.call(railEl.querySelectorAll(".rk,.rk-dot,.rl-lb,.rail-yr"),
+      function(n){ n.remove(); });
+    railTicks = [];
+    var n = railDays.length;
+    railDays.forEach(function(dy, i){
+      var t = document.createElement("div");
+      t.className = "rk" + (i === 0 || i === n - 1 ? " cap" : "");
+      t.style.left = railX(i) + "px";
+      t.style.height = railRestH(dy.ev.length) + "px";
+      railEl.appendChild(t);
+      var dot = null;
+      if (i === 0 || i === n - 1){
+        dot = document.createElement("div");
+        dot.className = "rk-dot";
+        dot.style.left = t.style.left;
+        railEl.appendChild(dot);
       }
+      railTicks.push({ el: t, dot: dot });
     });
+    railLabels();
+  }
+  function railLabels(){
+    var boxes = [], n = railDays.length;
+    function put(x, txt, cls, align){
+      var el = document.createElement("div");
+      el.className = "rl-lb " + (cls || "");
+      el.textContent = txt;
+      railEl.appendChild(el);
+      var w = el.offsetWidth, left;
+      if (align === "l") left = x - w / 3;
+      else if (align === "r") left = x - w * 2 / 3;
+      else left = x - w / 2;
+      el.style.left = left + "px";
+      return { el: el, a: left, b: left + w };
+    }
+    function fits(r){
+      for (var i = 0; i < boxes.length; i++)
+        if (r.a < boxes[i].b + 13 && r.b > boxes[i].a - 13) return false;
+      return true;
+    }
+    boxes.push(put(railX(0), railMY(railDays[0].d), "end", "l"));
+    boxes.push(put(railX(n - 1), railMY(railDays[n - 1].d), "end", "r"));
+    for (var i = 1; i < n; i++){ /* dashed divider only where the year rolls over */
+      if (railDays[i].d.slice(0, 4) === railDays[i - 1].d.slice(0, 4)) continue;
+      var dv = document.createElement("div");
+      dv.className = "rail-yr";
+      dv.style.left = ((railX(i - 1) + railX(i)) / 2) + "px";
+      railEl.appendChild(dv);
+    }
+    var seenM = {}, seenY = {}, cands = [];
+    railDays.forEach(function(dy, i){ /* month on its first entry; year on the first month of each year */
+      var mk = dy.d.slice(0, 7), yr = dy.d.slice(0, 4);
+      if (seenM[mk]) return;
+      seenM[mk] = 1;
+      var p = mk.split("-"), txt = MONTHS[+p[1] - 1].slice(0, 3).toUpperCase(), first = false;
+      if (!seenY[yr]){ seenY[yr] = 1; txt += " '" + yr.slice(2); first = true; }
+      cands.push({ i: i, txt: txt, first: first });
+    });
+    /* year-carrying labels claim their space first, then plain months fill in */
+    cands.filter(function(c){ return c.first; }).concat(cands.filter(function(c){ return !c.first; }))
+      .forEach(function(c){
+        var r = put(railX(c.i), c.txt, "", "c");
+        if (!fits(r)) r.el.remove(); else boxes.push(r);
+      });
+  }
+
+  function railMatches(ev){
+    if (activeTrack) return activeTrack.events.indexOf(ev.id) >= 0;
+    return !activeCat || ev.category === activeCat;
+  }
+  function railFilter(){
+    if (!railEl || !railDays.length) return;
+    railActive = [];
+    railDays.forEach(function(dy, i){
+      for (var k = 0; k < dy.ev.length; k++)
+        if (railMatches(dy.ev[k])){ railActive.push(i); return; }
+    });
+    if (railActive.indexOf(railSel) < 0)
+      railSel = railActive.length ? railActive[railActive.length - 1] : -1;
     railGalStart = gallery.length;
-    selectRail(railSel >= 0 && railSel < shown.length ? railSel : shown.length - 1, true);
-    railFades();
+    railRenderDay();
+    railPaint();
   }
-  function magnify(cx){
-    if (reduceMotion) return;
-    for (var i = 0; i < railDots.length; i++){
-      var d = railDots[i], dx = cx - d.x;
-      var s = 1 + 1.15 * Math.exp(-(dx * dx) / 3200);
-      d.el.style.transform = "translate(-50%,-50%) scale(" + s.toFixed(3) + ")";
-    }
+  function railNearest(x){
+    if (!railActive.length) return -1;
+    var best = -1, bd = Infinity;
+    railActive.forEach(function(i){
+      var d = Math.abs(x - railX(i));
+      if (d < bd){ bd = d; best = i; }
+    });
+    return best;
   }
-  function resetMagnify(){
-    for (var i = 0; i < railDots.length; i++) railDots[i].el.style.transform = "translate(-50%,-50%)";
+  function railPaint(){
+    var f = (railHov >= 0 && railActive.indexOf(railHov) >= 0) ? railHov : railSel;
+    railTicks.forEach(function(t, i){
+      var dy = railDays[i], base = railRestH(dy.ev.length);
+      var on = railActive.indexOf(i) >= 0;
+      var raise = (i === f && on) ? 26 : 0;
+      t.el.style.height = (base + raise) + "px";
+      var col = "var(--cat-" + dy.ev[0].category + ")";
+      t.el.style.background = (on && (i === f || i === railSel))
+        ? col : (t.el.classList.contains("cap") ? "var(--ivory-dim)" : "#43594f");
+      t.el.style.opacity = !on ? ".12" : ((i !== f && i !== railSel) ? ".5" : "1");
+      if (t.dot) t.dot.style.bottom = (34 + base + raise + 3) + "px";
+    });
+    if (f >= 0 && railActive.indexOf(f) >= 0){
+      var dy2 = railDays[f], e = dy2.ev[0];
+      railFlagEl.style.left = railX(f) + "px";
+      railFlagEl.querySelector(".t").textContent =
+        dy2.ev.length > 1 ? dy2.ev.length + " entries" : e.title;
+      var dEl = railFlagEl.querySelector(".d");
+      dEl.textContent = fmtDate(dy2.d);
+      dEl.style.color = "var(--cat-" + e.category + ")";
+      railFlagEl.classList.add("on");
+    } else railFlagEl.classList.remove("on");
   }
-  function railFades(){
-    if (!railScrollEl) return;
-    var max = railScrollEl.scrollWidth - railScrollEl.clientWidth;
-    var l = railScrollEl.scrollLeft > 4, r = railScrollEl.scrollLeft < max - 4;
-    railScrollEl.classList.toggle("f-l", l);
-    railScrollEl.classList.toggle("f-r", r);
-  }
-  if (railScrollEl){
-    railScrollEl.addEventListener("scroll", railFades, { passive: true });
-    var dragOn = false, dragX = 0, dragL = 0, dragMoved = 0;
-    railScrollEl.addEventListener("pointerdown", function(e){
-      if (e.pointerType !== "mouse" || e.button !== 0) return;
-      dragOn = true; dragMoved = 0; dragX = e.clientX; dragL = railScrollEl.scrollLeft;
-      railScrollEl.classList.add("dragging");
-    });
-    window.addEventListener("pointermove", function(e){
-      if (!dragOn) return;
-      var dx = e.clientX - dragX;
-      if (Math.abs(dx) > dragMoved) dragMoved = Math.abs(dx);
-      railScrollEl.scrollLeft = dragL - dx;
-    });
-    window.addEventListener("pointerup", function(){
-      if (!dragOn) return;
-      dragOn = false;
-      railScrollEl.classList.remove("dragging");
-    });
-    railScrollEl.addEventListener("click", function(e){
-      if (dragMoved > 4){ e.preventDefault(); e.stopPropagation(); dragMoved = 0; }
-    }, true);
-  }
-  if (railEl){
-    railEl.addEventListener("mousemove", function(e){
-      if (railRaf) return;
-      var r = railEl.getBoundingClientRect(), cx = e.clientX - r.left;
-      railRaf = requestAnimationFrame(function(){ railRaf = 0; magnify(cx); });
-    });
-    railEl.addEventListener("mouseleave", resetMagnify);
-    railEl.addEventListener("keydown", function(e){
-      var n = railShown.length;
-      if (!n) return;
-      if (e.key === "ArrowRight" || e.key === "ArrowDown"){ e.preventDefault(); selectRail(Math.min(n - 1, railSel + 1)); }
-      else if (e.key === "ArrowLeft" || e.key === "ArrowUp"){ e.preventDefault(); selectRail(Math.max(0, railSel - 1)); }
-      else if (e.key === "Home"){ e.preventDefault(); selectRail(0); }
-      else if (e.key === "End"){ e.preventDefault(); selectRail(n - 1); }
-    });
-    window.addEventListener("resize", function(){
-      if (railRaf) return;
-      railRaf = requestAnimationFrame(function(){ railRaf = 0; buildRail(railShown); });
-    });
-  }
-  function selectRail(i, quiet){
-    if (!railShown.length) return;
-    railSel = Math.max(0, Math.min(railShown.length - 1, i));
-    railDots.forEach(function(d, k){
-      d.el.classList.toggle("sel", k === railSel);
-      d.el.setAttribute("aria-selected", k === railSel ? "true" : "false");
-    });
-    var dot = railDots[railSel];
-    if (dot && railScrollEl){
-      var view = railScrollEl.clientWidth, want = dot.x - view / 2;
-      railScrollEl.scrollTo({ left: Math.max(0, want), behavior: (reduceMotion || quiet) ? "auto" : "smooth" });
-    }
-    renderRailDetail(railShown[railSel]);
-  }
-  function renderRailDetail(ev){
-    if (!ev) return;
-    gallery.length = Math.min(gallery.length, railGalStart);
-    railDetailEl.style.setProperty("--catc", "var(--cat-" + ev.category + ")");
-    var dateHtml = ev.dateDisplay
-      ? "<span class='approx'>" + esc(ev.dateDisplay) + "</span>"
-      : esc(fmtDate(ev.date));
+  function railCard(ev){
+    var card = document.createElement("article");
+    card.className = "ev" + (ev.category === "milestone" ? " ev-hero" : "");
+    card.id = "ev-" + ev.id;
+    card.style.setProperty("--node", "var(--cat-" + ev.category + ")");
+    card.style.setProperty("--catc", "var(--cat-" + ev.category + ")");
     var costHtml = (typeof ev.cost === "number")
       ? "<span class='ev-cost'>" + money(ev.cost) + (ev.costNote ? "<small>" + esc(ev.costNote) + "</small>" : "") + "</span>"
-      : "";
-    railDetailEl.innerHTML =
-      "<div class='rail-nav'>" +
-        "<button type='button' class='rd-prev' aria-label='Previous event'>‹</button>" +
-        "<button type='button' class='rd-next' aria-label='Next event'>›</button>" +
+      : (ev.costNote ? "<span class='ev-cost'><small>" + esc(ev.costNote) + "</small></span>" : "");
+    card.innerHTML =
+      "<div class='ev-top'>" +
+        (ev.dateDisplay ? "<span class='ev-date'><span class='approx'>" + esc(ev.dateDisplay) + "</span></span>" : "") +
+        "<span class='ev-cat'>" + esc((CAT_META[ev.category] || { label: ev.category }).label) + "</span>" +
+        costHtml +
       "</div>" +
-      "<div class='rd-body'>" +
-        "<div class='rd-pos'>" + (railSel + 1) + " / " + railShown.length + "</div>" +
-        "<div class='ev-top'>" +
-          "<span class='ev-date'>" + dateHtml + "</span>" +
-          "<span class='ev-cat' style='color:var(--cat-" + ev.category + ")'>" +
-            esc((CAT_META[ev.category] || { label: ev.category }).label) + "</span>" +
-          costHtml +
-        "</div>" +
-        "<h3>" + esc(ev.title) + "</h3>" +
-        (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
-        bulletsHtml(ev) +
-        (ev.needsReview ? "<span class='verify'>verify</span>" : "") +
-      "</div>";
-    var pv = railDetailEl.querySelector(".rd-prev"), nx = railDetailEl.querySelector(".rd-next");
-    pv.disabled = railSel === 0;
-    nx.disabled = railSel === railShown.length - 1;
-    pv.addEventListener("click", function(){ selectRail(railSel - 1); railEl.focus(); });
-    nx.addEventListener("click", function(){ selectRail(railSel + 1); railEl.focus(); });
+      "<h3>" + esc(ev.title) + "</h3>" +
+      (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
+      bulletsHtml(ev) +
+      (ev.needsReview ? "<span class='verify'>verify</span>" : "");
     if (ev.media && ev.media.length){
       var strip = document.createElement("div");
       strip.className = "media-strip";
@@ -2353,8 +2333,7 @@
         var gIdx = gallery.length;
         gallery.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
         var t = document.createElement("button");
-        t.className = "thumb";
-        t.type = "button";
+        t.className = "thumb"; t.type = "button";
         t.setAttribute("aria-label", (m.caption || m.type) + " — open viewer");
         var src = null;
         if (m.type === "image") src = m.src;
@@ -2365,9 +2344,61 @@
         t.addEventListener("click", function(){ openLightbox(gIdx); });
         strip.appendChild(t);
       });
-      railDetailEl.querySelector(".rd-body").appendChild(strip);
+      card.appendChild(strip);
     }
+    return card;
   }
+  /* re-rendering the day must never move the rail under the reader */
+  function railRenderDay(){
+    if (!railEl) return;
+    var before = railEl.getBoundingClientRect().top;
+    if (railSel < 0){
+      railHeadEl.textContent = "no entries in this filter";
+      railDetailEl.innerHTML = "";
+    } else {
+      var dy = railDays[railSel];
+      var list = dy.ev.filter(railMatches);
+      if (!list.length) list = dy.ev;
+      railHeadEl.textContent = fmtDate(dy.d) + (list.length > 1 ? " · " + list.length + " entries" : "");
+      gallery.length = Math.min(gallery.length, railGalStart);
+      railDetailEl.innerHTML = "";
+      list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev)); });
+    }
+    var after = railEl.getBoundingClientRect().top;
+    var delta = after - before;
+    if (Math.abs(delta) > 0.5) window.scrollBy(0, delta);
+  }
+  if (railEl){
+    railEl.addEventListener("mousemove", function(e){
+      var b = railEl.getBoundingClientRect();
+      railHov = railNearest(e.clientX - b.left);
+      railPaint();
+    });
+    railEl.addEventListener("mouseleave", function(){ railHov = -1; railPaint(); });
+    railEl.addEventListener("click", function(e){
+      var b = railEl.getBoundingClientRect();
+      var i = railNearest(e.clientX - b.left);
+      if (i >= 0 && i !== railSel){ railSel = i; railRenderDay(); railPaint(); }
+    });
+    railEl.addEventListener("pointerdown", function(e){
+      if (e.pointerType === "mouse") return;
+      var b = railEl.getBoundingClientRect();
+      var i = railNearest(e.clientX - b.left);
+      if (i >= 0){ railSel = i; railHov = i; railRenderDay(); railPaint(); }
+    });
+    railEl.addEventListener("keydown", function(e){
+      if (!railActive.length) return;
+      var pos = railActive.indexOf(railSel), moved = false;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown"){ railSel = railActive[Math.min(railActive.length - 1, pos + 1)]; moved = true; }
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp"){ railSel = railActive[Math.max(0, pos - 1)]; moved = true; }
+      else if (e.key === "Home"){ railSel = railActive[0]; moved = true; }
+      else if (e.key === "End"){ railSel = railActive[railActive.length - 1]; moved = true; }
+      if (moved){ e.preventDefault(); railRenderDay(); railPaint(); }
+    });
+    window.addEventListener("resize", function(){ buildRail(); railPaint(); });
+    buildRail();
+  }
+
   var listToggle = document.getElementById("rail-listtoggle");
   if (listToggle){
     listToggle.addEventListener("click", function(){
