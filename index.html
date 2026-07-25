@@ -29,9 +29,11 @@
                                            // inline in the timeline at its date
                                            // as a media-only "snapshot" card.
 
-  tracker: [ Item, ... ]                 // optional — CURRENT damage/repair
-                                         // state, rendered as a pinned panel
-                                         // between the filters and timeline.
+  tracker: [ Item, ... ]                 // optional — CURRENT state of any
+                                         // part of the build: crash damage,
+                                         // cosmetic work (paint, powder coat),
+                                         // upgrades, anything with a status.
+                                         // Renders as the "Build status" panel.
     label    short part name ("Gas tank")
     status   "broken" | "in-progress" | "fixed"
     note     optional one-liner of current state ("parts ordered")
@@ -1333,12 +1335,6 @@
 </header>
 
 <div class="wrap">
-  <section class="tracker" id="tracker" aria-label="Damage tracker"></section>
-  <section class="nextup">
-    <h2>Up next</h2>
-    <ul id="nextup-list"></ul>
-  </section>
-
   <section class="sec" id="sec-timeline">
     <div class="sec-head">
       <h2>Build timeline</h2>
@@ -1357,6 +1353,13 @@
     </div>
 
     <div id="timeline" class="tl-hidden"></div>
+  </section>
+
+  <section class="tracker" id="tracker" aria-label="Build status"></section>
+
+  <section class="nextup">
+    <h2>Up next</h2>
+    <ul id="nextup-list"></ul>
   </section>
 
   <footer>
@@ -1775,7 +1778,7 @@
     var tc = { "broken":0, "in-progress":0, "fixed":0 };
     trkItems.forEach(function(t){ if (tc[t.status] != null) tc[t.status]++; });
     trkEl.innerHTML =
-      "<div class='trk-head'><h2>Damage tracker</h2>" +
+      "<div class='trk-head'><h2>Build status</h2>" +
       "<span class='trk-count'>" + tc["fixed"] + " fixed · " + tc["in-progress"] + " in progress · " + tc["broken"] + " broken</span></div>" +
       "<div class='trk-grid'>" + trkItems.map(function(t, i){
         var s = TRK_STATUS[t.status] || TRK_STATUS["broken"];
@@ -1799,8 +1802,13 @@
         });
         renderFilters();
         renderTimelineAnimated();
-        var sec = document.getElementById("sec-timeline");
-        if (sec) sec.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+        /* only travel if the rail isn't already on screen */
+        var rEl = document.getElementById("rail");
+        if (rEl){
+          var rb = rEl.getBoundingClientRect();
+          if (rb.bottom < 0 || rb.top > (window.innerHeight || 0) - 60)
+            rEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        }
       });
     });
   }
@@ -2283,27 +2291,40 @@
     });
     return best;
   }
+  /* a tick only wears a category colour when that colour is unambiguous:
+     under a filter it wears the filter's colour, a mixed-category day wears
+     neutral ivory so it can never be mistaken for a category. */
+  function railColor(i){
+    if (activeCat) return "var(--cat-" + activeCat + ")";
+    if (activeTrack) return "var(--ivory)";
+    var dy = railDays[i], c = dy.ev[0].category;
+    for (var k = 1; k < dy.ev.length; k++)
+      if (dy.ev[k].category !== c) return "var(--ivory)";
+    return "var(--cat-" + c + ")";
+  }
   function railPaint(){
+    var filtering = !!(activeCat || activeTrack);
     var f = (railHov >= 0 && railActive.indexOf(railHov) >= 0) ? railHov : railSel;
     railTicks.forEach(function(t, i){
-      var dy = railDays[i], base = railRestH(dy.ev.length);
+      var base = railRestH(railDays[i].ev.length);
       var on = railActive.indexOf(i) >= 0;
-      var raise = (i === f && on) ? 26 : 0;
+      var raise = (on && (i === f || filtering)) ? 26 : 0;
       t.el.style.height = (base + raise) + "px";
-      var col = "var(--cat-" + dy.ev[0].category + ")";
-      t.el.style.background = (on && (i === f || i === railSel))
-        ? col : (t.el.classList.contains("cap") ? "var(--ivory-dim)" : "#43594f");
-      t.el.style.opacity = !on ? ".12" : ((i !== f && i !== railSel) ? ".5" : "1");
+      var lit = on && (filtering || i === f || i === railSel);
+      t.el.style.background = lit ? railColor(i)
+        : (t.el.classList.contains("cap") ? "var(--ivory-dim)" : "#43594f");
+      t.el.style.opacity = !on ? ".12"
+        : ((i === f || i === railSel) ? "1" : (filtering ? ".7" : ".5"));
       if (t.dot) t.dot.style.bottom = (34 + base + raise + 3) + "px";
     });
     if (f >= 0 && railActive.indexOf(f) >= 0){
-      var dy2 = railDays[f], e = dy2.ev[0];
+      var dy2 = railDays[f];
       railFlagEl.style.left = railX(f) + "px";
       railFlagEl.querySelector(".t").textContent =
-        dy2.ev.length > 1 ? dy2.ev.length + " entries" : e.title;
+        dy2.ev.length > 1 ? dy2.ev.length + " entries" : dy2.ev[0].title;
       var dEl = railFlagEl.querySelector(".d");
       dEl.textContent = fmtDate(dy2.d);
-      dEl.style.color = "var(--cat-" + e.category + ")";
+      dEl.style.color = railColor(f);
       railFlagEl.classList.add("on");
     } else railFlagEl.classList.remove("on");
   }
