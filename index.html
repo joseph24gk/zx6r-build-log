@@ -135,12 +135,12 @@
     --cat-milestone:#3fae8c;
     --cat-wrenching:#8fd0b8;
     --cat-fabrication:#7fa8c9;
-    --cat-purchase:#d8b46a;
-    --cat-tools:#b58a4f;
-    --cat-legal:#cf8f6a;
+    --cat-purchase:#e2708f;
+    --cat-tools:#a08ad6;
+    --cat-legal:#e2865f;
     --cat-shop:#9aa79b;
-    --cat-decision:#d9cfae;
-    --cat-logistics:#6f8f85;
+    --cat-decision:#62cfe0;
+    --cat-logistics:#7fa8a0;
     --cat-media:#79c9b4;
 
     --display:'Big Shoulders Display',sans-serif;
@@ -272,7 +272,7 @@
     position:relative;margin-bottom:22px;
     border:1px solid var(--line);border-radius:8px;
     background:var(--panel);
-    background:linear-gradient(135deg, color-mix(in srgb,var(--catc,var(--sheen)) 6%,var(--panel)) 0%, var(--panel) 46%);
+    background:radial-gradient(125% 150% at 0% 0%, color-mix(in srgb,var(--catc,var(--sheen)) 10%,transparent) 0%, transparent 60%), var(--panel);
     padding:16px 20px 15px;
     transition:border-color .2s ease,transform .22s ease,box-shadow .25s ease;
   }
@@ -467,6 +467,63 @@
     .lb-next{right:24%}
     .thumb{width:84px;height:63px}
   }
+
+  /* ── horizontal rail ───────────────────────────────────── */
+  .railwrap{margin:26px 0 10px}
+  .rail-top{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}
+  .rail-hint{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory-faint)}
+  .rail-listtoggle{
+    margin-left:auto;background:none;border:1px solid var(--line);border-radius:999px;
+    color:var(--ivory-dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
+    text-transform:uppercase;padding:4px 11px;cursor:pointer;transition:color .2s,border-color .2s;
+  }
+  .rail-listtoggle:hover{color:var(--ivory);border-color:var(--sheen-dim)}
+  .rail-listtoggle .chev{display:inline-block;transition:transform .25s ease}
+  .rail-listtoggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+  .tl-hidden{display:none}
+  .rail-scroll{overflow-x:auto;overflow-y:hidden;padding:0 2px;scrollbar-width:thin}
+  .rail{position:relative;height:74px;min-width:100%;outline:none}
+  .rail:focus-visible{outline:1px dashed var(--sheen-dim);outline-offset:3px;border-radius:6px}
+  .rail-line{
+    position:absolute;left:0;right:0;top:44px;height:2px;
+    background:repeating-linear-gradient(90deg,var(--sheen-dim) 0 7px,transparent 7px 13px);
+    opacity:.55;
+  }
+  .rail-tick{position:absolute;top:52px;transform:translateX(-50%);text-align:center;pointer-events:none}
+  .rail-tick i{display:block;width:1px;height:7px;background:var(--line);margin:0 auto 3px}
+  .rail-tick span{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--ivory-faint);white-space:nowrap}
+  .rail-dot{
+    position:absolute;top:45px;width:11px;height:11px;padding:0;
+    border:none;border-radius:50%;cursor:pointer;
+    background:var(--dc,var(--sheen));
+    transform:translate(-50%,-50%);transform-origin:50% 50%;
+    box-shadow:0 0 0 3px var(--pit);
+  }
+  .rail-dot::after{content:"";position:absolute;inset:-9px}
+  .rail-dot.sel{box-shadow:0 0 0 2px var(--pit),0 0 0 3.5px var(--dc,var(--sheen)),0 0 14px color-mix(in srgb,var(--dc,var(--sheen)) 60%,transparent)}
+  .rail-dot.hero{width:15px;height:15px}
+  .rail-detail{
+    margin-top:8px;border:1px solid var(--line);border-radius:10px;
+    background:radial-gradient(120% 150% at 0% 0%, color-mix(in srgb,var(--catc,var(--sheen)) 11%,transparent) 0%, transparent 62%), var(--panel);
+    padding:16px 20px 15px;position:relative;min-height:96px;
+  }
+  .rail-detail::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:2px;border-radius:10px 10px 0 0;
+    background:linear-gradient(90deg,var(--catc,var(--sheen)),transparent 78%);opacity:.75;
+  }
+  .rail-nav{
+    position:absolute;top:12px;right:14px;display:flex;gap:5px;
+  }
+  .rail-nav button{
+    background:none;border:1px solid var(--line);border-radius:5px;color:var(--ivory-dim);
+    font-family:var(--mono);font-size:12px;line-height:1;padding:4px 8px;cursor:pointer;
+    transition:color .2s,border-color .2s;
+  }
+  .rail-nav button:hover:not(:disabled){color:var(--ivory);border-color:var(--sheen-dim)}
+  .rail-nav button:disabled{opacity:.3;cursor:default}
+  .rail-detail .rd-body{animation:rdIn .28s cubic-bezier(.22,.9,.28,1)}
+  @keyframes rdIn{from{opacity:0;transform:translateY(6px)}}
+  .rd-pos{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--ivory-faint);margin-right:64px}
 
   /* ── next up ───────────────────────────────────────────── */
   .nextup{
@@ -1191,7 +1248,22 @@
   <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
   <div class="filter-note" id="filter-note" aria-live="polite"></div>
   <section class="tracker" id="tracker" aria-label="Damage tracker"></section>
-  <div id="timeline"></div>
+  <section class="railwrap" id="railwrap" aria-label="Event timeline">
+    <div class="rail-top">
+      <span class="rail-hint" id="rail-hint"></span>
+      <button type="button" class="rail-listtoggle" id="rail-listtoggle" aria-expanded="false">full list <span class="chev" aria-hidden="true">▾</span></button>
+    </div>
+    <div class="rail-scroll" id="rail-scroll">
+      <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
+        <div class="rail-line" aria-hidden="true"></div>
+        <div class="rail-ticks" id="rail-ticks" aria-hidden="true"></div>
+        <div class="rail-dots" id="rail-dots"></div>
+      </div>
+    </div>
+    <div class="rail-detail" id="rail-detail"></div>
+  </section>
+
+  <div id="timeline" class="tl-hidden"></div>
 
   <section class="nextup">
     <h2>Up next</h2>
@@ -1560,6 +1632,7 @@
     if (!shown.length){
       tlEl.innerHTML = "<p style='color:var(--ivory-faint);font-family:var(--mono);font-size:13px;margin-top:20px'>No events in this category yet.</p>";
     }
+    buildRail(shown);
     var fn = document.getElementById("filter-note");
     if (fn){
       if (activeCat){
@@ -1620,14 +1693,14 @@
 
   /* ── spend breakdown modal (click the Parts gauge) ────── */
   var SYS_META = {
-    cooling:     { label:"Cooling",              c:"#7fa8c9" },
-    fuel:        { label:"Fuel & tank",          c:"#d8b46a" },
-    brakes:      { label:"Brakes",               c:"#cf8f6a" },
+    cooling:     { label:"Cooling",              c:"#5fa8d3" },
+    fuel:        { label:"Fuel & tank",          c:"#d4779b" },
+    brakes:      { label:"Brakes",               c:"#e2865f" },
     controls:    { label:"Controls",             c:"#8fd0b8" },
-    bodywork:    { label:"Bodywork & front end", c:"#9aa79b" },
-    wheels:      { label:"Wheels & tires",       c:"#b58a4f" },
-    consumables: { label:"Fluids & consumables", c:"#d9cfae" },
-    fees:        { label:"Shipping & fees",      c:"#6f8f85" },
+    bodywork:    { label:"Bodywork & front end", c:"#a08ad6" },
+    wheels:      { label:"Wheels & tires",       c:"#62cfe0" },
+    consumables: { label:"Fluids & consumables", c:"#9aa79b" },
+    fees:        { label:"Shipping & fees",      c:"#7d8f99" },
     other:       { label:"Other",                c:"#7e7a6d" }
   };
   function spendEntries(){
@@ -1976,6 +2049,171 @@
     li.textContent = item;
     nu.appendChild(li);
   });
+
+  /* ── horizontal rail: dock-magnified dots, click/arrow to read ── */
+  var railEl = document.getElementById("rail"),
+      railDotsEl = document.getElementById("rail-dots"),
+      railTicksEl = document.getElementById("rail-ticks"),
+      railDetailEl = document.getElementById("rail-detail"),
+      railScrollEl = document.getElementById("rail-scroll"),
+      railHintEl = document.getElementById("rail-hint"),
+      railDots = [], railShown = [], railSel = -1, railGalStart = 0, railRaf = 0;
+
+  function railWidthFor(n){
+    var avail = railScrollEl ? railScrollEl.clientWidth : 800;
+    return Math.max(avail, n * 26);
+  }
+  function buildRail(shown){
+    if (!railEl) return;
+    railShown = shown;
+    railDots = [];
+    railDotsEl.innerHTML = "";
+    railTicksEl.innerHTML = "";
+    if (!shown.length){
+      railDetailEl.innerHTML = "<div class='rd-pos'>nothing in this filter</div>";
+      railHintEl.textContent = "";
+      return;
+    }
+    var w = railWidthFor(shown.length);
+    railEl.style.width = w + "px";
+    var pad = 16, span = Math.max(1, w - pad * 2), lastMonth = "";
+    shown.forEach(function(ev, i){
+      var x = pad + (shown.length === 1 ? span / 2 : span * (i / (shown.length - 1)));
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "rail-dot" + (ev.category === "milestone" ? " hero" : "");
+      b.style.left = x + "px";
+      b.style.setProperty("--dc", "var(--cat-" + ev.category + ")");
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-selected", "false");
+      b.setAttribute("aria-label", (ev.dateDisplay || fmtDate(ev.date)) + " — " + ev.title);
+      b.title = (ev.dateDisplay || fmtDate(ev.date)) + " · " + ev.title;
+      b.addEventListener("click", function(){ selectRail(i); });
+      railDotsEl.appendChild(b);
+      railDots.push({ el: b, x: x });
+      var mk = ev.date.slice(0, 7);
+      if (mk !== lastMonth){
+        lastMonth = mk;
+        var p = mk.split("-");
+        var t = document.createElement("div");
+        t.className = "rail-tick";
+        t.style.left = x + "px";
+        t.innerHTML = "<i></i><span>" + MONTHS[+p[1] - 1].slice(0, 3).toUpperCase() + " " + p[0].slice(2) + "</span>";
+        railTicksEl.appendChild(t);
+      }
+    });
+    railHintEl.textContent = shown.length + " entries · click a dot, then ← → to read through";
+    railGalStart = gallery.length;
+    selectRail(railSel >= 0 && railSel < shown.length ? railSel : shown.length - 1, true);
+  }
+  function magnify(cx){
+    if (reduceMotion) return;
+    for (var i = 0; i < railDots.length; i++){
+      var d = railDots[i], dx = cx - d.x;
+      var s = 1 + 1.15 * Math.exp(-(dx * dx) / 3200);
+      d.el.style.transform = "translate(-50%,-50%) scale(" + s.toFixed(3) + ")";
+    }
+  }
+  function resetMagnify(){
+    for (var i = 0; i < railDots.length; i++) railDots[i].el.style.transform = "translate(-50%,-50%)";
+  }
+  if (railEl){
+    railEl.addEventListener("mousemove", function(e){
+      if (railRaf) return;
+      var r = railEl.getBoundingClientRect(), cx = e.clientX - r.left;
+      railRaf = requestAnimationFrame(function(){ railRaf = 0; magnify(cx); });
+    });
+    railEl.addEventListener("mouseleave", resetMagnify);
+    railEl.addEventListener("keydown", function(e){
+      var n = railShown.length;
+      if (!n) return;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown"){ e.preventDefault(); selectRail(Math.min(n - 1, railSel + 1)); }
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp"){ e.preventDefault(); selectRail(Math.max(0, railSel - 1)); }
+      else if (e.key === "Home"){ e.preventDefault(); selectRail(0); }
+      else if (e.key === "End"){ e.preventDefault(); selectRail(n - 1); }
+    });
+    window.addEventListener("resize", function(){
+      if (railRaf) return;
+      railRaf = requestAnimationFrame(function(){ railRaf = 0; buildRail(railShown); });
+    });
+  }
+  function selectRail(i, quiet){
+    if (!railShown.length) return;
+    railSel = Math.max(0, Math.min(railShown.length - 1, i));
+    railDots.forEach(function(d, k){
+      d.el.classList.toggle("sel", k === railSel);
+      d.el.setAttribute("aria-selected", k === railSel ? "true" : "false");
+    });
+    var dot = railDots[railSel];
+    if (dot && railScrollEl){
+      var view = railScrollEl.clientWidth, want = dot.x - view / 2;
+      railScrollEl.scrollTo({ left: Math.max(0, want), behavior: (reduceMotion || quiet) ? "auto" : "smooth" });
+    }
+    renderRailDetail(railShown[railSel]);
+  }
+  function renderRailDetail(ev){
+    if (!ev) return;
+    gallery.length = Math.min(gallery.length, railGalStart);
+    railDetailEl.style.setProperty("--catc", "var(--cat-" + ev.category + ")");
+    var dateHtml = ev.dateDisplay
+      ? "<span class='approx'>" + esc(ev.dateDisplay) + "</span>"
+      : esc(fmtDate(ev.date));
+    var costHtml = (typeof ev.cost === "number")
+      ? "<span class='ev-cost'>" + money(ev.cost) + (ev.costNote ? "<small>" + esc(ev.costNote) + "</small>" : "") + "</span>"
+      : "";
+    railDetailEl.innerHTML =
+      "<div class='rail-nav'>" +
+        "<button type='button' class='rd-prev' aria-label='Previous event'>‹</button>" +
+        "<button type='button' class='rd-next' aria-label='Next event'>›</button>" +
+      "</div>" +
+      "<div class='rd-body'>" +
+        "<div class='rd-pos'>" + (railSel + 1) + " / " + railShown.length + "</div>" +
+        "<div class='ev-top'>" +
+          "<span class='ev-date'>" + dateHtml + "</span>" +
+          "<span class='ev-cat' style='color:var(--cat-" + ev.category + ")'>" +
+            esc((CAT_META[ev.category] || { label: ev.category }).label) + "</span>" +
+          costHtml +
+        "</div>" +
+        "<h3>" + esc(ev.title) + "</h3>" +
+        (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
+        bulletsHtml(ev) +
+        (ev.needsReview ? "<span class='verify'>verify</span>" : "") +
+      "</div>";
+    var pv = railDetailEl.querySelector(".rd-prev"), nx = railDetailEl.querySelector(".rd-next");
+    pv.disabled = railSel === 0;
+    nx.disabled = railSel === railShown.length - 1;
+    pv.addEventListener("click", function(){ selectRail(railSel - 1); railEl.focus(); });
+    nx.addEventListener("click", function(){ selectRail(railSel + 1); railEl.focus(); });
+    if (ev.media && ev.media.length){
+      var strip = document.createElement("div");
+      strip.className = "media-strip";
+      ev.media.forEach(function(m){
+        var gIdx = gallery.length;
+        gallery.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
+        var t = document.createElement("button");
+        t.className = "thumb";
+        t.type = "button";
+        t.setAttribute("aria-label", (m.caption || m.type) + " — open viewer");
+        var src = null;
+        if (m.type === "image") src = m.src;
+        else if (m.type === "video" && m.poster) src = m.poster;
+        else if (m.type === "youtube"){ var y = ytId(m.src); if (y) src = "https://img.youtube.com/vi/" + y + "/hqdefault.jpg"; }
+        t.innerHTML = (src ? "<img src='" + esc(src) + "' alt='' loading='lazy'>" : "<span class='noimg'>video</span>") +
+          (m.type !== "image" ? "<span class='play' aria-hidden='true'></span>" : "");
+        t.addEventListener("click", function(){ openLightbox(gIdx); });
+        strip.appendChild(t);
+      });
+      railDetailEl.querySelector(".rd-body").appendChild(strip);
+    }
+  }
+  var listToggle = document.getElementById("rail-listtoggle");
+  if (listToggle){
+    listToggle.addEventListener("click", function(){
+      var open = tlEl.classList.toggle("tl-hidden") === false;
+      listToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      listToggle.firstChild.nodeValue = open ? "hide list " : "full list ";
+    });
+  }
 
   renderFilters();
   renderTimeline();

@@ -2,6 +2,11 @@
 
 Captured 2026-07-24. Ordered roughly by Joseph's priority.
 
+> **Status 2026-07-24 (later):** items 1 and 2 shipped in first form — the
+> horizontal rail is live and the gold/tan/brown palette is replaced. What
+> remains is Joseph's reaction to both, item 3, and the deeper surface/
+> gradient exploration in 2a (still wants the design skills run on it).
+
 ## 1. Timeline: scrap the vertical redesign, go horizontal
 
 The vertical card-stack upgrade missed the goal. The real goal: **stop
