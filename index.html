@@ -469,7 +469,7 @@
   }
 
   /* ── horizontal rail ───────────────────────────────────── */
-  .railwrap{margin:26px 0 10px}
+  .railwrap{margin:26px 0 10px;position:relative}
   .rail-top{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}
   .rail-hint{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory-faint)}
   .rail-listtoggle{
@@ -481,7 +481,29 @@
   .rail-listtoggle .chev{display:inline-block;transition:transform .25s ease}
   .rail-listtoggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
   .tl-hidden{display:none}
-  .rail-scroll{overflow-x:auto;overflow-y:hidden;padding:0 2px;scrollbar-width:thin}
+  .rail-scroll{
+    overflow-x:auto;overflow-y:hidden;padding:0 2px;
+    scrollbar-width:none;-ms-overflow-style:none;
+    --fl:0px;--fr:0px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
+  }
+  .rail-scroll::-webkit-scrollbar{width:0;height:0;display:none}
+  .rail-scroll.f-l{--fl:54px}
+  .rail-scroll.f-r{--fr:54px}
+  @media (hover:hover) and (pointer:fine){
+    .rail-scroll{cursor:grab}
+    .rail-scroll.dragging{cursor:grabbing}
+    .rail-scroll.dragging .rail-dot{transition:none}
+  }
+  .rail-edge{
+    position:absolute;top:0;bottom:0;width:30px;pointer-events:none;z-index:2;
+    display:flex;align-items:center;opacity:0;transition:opacity .25s ease;
+    font-family:var(--mono);font-size:13px;color:var(--sheen-dim);
+  }
+  .rail-edge.on{opacity:1}
+  .rail-edge.l{left:0;justify-content:flex-start}
+  .rail-edge.r{right:0;justify-content:flex-end}
   .rail{position:relative;height:74px;min-width:100%;outline:none}
   .rail:focus-visible{outline:1px dashed var(--sheen-dim);outline-offset:3px;border-radius:6px}
   .rail-line{
@@ -1253,6 +1275,8 @@
       <span class="rail-hint" id="rail-hint"></span>
       <button type="button" class="rail-listtoggle" id="rail-listtoggle" aria-expanded="false">full list <span class="chev" aria-hidden="true">▾</span></button>
     </div>
+    <span class="rail-edge l" id="rail-edge-l" aria-hidden="true">‹</span>
+    <span class="rail-edge r" id="rail-edge-r" aria-hidden="true">›</span>
     <div class="rail-scroll" id="rail-scroll">
       <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
         <div class="rail-line" aria-hidden="true"></div>
@@ -2105,6 +2129,7 @@
     railHintEl.textContent = shown.length + " entries · click a dot, then ← → to read through";
     railGalStart = gallery.length;
     selectRail(railSel >= 0 && railSel < shown.length ? railSel : shown.length - 1, true);
+    railFades();
   }
   function magnify(cx){
     if (reduceMotion) return;
@@ -2116,6 +2141,39 @@
   }
   function resetMagnify(){
     for (var i = 0; i < railDots.length; i++) railDots[i].el.style.transform = "translate(-50%,-50%)";
+  }
+  function railFades(){
+    if (!railScrollEl) return;
+    var max = railScrollEl.scrollWidth - railScrollEl.clientWidth;
+    var l = railScrollEl.scrollLeft > 4, r = railScrollEl.scrollLeft < max - 4;
+    railScrollEl.classList.toggle("f-l", l);
+    railScrollEl.classList.toggle("f-r", r);
+    var el = document.getElementById("rail-edge-l"), er = document.getElementById("rail-edge-r");
+    if (el) el.classList.toggle("on", l);
+    if (er) er.classList.toggle("on", r);
+  }
+  if (railScrollEl){
+    railScrollEl.addEventListener("scroll", railFades, { passive: true });
+    var dragOn = false, dragX = 0, dragL = 0, dragMoved = 0;
+    railScrollEl.addEventListener("pointerdown", function(e){
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      dragOn = true; dragMoved = 0; dragX = e.clientX; dragL = railScrollEl.scrollLeft;
+      railScrollEl.classList.add("dragging");
+    });
+    window.addEventListener("pointermove", function(e){
+      if (!dragOn) return;
+      var dx = e.clientX - dragX;
+      if (Math.abs(dx) > dragMoved) dragMoved = Math.abs(dx);
+      railScrollEl.scrollLeft = dragL - dx;
+    });
+    window.addEventListener("pointerup", function(){
+      if (!dragOn) return;
+      dragOn = false;
+      railScrollEl.classList.remove("dragging");
+    });
+    railScrollEl.addEventListener("click", function(e){
+      if (dragMoved > 4){ e.preventDefault(); e.stopPropagation(); dragMoved = 0; }
+    }, true);
   }
   if (railEl){
     railEl.addEventListener("mousemove", function(e){
