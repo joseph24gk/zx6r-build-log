@@ -80,7 +80,9 @@
     system        optional spend tag used by the money-breakdown modal
                   (opened by clicking the Parts & consumables gauge). One of:
                   cooling | fuel | brakes | controls | bodywork | wheels |
-                  consumables | fees. Only meaningful with cost + bucket.
+                  consumables. Only meaningful with cost + bucket. Costs are
+                  always landed cost — shipping and tax included, never split
+                  into a separate line.
     spendItems    optional itemization of a mixed-system purchase for that
                   modal: [{ label, cost, system }]. Item costs must sum to
                   the event's cost. Without it, the event appears as one
@@ -241,29 +243,22 @@
   .chip:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
 
   /* ── timeline ──────────────────────────────────────────── */
+  /* month headings inside the full-list panel — no sticky, no pit-coloured
+     gradient (that read as black banding over the card surface) */
   .month{
-    position:sticky;top:-1px;z-index:5;
-    margin:38px 0 18px;padding:8px 0;
-    background:linear-gradient(var(--pit) 80%,transparent);
+    margin:26px 0 14px;padding:0;
     display:flex;align-items:center;gap:14px;
   }
-  .month::after{ /* brass-kissed divider rule */
+  .month:first-child{margin-top:6px}
+  .month::after{
     content:"";flex:1;height:1px;
-    background:linear-gradient(90deg, color-mix(in srgb,var(--brass) 30%,transparent), var(--line) 45%, transparent);
+    background:linear-gradient(90deg, color-mix(in srgb,var(--brass) 32%,transparent), var(--line) 40%, transparent);
   }
   .month span{
     display:inline-flex;align-items:baseline;gap:10px;font-family:var(--display);font-weight:700;
-    font-size:22px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--sheen);border:1px solid var(--line);border-radius:6px;
-    padding:4px 16px;background:var(--panel);
-    transition:transform .25s cubic-bezier(.22,.9,.28,1),border-color .25s,box-shadow .25s;
-    transform-origin:left center;
+    font-size:19px;letter-spacing:.14em;text-transform:uppercase;color:var(--sheen);
   }
   .month .m-meta{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:none;color:var(--ivory-dim)}
-  .month.stuck span{
-    transform:scale(.9);border-color:var(--sheen-dim);
-    box-shadow:0 4px 18px rgba(10,15,13,.55);
-  }
   .timeline{position:relative;padding-left:34px}
   .timeline::before{ /* chain spine */
     content:"";position:absolute;left:10px;top:6px;bottom:6px;width:2px;
@@ -549,6 +544,17 @@
   .rail-detail .ev{margin-bottom:10px;animation:rdIn .3s cubic-bezier(.22,.9,.28,1)}
   .rail-detail .ev:last-child{margin-bottom:0}
   .rail-detail .ev::before{display:none}
+  .rd-nav{
+    display:flex;gap:8px;justify-content:space-between;
+    margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
+  }
+  .rd-nav button{
+    background:none;border:1px solid var(--line);border-radius:999px;color:var(--ivory-dim);
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+    padding:6px 14px;cursor:pointer;transition:color .2s,border-color .2s;
+  }
+  .rd-nav button:hover:not(:disabled){color:var(--ivory);border-color:var(--sheen-dim)}
+  .rd-nav button:disabled{opacity:.3;cursor:default}
   @keyframes rdIn{from{opacity:0;transform:translateY(7px)}}
   @media (max-width:560px){ .rail{height:108px} .rail-flag .t{font-size:11.5px} }
 
@@ -738,6 +744,25 @@
     .tl-anim .ev.inview:not(.settled)::before{animation:none}
     .chip.active .dot{animation:none}
     .ev.flash{animation:none;box-shadow:0 0 0 2px var(--sheen)}
+  }
+  /* ── wide desktop: sidebar + stretched timeline ────────── */
+  @media (min-width:1180px){
+    header{max-width:1400px}
+    .wrap{
+      max-width:1400px;display:grid;align-items:start;
+      grid-template-columns:352px minmax(0,1fr);
+      column-gap:26px;
+    }
+    #sec-timeline{grid-column:2;grid-row:1 / span 2;margin-top:30px}
+    .tracker{grid-column:1;grid-row:1;margin-top:30px}
+    .nextup{grid-column:1;grid-row:2;margin-top:26px}
+    footer{grid-column:1 / -1}
+    .trk-grid{grid-template-columns:1fr}
+    .rail{height:132px}
+  }
+  @media (min-width:1180px) and (max-width:1439px){
+    header,.wrap{max-width:1180px}
+    .wrap{grid-template-columns:320px minmax(0,1fr)}
   }
   @media (pointer:coarse){
     .ev-toggle{padding:8px 12px}
@@ -1267,15 +1292,7 @@
       "costNote": "total w/ shipping + tax",
       "bucket": "parts",
       "system": "brakes",
-      "spendItems": [
-        { "label": "MC hose barb 13159-1061", "cost": 9.85, "system": "brakes" },
-        { "label": "MC O-ring 92055-0741", "cost": 2.82, "system": "brakes" },
-        { "label": "Brake breather 43056-1056", "cost": 10.86, "system": "brakes" },
-        { "label": "Breather cap 43057-1001", "cost": 3.73, "system": "brakes" },
-        { "label": "EBC FA436HH rear pads", "cost": 39.90, "system": "brakes" },
-        { "label": "RH tank cover 14092-1088", "cost": 9.00, "system": "bodywork" },
-        { "label": "Shipping + tax", "cost": 18.52, "system": "fees" }
-      ]
+      "spendLabel": "Partzilla OEM order + EBC rear pads"
     },
     {
       "id": "form-777-pivot",
@@ -1822,7 +1839,6 @@
     bodywork:    { label:"Bodywork & front end", c:"#a08ad6" },
     wheels:      { label:"Wheels & tires",       c:"#62cfe0" },
     consumables: { label:"Fluids & consumables", c:"#9aa79b" },
-    fees:        { label:"Shipping & fees",      c:"#7d8f99" },
     other:       { label:"Other",                c:"#7e7a6d" }
   };
   function spendEntries(){
@@ -1854,7 +1870,7 @@
       "L" + (cx+r0*s1).toFixed(2) + " " + (cy-r0*c1).toFixed(2) +
       "A" + r0 + " " + r0 + " 0 " + big + " 0 " + (cx+r0*s0).toFixed(2) + " " + (cy-r0*c0).toFixed(2) + "Z";
   }
-  var spendEl = null, spReadout = null;
+  var spendEl = null, spReadout = null, spendReset = null;
   function readout(html){ if (spReadout) spReadout.innerHTML = html; }
   function entryReadout(e){
     var m = SYS_META[e.system] || SYS_META.other;
@@ -1990,6 +2006,7 @@
       selSys = (k === null || selSys === k) ? null : k;
       applySel();
     }
+    spendReset = function(){ selSys = null; applySel(); };
 
     function sysReadout(k){
       var m = SYS_META[k] || SYS_META.other, sys = bySys[k];
@@ -2149,6 +2166,7 @@
     if (!spendEl) return;
     spendEl.classList.remove("open");
     document.body.style.overflow = "";
+    if (spendReset) spendReset();   /* always reopens unfiltered */
   }
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape" && spendEl && spendEl.classList.contains("open")) closeSpend();
@@ -2276,8 +2294,8 @@
       for (var k = 0; k < dy.ev.length; k++)
         if (railMatches(dy.ev[k])){ railActive.push(i); return; }
     });
-    if (railActive.indexOf(railSel) < 0)
-      railSel = railActive.length ? railActive[railActive.length - 1] : -1;
+    /* any filter change — including clearing — starts at the first match */
+    railSel = railActive.length ? railActive[0] : -1;
     railGalStart = gallery.length;
     railRenderDay();
     railPaint();
@@ -2384,6 +2402,23 @@
       gallery.length = Math.min(gallery.length, railGalStart);
       railDetailEl.innerHTML = "";
       list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev)); });
+      /* read straight through without touching the rail */
+      var pos = railActive.indexOf(railSel);
+      var nav = document.createElement("div");
+      nav.className = "rd-nav";
+      nav.innerHTML =
+        "<button type='button' class='rd-prev'>&lsaquo; previous entry</button>" +
+        "<button type='button' class='rd-next'>next entry &rsaquo;</button>";
+      var pv = nav.querySelector(".rd-prev"), nx = nav.querySelector(".rd-next");
+      pv.disabled = pos <= 0;
+      nx.disabled = pos < 0 || pos >= railActive.length - 1;
+      pv.addEventListener("click", function(){
+        railSel = railActive[Math.max(0, pos - 1)]; railRenderDay(); railPaint();
+      });
+      nx.addEventListener("click", function(){
+        railSel = railActive[Math.min(railActive.length - 1, pos + 1)]; railRenderDay(); railPaint();
+      });
+      railDetailEl.appendChild(nav);
     }
     var after = railEl.getBoundingClientRect().top;
     var delta = after - before;
