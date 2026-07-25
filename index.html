@@ -1327,8 +1327,6 @@
     <div class="railwrap" id="railwrap">
       <div class="rail-viewport">
         <div class="rail-curve" aria-hidden="true"></div>
-        <span class="rail-edge l" id="rail-edge-l" aria-hidden="true">‹</span>
-        <span class="rail-edge r" id="rail-edge-r" aria-hidden="true">›</span>
         <div class="rail-scroll" id="rail-scroll">
           <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
             <div class="rail-ticks" id="rail-ticks" aria-hidden="true"></div>
@@ -2218,9 +2216,6 @@
     var l = railScrollEl.scrollLeft > 4, r = railScrollEl.scrollLeft < max - 4;
     railScrollEl.classList.toggle("f-l", l);
     railScrollEl.classList.toggle("f-r", r);
-    var el = document.getElementById("rail-edge-l"), er = document.getElementById("rail-edge-r");
-    if (el) el.classList.toggle("on", l);
-    if (er) er.classList.toggle("on", r);
   }
   if (railScrollEl){
     railScrollEl.addEventListener("scroll", railFades, { passive: true });
