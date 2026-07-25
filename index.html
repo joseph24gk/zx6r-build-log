@@ -35,6 +35,8 @@
     label    short part name ("Gas tank")
     status   "broken" | "in-progress" | "fixed"
     note     optional one-liner of current state ("parts ordered")
+    events   optional array of event ids. Makes the row clickable —
+             clicking filters the timeline to just those events.
                                          // Events are the history; the tracker
                                          // is now. New damage found later gets
                                          // logged in that day's event AND
@@ -469,11 +471,32 @@
   }
 
   /* ── horizontal rail ───────────────────────────────────── */
-  .railwrap{margin:26px 0 10px;position:relative}
-  .rail-top{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}
-  .rail-hint{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ivory-faint)}
+  /* section shells */
+  .sec{
+    margin-top:30px;border:1px solid var(--line);border-radius:10px;
+    background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
+    padding:20px 22px 18px;
+  }
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+  .sec-head h2{
+    font-family:var(--display);font-weight:800;font-size:24px;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--ivory);
+  }
+  .sec-head::after{
+    content:"";flex:1;height:1px;order:1;
+    background:linear-gradient(90deg,var(--line),transparent);
+  }
+  .sec-head .rail-listtoggle{order:2;margin-left:0}
+  .railwrap{margin:4px 0 0;position:relative}
+  .rail-viewport{position:relative}
+  .rail-curve{
+    position:absolute;left:0;right:0;top:43px;height:4px;z-index:0;pointer-events:none;
+    background:repeating-linear-gradient(90deg,var(--sheen-dim) 0 7px,transparent 7px 13px);
+    opacity:.62;
+    clip-path:ellipse(50% 50% at 50% 50%);
+  }
   .rail-listtoggle{
-    margin-left:auto;background:none;border:1px solid var(--line);border-radius:999px;
+    background:none;border:1px solid var(--line);border-radius:999px;
     color:var(--ivory-dim);font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
     text-transform:uppercase;padding:4px 11px;cursor:pointer;transition:color .2s,border-color .2s;
   }
@@ -484,13 +507,14 @@
   .rail-scroll{
     overflow-x:auto;overflow-y:hidden;padding:0 2px;
     scrollbar-width:none;-ms-overflow-style:none;
+    position:relative;z-index:1;
     --fl:0px;--fr:0px;
     -webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
     mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);
   }
   .rail-scroll::-webkit-scrollbar{width:0;height:0;display:none}
-  .rail-scroll.f-l{--fl:54px}
-  .rail-scroll.f-r{--fr:54px}
+  .rail-scroll.f-l{--fl:30px}
+  .rail-scroll.f-r{--fr:30px}
   @media (hover:hover) and (pointer:fine){
     .rail-scroll{cursor:grab}
     .rail-scroll.dragging{cursor:grabbing}
@@ -504,13 +528,8 @@
   .rail-edge.on{opacity:1}
   .rail-edge.l{left:0;justify-content:flex-start}
   .rail-edge.r{right:0;justify-content:flex-end}
-  .rail{position:relative;height:74px;min-width:100%;outline:none}
+  .rail{position:relative;height:94px;min-width:100%;outline:none}
   .rail:focus-visible{outline:1px dashed var(--sheen-dim);outline-offset:3px;border-radius:6px}
-  .rail-line{
-    position:absolute;left:0;right:0;top:44px;height:2px;
-    background:repeating-linear-gradient(90deg,var(--sheen-dim) 0 7px,transparent 7px 13px);
-    opacity:.55;
-  }
   .rail-tick{position:absolute;top:52px;transform:translateX(-50%);text-align:center;pointer-events:none}
   .rail-tick i{display:block;width:1px;height:7px;background:var(--line);margin:0 auto 3px}
   .rail-tick span{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--ivory-faint);white-space:nowrap}
@@ -549,7 +568,7 @@
 
   /* ── next up ───────────────────────────────────────────── */
   .nextup{
-    margin-top:52px;border:1px solid var(--line);border-radius:10px;
+    margin-top:30px;border:1px solid var(--line);border-radius:10px;
     background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
     padding:26px 28px;
   }
@@ -570,7 +589,7 @@
   }
 
   .tracker{
-    margin:30px 0 4px;border:1px solid var(--line);border-radius:10px;
+    margin:30px 0 0;border:1px solid var(--line);border-radius:10px;
     background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
     padding:22px 24px 18px;
   }
@@ -581,7 +600,21 @@
   }
   .trk-count{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ivory-faint)}
   .trk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:0 30px}
-  .trk-item{display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .trk-item{
+    display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line);
+    width:100%;text-align:left;background:none;border-left:none;border-right:none;border-top:none;
+    font-family:var(--body);
+  }
+  .trk-can{cursor:pointer;transition:background .2s,padding .2s}
+  .trk-can:hover{background:rgba(63,174,140,.05)}
+  .trk-can.on{background:rgba(63,174,140,.09)}
+  .trk-can.on .trk-label{color:var(--sheen)}
+  .trk-n{
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ivory-faint);margin-left:8px;opacity:0;transition:opacity .2s;
+  }
+  .trk-can:hover .trk-n,.trk-can.on .trk-n{opacity:1}
+  @media (pointer:coarse){ .trk-n{opacity:1} }
   .trk-dot{
     flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;
     background:var(--trk-c);
@@ -763,16 +796,26 @@
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
   "tracker": [
-    { "label": "Gas tank", "status": "fixed", "note": "Swapped on Jul 20 — pump module moved over; flange O-ring reused, replacement on the end-of-build punch list." },
-    { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash." },
-    { "label": "Fairings", "status": "broken", "note": "Nose hardware being replaced piecemeal; full fairing set waits on the repaint direction." },
-    { "label": "The sliders", "status": "broken", "note": "Did their job." },
-    { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun." },
-    { "label": "Front brakes", "status": "in-progress", "note": "Reservoir kit and OEM barb + O-ring all ordered; assemble and bleed when parts land." },
-    { "label": "Front air intake and fairing stay", "status": "in-progress", "note": "Duct + fairing/gauge stay bought Jul 22; headlight shell-only order is next." },
-    { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho." },
-    { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way." },
-    { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IV pair ordered Jul 22 — mounting on the current rims for now; powder coat in the final cosmetic phase." }
+    { "label": "Gas tank", "status": "fixed", "note": "Swapped on Jul 20 — pump module moved over; flange O-ring reused, replacement on the end-of-build punch list.",
+      "events": ["back-to-okc","tank-won","tank-arrives","tank-swap","partzilla-oem-order"] },
+    { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash.",
+      "events": ["back-to-okc","radiator-out","radiator-order","ebay-controls-bottle","supplies-day","cooling-oil-day","flir-validation"] },
+    { "label": "Fairings", "status": "broken", "note": "Nose hardware being replaced piecemeal; full fairing set waits on the repaint direction.",
+      "events": ["back-to-okc","tcmt-headlight","midnight-emerald"] },
+    { "label": "The sliders", "status": "broken", "note": "Did their job.",
+      "events": ["back-to-okc"] },
+    { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun.",
+      "events": ["back-to-okc","first-start","ebay-controls-bottle","controls-installed"] },
+    { "label": "Front brakes", "status": "in-progress", "note": "Reservoir kit and OEM barb + O-ring all ordered; assemble and bleed when parts land.",
+      "events": ["back-to-okc","front-mc-diagnosis","reservoir-kit","partzilla-oem-order"] },
+    { "label": "Front air intake and fairing stay", "status": "in-progress", "note": "Duct + fairing/gauge stay bought Jul 22; headlight shell-only order is next.",
+      "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase"] },
+    { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho.",
+      "events": ["back-to-okc"] },
+    { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way.",
+      "events": ["back-to-okc","rearset-teardown","bracket-prints","cam-start"] },
+    { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IV pair ordered Jul 22 — mounting on the current rims for now; powder coat in the final cosmetic phase.",
+      "events": ["back-to-okc","tires-rosso-iv"] }
   ],
   "gallery": [
     {
@@ -1267,31 +1310,36 @@
 </header>
 
 <div class="wrap">
-  <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
-  <div class="filter-note" id="filter-note" aria-live="polite"></div>
   <section class="tracker" id="tracker" aria-label="Damage tracker"></section>
-  <section class="railwrap" id="railwrap" aria-label="Event timeline">
-    <div class="rail-top">
-      <span class="rail-hint" id="rail-hint"></span>
-      <button type="button" class="rail-listtoggle" id="rail-listtoggle" aria-expanded="false">full list <span class="chev" aria-hidden="true">▾</span></button>
-    </div>
-    <span class="rail-edge l" id="rail-edge-l" aria-hidden="true">‹</span>
-    <span class="rail-edge r" id="rail-edge-r" aria-hidden="true">›</span>
-    <div class="rail-scroll" id="rail-scroll">
-      <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
-        <div class="rail-line" aria-hidden="true"></div>
-        <div class="rail-ticks" id="rail-ticks" aria-hidden="true"></div>
-        <div class="rail-dots" id="rail-dots"></div>
-      </div>
-    </div>
-    <div class="rail-detail" id="rail-detail"></div>
-  </section>
-
-  <div id="timeline" class="tl-hidden"></div>
-
   <section class="nextup">
     <h2>Up next</h2>
     <ul id="nextup-list"></ul>
+  </section>
+
+  <section class="sec" id="sec-timeline">
+    <div class="sec-head">
+      <h2>Build timeline</h2>
+      <button type="button" class="rail-listtoggle" id="rail-listtoggle" aria-expanded="false">full list <span class="chev" aria-hidden="true">▾</span></button>
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
+    <div class="filter-note" id="filter-note" aria-live="polite"></div>
+
+    <div class="railwrap" id="railwrap">
+      <div class="rail-viewport">
+        <div class="rail-curve" aria-hidden="true"></div>
+        <span class="rail-edge l" id="rail-edge-l" aria-hidden="true">‹</span>
+        <span class="rail-edge r" id="rail-edge-r" aria-hidden="true">›</span>
+        <div class="rail-scroll" id="rail-scroll">
+          <div class="rail" id="rail" tabindex="0" role="listbox" aria-label="Events, use arrow keys">
+            <div class="rail-ticks" id="rail-ticks" aria-hidden="true"></div>
+            <div class="rail-dots" id="rail-dots"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rail-detail" id="rail-detail"></div>
+    </div>
+
+    <div id="timeline" class="tl-hidden"></div>
   </section>
 
   <footer>
@@ -1328,7 +1376,7 @@
   }
 
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var seenIds = {}, openIds = {}, tlBusy = false, cardIO = null, monthIO = null;
+  var seenIds = {}, openIds = {}, tlBusy = false, cardIO = null, monthIO = null, activeTrack = null;
 
   function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function moneyRound(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
@@ -1398,6 +1446,8 @@
       "<span class='chip-n'>" + (cat ? (catCounts[cat] || 0) : events.length) + "</span>";
     b.addEventListener("click", function(){
       activeCat = (activeCat === cat) ? null : cat;
+      activeTrack = null;
+      Array.prototype.forEach.call(document.querySelectorAll(".trk-can.on"), function(x){ x.classList.remove("on"); });
       renderFilters(); renderTimelineAnimated();
     });
     return b;
@@ -1545,7 +1595,10 @@
         });
       }, { rootMargin: "0px 0px -7% 0px", threshold: 0.06 });
     }
-    var shown = events.filter(function(ev){ return !activeCat || ev.category === activeCat; });
+    var shown = events.filter(function(ev){
+      if (activeTrack) return activeTrack.events.indexOf(ev.id) >= 0;
+      return !activeCat || ev.category === activeCat;
+    });
     var mstats = {};
     shown.forEach(function(ev){
       var k2 = ev.date.slice(0,7);
@@ -1659,14 +1712,17 @@
     buildRail(shown);
     var fn = document.getElementById("filter-note");
     if (fn){
-      if (activeCat){
+      if (activeCat || activeTrack){
         var vSpend = 0;
         shown.forEach(function(ev){ if (typeof ev.cost === "number") vSpend += ev.cost; });
-        fn.innerHTML = "showing " + shown.length + " of " + events.length + " entries" +
+        fn.innerHTML = (activeTrack ? esc(activeTrack.label) + " — " : "") +
+          "showing " + shown.length + " of " + events.length + " entries" +
           (vSpend > 0 ? " · " + money(vSpend) + " in this view" : "") +
           "<button type='button' class='fn-clear'>clear <span aria-hidden='true'>✕</span></button>";
         fn.querySelector(".fn-clear").addEventListener("click", function(){
-          activeCat = null; renderFilters(); renderTimelineAnimated();
+          activeCat = null; activeTrack = null;
+          Array.prototype.forEach.call(document.querySelectorAll(".trk-can.on"), function(x){ x.classList.remove("on"); });
+          renderFilters(); renderTimelineAnimated();
           var fc = filtersEl.querySelector(".chip");
           if (fc) fc.focus();
         });
@@ -1704,15 +1760,32 @@
     trkEl.innerHTML =
       "<div class='trk-head'><h2>Damage tracker</h2>" +
       "<span class='trk-count'>" + tc["fixed"] + " fixed · " + tc["in-progress"] + " in progress · " + tc["broken"] + " broken</span></div>" +
-      "<div class='trk-grid'>" + trkItems.map(function(t){
+      "<div class='trk-grid'>" + trkItems.map(function(t, i){
         var s = TRK_STATUS[t.status] || TRK_STATUS["broken"];
-        return "<div class='trk-item' style='--trk-c:" + s.c + "'>" +
+        var can = !!(t.events && t.events.length);
+        return "<" + (can ? "button type='button'" : "div") + " class='trk-item" + (can ? " trk-can" : "") +
+          "' data-i='" + i + "' style='--trk-c:" + s.c + "'>" +
           "<span class='trk-dot' aria-hidden='true'></span>" +
           "<div><span class='trk-label'>" + esc(t.label) + "</span>" +
           "<span class='trk-state'>" + s.word + "</span>" +
+          (can ? "<span class='trk-n'>" + t.events.length + " entries</span>" : "") +
           (t.note ? "<span class='trk-note'>" + esc(t.note) + "</span>" : "") +
-          "</div></div>";
+          "</div></" + (can ? "button" : "div") + ">";
       }).join("") + "</div>";
+    Array.prototype.forEach.call(trkEl.querySelectorAll(".trk-can"), function(b){
+      b.addEventListener("click", function(){
+        var t = trkItems[+b.getAttribute("data-i")];
+        activeTrack = (activeTrack && activeTrack.label === t.label) ? null : t;
+        activeCat = null;
+        Array.prototype.forEach.call(trkEl.querySelectorAll(".trk-can"), function(x){
+          x.classList.toggle("on", activeTrack !== null && x === b);
+        });
+        renderFilters();
+        renderTimelineAnimated();
+        var sec = document.getElementById("sec-timeline");
+        if (sec) sec.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      });
+    });
   }
 
   /* ── spend breakdown modal (click the Parts gauge) ────── */
@@ -2080,7 +2153,6 @@
       railTicksEl = document.getElementById("rail-ticks"),
       railDetailEl = document.getElementById("rail-detail"),
       railScrollEl = document.getElementById("rail-scroll"),
-      railHintEl = document.getElementById("rail-hint"),
       railDots = [], railShown = [], railSel = -1, railGalStart = 0, railRaf = 0;
 
   function railWidthFor(n){
@@ -2095,7 +2167,6 @@
     railTicksEl.innerHTML = "";
     if (!shown.length){
       railDetailEl.innerHTML = "<div class='rd-pos'>nothing in this filter</div>";
-      railHintEl.textContent = "";
       return;
     }
     var w = railWidthFor(shown.length);
@@ -2126,7 +2197,6 @@
         railTicksEl.appendChild(t);
       }
     });
-    railHintEl.textContent = shown.length + " entries · click a dot, then ← → to read through";
     railGalStart = gallery.length;
     selectRail(railSel >= 0 && railSel < shown.length ? railSel : shown.length - 1, true);
     railFades();
