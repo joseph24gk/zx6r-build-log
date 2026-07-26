@@ -548,6 +548,10 @@
     display:flex;gap:8px;justify-content:space-between;
     margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
   }
+  .rd-nav.top{
+    margin:0 0 12px;padding:0 0 12px;
+    border-top:none;border-bottom:1px dashed var(--line);
+  }
   .rd-nav button{
     background:none;border:1px solid var(--line);border-radius:999px;color:var(--ivory-dim);
     font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
@@ -2391,6 +2395,28 @@
     }
     return card;
   }
+  function railStep(d){
+    var pos = railActive.indexOf(railSel);
+    if (pos < 0) return;
+    var np = Math.max(0, Math.min(railActive.length - 1, pos + d));
+    if (np === pos) return;
+    railSel = railActive[np];
+    railRenderDay();
+    railPaint();
+  }
+  function railNav(pos, cls){
+    var nav = document.createElement("div");
+    nav.className = "rd-nav" + (cls ? " " + cls : "");
+    nav.innerHTML =
+      "<button type='button' class='rd-prev'>&lsaquo; previous entry</button>" +
+      "<button type='button' class='rd-next'>next entry &rsaquo;</button>";
+    var pv = nav.querySelector(".rd-prev"), nx = nav.querySelector(".rd-next");
+    pv.disabled = pos <= 0;
+    nx.disabled = pos < 0 || pos >= railActive.length - 1;
+    pv.addEventListener("click", function(){ railStep(-1); });
+    nx.addEventListener("click", function(){ railStep(1); });
+    return nav;
+  }
   /* re-rendering the day must never move the rail under the reader */
   function railRenderDay(){
     if (!railEl) return;
@@ -2405,28 +2431,30 @@
       railHeadEl.textContent = fmtDate(dy.d) + (list.length > 1 ? " · " + list.length + " entries" : "");
       gallery.length = Math.min(gallery.length, railGalStart);
       railDetailEl.innerHTML = "";
-      list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev)); });
-      /* read straight through without touching the rail */
+      /* read straight through, from either end of the stack */
       var pos = railActive.indexOf(railSel);
-      var nav = document.createElement("div");
-      nav.className = "rd-nav";
-      nav.innerHTML =
-        "<button type='button' class='rd-prev'>&lsaquo; previous entry</button>" +
-        "<button type='button' class='rd-next'>next entry &rsaquo;</button>";
-      var pv = nav.querySelector(".rd-prev"), nx = nav.querySelector(".rd-next");
-      pv.disabled = pos <= 0;
-      nx.disabled = pos < 0 || pos >= railActive.length - 1;
-      pv.addEventListener("click", function(){
-        railSel = railActive[Math.max(0, pos - 1)]; railRenderDay(); railPaint();
-      });
-      nx.addEventListener("click", function(){
-        railSel = railActive[Math.min(railActive.length - 1, pos + 1)]; railRenderDay(); railPaint();
-      });
-      railDetailEl.appendChild(nav);
+      railDetailEl.appendChild(railNav(pos, "top"));
+      list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev)); });
+      railDetailEl.appendChild(railNav(pos, ""));
     }
     var after = railEl.getBoundingClientRect().top;
     var delta = after - before;
     if (Math.abs(delta) > 0.5) window.scrollBy(0, delta);
+  }
+  if (railDetailEl){ /* swipe the entry stack sideways on touch */
+    var swX = null, swY = null;
+    railDetailEl.addEventListener("touchstart", function(e){
+      if (e.touches.length !== 1){ swX = null; return; }
+      swX = e.touches[0].clientX; swY = e.touches[0].clientY;
+    }, { passive: true });
+    railDetailEl.addEventListener("touchend", function(e){
+      if (swX === null) return;
+      var dx = e.changedTouches[0].clientX - swX,
+          dy = e.changedTouches[0].clientY - swY;
+      swX = null;
+      /* horizontal intent only, so vertical scrolling is never hijacked */
+      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) railStep(dx < 0 ? 1 : -1);
+    }, { passive: true });
   }
   if (railEl){
     railEl.addEventListener("mousemove", function(e){
