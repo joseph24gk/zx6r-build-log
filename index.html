@@ -710,6 +710,55 @@
   .sp-row .sw{position:relative;width:8px;height:8px;border-radius:2px;flex:none}
   .sp-row .sp-name{position:relative;font-size:13px;color:var(--ivory);text-align:left}
   .sp-row .amt{position:relative;margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--ivory);white-space:nowrap}
+  /* tools list */
+  .tl-row{
+    position:relative;display:flex;align-items:baseline;gap:10px;width:100%;
+    padding:9px 10px;border-bottom:1px dashed var(--line);
+  }
+  .tl-row:last-child{border-bottom:none}
+  .tl-row .bar{position:absolute;left:0;top:5px;bottom:5px;border-radius:3px;background:var(--brass);opacity:.16}
+  .tl-row .nm{position:relative;color:var(--ivory);font-size:13.5px}
+  .tl-row .dt{position:relative;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--ivory-faint);text-transform:uppercase}
+  .tl-row .amt{position:relative;margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--brass);white-space:nowrap}
+  /* calendar */
+  .cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:20px 24px}
+  .cal-mo h4{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ivory-dim);margin-bottom:7px;font-weight:500;
+  }
+  .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px}
+  .cal-dow span{
+    font-family:var(--mono);font-size:7.5px;letter-spacing:.04em;color:var(--ivory-faint);
+    text-align:center;opacity:.6;
+  }
+  .cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .cal-d{aspect-ratio:1;border-radius:3px;background:rgba(239,232,214,.035)}
+  .cal-d.on{
+    background:color-mix(in srgb,var(--sheen) var(--lvl,35%),transparent);
+    border:none;padding:0;cursor:pointer;position:relative;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:9px;color:var(--pit);font-weight:600;
+    transition:transform .16s cubic-bezier(.22,.9,.28,1),box-shadow .16s ease,background .16s ease;
+  }
+  .cal-d.on:hover{
+    background:var(--sheen);transform:scale(1.24);z-index:2;
+    box-shadow:0 5px 16px color-mix(in srgb,var(--sheen) 45%,transparent);
+  }
+  .cal-d.on:focus-visible{outline:1px solid var(--ivory);outline-offset:2px}
+  .cal-key{
+    display:flex;align-items:center;gap:7px;margin-top:15px;padding-top:11px;
+    border-top:1px dashed var(--line);
+    font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ivory-faint);
+  }
+  .cal-key i{width:11px;height:11px;border-radius:3px;background:color-mix(in srgb,var(--sheen) var(--lvl),transparent)}
+  .cal-gap{
+    display:flex;align-items:center;justify-content:center;min-height:90px;
+    border:1px dashed var(--line);border-radius:6px;
+  }
+  .cal-gap span{
+    font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ivory-faint);text-align:center;padding:0 8px;
+  }
   .sp-jump{
     background:none;border:none;padding:0 2px;margin-left:6px;cursor:pointer;
     color:var(--sheen);vertical-align:-3px;line-height:0;
@@ -829,7 +878,7 @@
       "events": ["back-to-okc"] },
     { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way.",
       "events": ["back-to-okc","rearset-teardown","bracket-prints","cam-start"] },
-    { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IV pair mounted on the current rims Jul 25 with new valve stems; powder coat in the final cosmetic phase.",
+    { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IV pair mounted on the current rims Jul 26 with new valve stems; powder coat in the final cosmetic phase.",
       "events": ["back-to-okc","tires-rosso-iv","tire-mount"] }
   ],
   "gallery": [
@@ -1306,7 +1355,7 @@
       "id": "front-stand",
       "date": "2026-07-22",
       "title": "Front wheel lift stand",
-      "detail": "Extreme Max 5600.3265 sport bike front wheel lift stand off Amazon, $53.42. Pairs with the rear stand so the bike can sit on both ends for wheel-off work.",
+      "detail": "Extreme Max 5600.3265 sport bike front wheel lift stand off Amazon, $53.42, delivered Jul 26. Pairs with the rear stand so the bike can sit on both ends for wheel-off work.",
       "category": "tools",
       "cost": 53.42,
       "bucket": "tools"
@@ -1325,7 +1374,7 @@
     },
     {
       "id": "tire-mount",
-      "date": "2026-07-25",
+      "date": "2026-07-26",
       "title": "Tires mounted at CycleGear",
       "detail": "Mount and balance for the Rosso IV set, new valve stems, and the road hazard protection at about $20 a wheel — $121.70 all in.",
       "category": "purchase",
@@ -1333,8 +1382,7 @@
       "costNote": "mounting, stems + protection",
       "bucket": "parts",
       "system": "wheels",
-      "spendLabel": "Tire mounting, valve stems + protection",
-      "needsReview": true
+      "spendLabel": "Tire mounting, valve stems + protection"
     },
     {
       "id": "bleeder-kit",
@@ -2222,6 +2270,150 @@
   document.addEventListener("keydown", function(e){
     if (e.key === "Escape" && spendEl && spendEl.classList.contains("open")) closeSpend();
   });
+  /* ── tools panel: just what got bought ─────────────────── */
+  var toolsEl = null;
+  function buildTools(){
+    var items = data.events.filter(function(ev){
+      return ev.bucket === "tools" && typeof ev.cost === "number";
+    }).sort(function(a, b){ return b.cost - a.cost; });
+    if (!items.length) return;
+    var total = 0, max = 0;
+    items.forEach(function(e){ total += e.cost; if (e.cost > max) max = e.cost; });
+    toolsEl = document.createElement("div");
+    toolsEl.className = "spend";
+    toolsEl.setAttribute("role", "dialog");
+    toolsEl.setAttribute("aria-modal", "true");
+    toolsEl.setAttribute("aria-label", "Tools bought");
+    var panel = document.createElement("div");
+    panel.className = "sp-panel";
+    panel.innerHTML =
+      "<button type='button' class='sp-close'>ESC ✕</button>" +
+      "<h2>What I bought to do this</h2>" +
+      "<div class='sp-total'>" + money(total) + " in tools &amp; shop · " + items.length + " purchases</div>" +
+      "<div class='tl-list'></div>";
+    var list = panel.querySelector(".tl-list");
+    items.forEach(function(e){
+      var row = document.createElement("div");
+      row.className = "tl-row";
+      row.innerHTML =
+        "<span class='bar' style='width:" + Math.max(4, e.cost / max * 100).toFixed(1) + "%'></span>" +
+        "<span class='nm'>" + esc(e.spendLabel || e.title) + "</span>" +
+        "<span class='dt'>" + esc(fmtDate(e.date)) + "</span>" +
+        "<span class='amt'>" + money(e.cost) + "</span>";
+      list.appendChild(row);
+    });
+    toolsEl.appendChild(panel);
+    document.body.appendChild(toolsEl);
+    panel.querySelector(".sp-close").addEventListener("click", function(){ closeModal(toolsEl); });
+    toolsEl.addEventListener("click", function(e){ if (e.target === toolsEl) closeModal(toolsEl); });
+  }
+
+  /* ── calendar: every day that has an entry ─────────────── */
+  var calEl = null;
+  function buildCal(){
+    var byDay = {};
+    events.forEach(function(ev){ byDay[ev.date] = (byDay[ev.date] || 0) + 1; });
+    var keys = Object.keys(byDay).sort();
+    if (!keys.length) return;
+    calEl = document.createElement("div");
+    calEl.className = "spend";
+    calEl.setAttribute("role", "dialog");
+    calEl.setAttribute("aria-modal", "true");
+    calEl.setAttribute("aria-label", "Calendar of entries");
+    var panel = document.createElement("div");
+    panel.className = "sp-panel";
+    panel.innerHTML =
+      "<button type='button' class='sp-close'>ESC ✕</button>" +
+      "<h2>Every day on the bench</h2>" +
+      "<div class='sp-total'>" + logCount + " entries across " + keys.length + " days</div>" +
+      "<div class='cal-grid'></div>" +
+      "<div class='cal-key'><i style='--lvl:26%'></i><i style='--lvl:52%'></i><i style='--lvl:100%'></i>" +
+      "<span>quieter → busier day · click one to open it</span></div>";
+    var grid = panel.querySelector(".cal-grid");
+    var first = keys[0].split("-"), last = keys[keys.length - 1].split("-");
+    var y = +first[0], m = +first[1] - 1;
+    var endY = +last[0], endM = +last[1] - 1;
+    var quiet = 0;
+    function flushQuiet(){
+      if (!quiet) return;
+      var g = document.createElement("div");
+      g.className = "cal-gap";
+      g.innerHTML = "<span>" + quiet + " quiet month" + (quiet === 1 ? "" : "s") + "</span>";
+      grid.appendChild(g);
+      quiet = 0;
+    }
+    while (y < endY || (y === endY && m <= endM)){
+      var hasAny = keys.some(function(k){
+        return +k.slice(0, 4) === y && +k.slice(5, 7) - 1 === m;
+      });
+      if (!hasAny){ quiet++; m++; if (m > 11){ m = 0; y++; } continue; }
+      flushQuiet();
+      var mo = document.createElement("div");
+      mo.className = "cal-mo";
+      var dowRow = "<div class='cal-dow'>" +
+        ["S","M","T","W","T","F","S"].map(function(d){ return "<span>" + d + "</span>"; }).join("") + "</div>";
+      var startDow = new Date(y, m, 1).getDay();
+      var dim = new Date(y, m + 1, 0).getDate();
+      var cells = "";
+      for (var b = 0; b < startDow; b++) cells += "<div class='cal-d'></div>";
+      for (var d = 1; d <= dim; d++){
+        var iso = y + "-" + ("0" + (m + 1)).slice(-2) + "-" + ("0" + d).slice(-2);
+        var n = byDay[iso];
+        if (n){
+          var lvl = n >= 3 ? 100 : (n === 2 ? 60 : 30);
+          cells += "<button type='button' class='cal-d on' data-d='" + iso + "' style='--lvl:" + lvl + "%' " +
+            "title='" + esc(fmtDate(iso)) + " · " + n + (n === 1 ? " entry" : " entries") + "'>" + d + "</button>";
+        } else cells += "<div class='cal-d'></div>";
+      }
+      mo.innerHTML = "<h4>" + MONTHS[m] + " " + y + "</h4>" + dowRow + "<div class='cal-days'>" + cells + "</div>";
+      grid.appendChild(mo);
+      m++; if (m > 11){ m = 0; y++; }
+    }
+    grid.addEventListener("click", function(e){
+      var b = e.target.closest ? e.target.closest(".cal-d.on") : null;
+      if (!b) return;
+      closeModal(calEl);
+      railGoToDate(b.getAttribute("data-d"));
+    });
+    calEl.appendChild(panel);
+    document.body.appendChild(calEl);
+    panel.querySelector(".sp-close").addEventListener("click", function(){ closeModal(calEl); });
+    calEl.addEventListener("click", function(e){ if (e.target === calEl) closeModal(calEl); });
+  }
+  function openModal(el){
+    if (!el) return;
+    el.classList.add("open");
+    el.querySelector(".sp-close").focus();
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(el){
+    if (!el) return;
+    el.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape") return;
+    if (toolsEl && toolsEl.classList.contains("open")) closeModal(toolsEl);
+    if (calEl && calEl.classList.contains("open")) closeModal(calEl);
+  });
+  function wireGauge(id, build, get){
+    var g = document.getElementById(id);
+    if (!g) return;
+    var cell = g.parentElement;
+    cell.classList.add("gauge-btn");
+    cell.setAttribute("role", "button");
+    cell.setAttribute("tabindex", "0");
+    function go(){ build(); openModal(get()); }
+    cell.addEventListener("click", go);
+    cell.addEventListener("keydown", function(e){
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); go(); }
+    });
+  }
+  wireGauge("g-tools", function(){ if (!toolsEl) buildTools(); }, function(){ return toolsEl; });
+  wireGauge("g-events", function(){ if (!calEl) buildCal(); }, function(){ return calEl; });
+  document.getElementById("g-tools").parentElement.title = "Click to see the tools";
+  document.getElementById("g-events").parentElement.title = "Click for the calendar";
+
   var partsGauge = document.getElementById("g-parts").parentElement;
   partsGauge.classList.add("gauge-btn");
   partsGauge.setAttribute("role","button");
@@ -2437,6 +2629,24 @@
       card.appendChild(strip);
     }
     return card;
+  }
+  function railGoToDate(iso){
+    for (var i = 0; i < railDays.length; i++){
+      if (railDays[i].d !== iso) continue;
+      if (railActive.indexOf(i) < 0){   /* day is filtered out — clear filters to reach it */
+        activeCat = null; activeTrack = null;
+        Array.prototype.forEach.call(document.querySelectorAll(".trk-can.on"),
+          function(x){ x.classList.remove("on"); });
+        renderFilters(); renderTimeline();
+      }
+      railSel = i;
+      railRenderDay();
+      railPaint();
+      var b = railEl.getBoundingClientRect();
+      if (b.top < 0 || b.bottom > (window.innerHeight || 0))
+        railEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      return;
+    }
   }
   function railStep(d){
     var pos = railActive.indexOf(railSel);
