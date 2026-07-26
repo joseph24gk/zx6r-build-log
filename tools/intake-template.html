@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ZX-6R — new photo batch</title>
+<style>
+  :root{--pit:#0a0f0d;--panel:#0e1a16;--emerald:#0e2b24;--sheen:#3fae8c;--sheen-dim:#2a7560;
+        --ivory:#efe8d6;--dim:#b6ae9c;--faint:#7e7a6d;--line:#1c332c;--brass:#d8b46a}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--pit);color:var(--ivory);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+       font-size:15px;line-height:1.5;padding:26px 22px 120px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:26px;letter-spacing:.02em;margin-bottom:4px}
+  .sub{color:var(--faint);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.1em;
+       text-transform:uppercase;margin-bottom:20px}
+  .bulk{position:sticky;top:0;z-index:5;background:linear-gradient(var(--pit) 78%,transparent);
+        padding:12px 0 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .bulk .lbl{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+             text-transform:uppercase;color:var(--faint);margin-right:2px}
+  input,select,textarea,button{font-family:inherit;font-size:14px;color:var(--ivory);
+        background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:8px 10px}
+  input:focus,select,textarea:focus{outline:none;border-color:var(--sheen-dim)}
+  button{cursor:pointer;background:none;transition:border-color .15s,color .15s}
+  button:hover{border-color:var(--sheen-dim)}
+  button.go{background:var(--sheen);color:var(--pit);border-color:var(--sheen);font-weight:600}
+  button.go:hover{filter:brightness(1.08)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+  .card{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;
+        display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s}
+  .card.sel{border-color:var(--sheen);box-shadow:0 0 0 1px var(--sheen-dim)}
+  .shot{position:relative;background:#060a09;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center}
+  .shot img{width:100%;height:100%;object-fit:contain;display:block}
+  .shot .none{color:var(--faint);font-family:ui-monospace,monospace;font-size:11px}
+  .tag{position:absolute;top:8px;left:8px;background:rgba(10,15,13,.82);border:1px solid var(--line);
+       border-radius:999px;padding:3px 9px;font-family:ui-monospace,monospace;font-size:9px;
+       letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .pick{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;
+        border:1px solid var(--line);background:rgba(10,15,13,.82);display:flex;align-items:center;
+        justify-content:center;color:transparent;font-size:14px;line-height:1}
+  .card.sel .pick{background:var(--sheen);border-color:var(--sheen);color:var(--pit)}
+  .body{padding:12px 13px 13px;display:flex;flex-direction:column;gap:8px}
+  .fn{font-family:ui-monospace,monospace;font-size:10px;color:var(--faint);
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .warn{color:var(--brass)}
+  textarea{resize:vertical;min-height:56px;line-height:1.45}
+  .foot{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(transparent,var(--pit) 34%);
+        padding:26px 22px 18px;display:flex;justify-content:center;gap:10px;align-items:center}
+  .foot .count{font-family:ui-monospace,monospace;font-size:11px;color:var(--faint);margin-right:6px}
+  .done{max-width:760px;margin:0 auto;border:1px solid var(--sheen-dim);border-radius:12px;
+        background:var(--emerald);padding:20px 22px;display:none}
+  .done.on{display:block}
+  .done h2{font-size:17px;margin-bottom:6px}
+  .done p{color:var(--dim);font-size:13.5px}
+  code{font-family:ui-monospace,monospace;background:rgba(0,0,0,.35);padding:2px 6px;border-radius:4px;
+       color:var(--sheen);font-size:12.5px}
+</style></head>
+<body><div class="wrap">
+  <h1>New batch for the build log</h1>
+  <div class="sub" id="sub"></div>
+
+  <div class="done" id="done">
+    <h2>Manifest saved ✓</h2>
+    <p>It's on your clipboard and downloaded as <code>zx6r-intake.json</code>.
+       Tell Claude <em>"the batch is ready"</em> and it'll process everything from here.</p>
+  </div>
+
+  <div class="bulk">
+    <span class="lbl">selected</span>
+    <button type="button" id="all">select all</button>
+    <button type="button" id="none">clear</button>
+    <span class="lbl" style="margin-left:10px">apply to selected</span>
+    <input id="bulkText" placeholder="what these show…" style="min-width:230px">
+    <select id="bulkEvent"></select>
+    <button type="button" id="apply">apply</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="foot">
+  <span class="count" id="count"></span>
+  <button type="button" class="go" id="submit">Submit batch</button>
+</div>
+
+<script>
+const ITEMS = /*__ITEMS__*/;
+const EVENTS = /*__EVENTS__*/;
+const grid = document.getElementById("grid");
+const state = ITEMS.map(it => ({ ...it, caption: "", target: "", sel: false }));
+
+function eventOptions(extra){
+  let o = "<option value=''>— new entry of its own —</option>";
+  if (extra) o = "<option value='__keep'>(leave unchanged)</option>" + o;
+  o += "<option value='__gallery'>standalone / gallery shot</option>";
+  EVENTS.forEach(e => { o += `<option value="${e.id}">${e.date} · ${e.title}</option>`; });
+  return o;
+}
+document.getElementById("bulkEvent").innerHTML = eventOptions(true);
+
+function draw(){
+  grid.innerHTML = "";
+  state.forEach((it, i) => {
+    const c = document.createElement("div");
+    c.className = "card" + (it.sel ? " sel" : "");
+    c.innerHTML =
+      `<div class="shot">${it.preview ? `<img src="${it.preview}" alt="">`
+                                      : `<span class="none">no preview</span>`}
+         <span class="tag">${it.kind} · ${it.date}${it.fallback ? " (file date)" : ""}</span>
+         <span class="pick">✓</span>
+       </div>
+       <div class="body">
+         <div class="fn ${it.fallback ? "warn" : ""}">${it.file} · ${it.size} MB${
+            it.fallback ? " · no capture date, using file date" : ""}</div>
+         <textarea placeholder="what is this?">${it.caption}</textarea>
+         <select>${eventOptions(false)}</select>
+       </div>`;
+    c.querySelector(".shot").addEventListener("click", () => { it.sel = !it.sel; draw(); tally(); });
+    const ta = c.querySelector("textarea");
+    ta.value = it.caption;
+    ta.addEventListener("input", e => { it.caption = e.target.value; tally(); });
+    const sl = c.querySelector("select");
+    sl.value = it.target;
+    sl.addEventListener("change", e => { it.target = e.target.value; });
+    grid.appendChild(c);
+  });
+}
+function tally(){
+  const described = state.filter(s => s.caption.trim()).length;
+  document.getElementById("count").textContent =
+    `${described} of ${state.length} described · ${state.filter(s => s.sel).length} selected`;
+}
+document.getElementById("all").onclick  = () => { state.forEach(s => s.sel = true);  draw(); tally(); };
+document.getElementById("none").onclick = () => { state.forEach(s => s.sel = false); draw(); tally(); };
+document.getElementById("apply").onclick = () => {
+  const t = document.getElementById("bulkText").value.trim();
+  const ev = document.getElementById("bulkEvent").value;
+  state.forEach(s => {
+    if (!s.sel) return;
+    if (t) s.caption = t;
+    if (ev !== "__keep") s.target = ev;
+  });
+  draw(); tally();
+};
+document.getElementById("submit").onclick = async () => {
+  const payload = {
+    created: new Date().toISOString(),
+    items: state.map(s => ({ file: s.file, date: s.date, dateFromFile: s.fallback,
+                             kind: s.kind, caption: s.caption.trim(), target: s.target }))
+  };
+  const txt = JSON.stringify(payload, null, 2);
+  try { await navigator.clipboard.writeText(txt); } catch(e){}
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([txt], { type: "application/json" }));
+  a.download = "zx6r-intake.json";
+  a.click();
+  document.getElementById("done").classList.add("on");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+document.getElementById("sub").textContent =
+  `${ITEMS.length} file${ITEMS.length === 1 ? "" : "s"} waiting · click a photo to select it for bulk edits`;
+draw(); tally();
+</script></body></html>

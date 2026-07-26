@@ -12,6 +12,9 @@ $RECYCLE.BIN/
 # Claude Code local files (settings, launch config)
 .claude/
 
+# Local machine paths for the photo-intake tooling
+tools/config.json
+
 # Unprocessed phone originals never belong in the repo — the iCloud inbox
 # stays outside it, and only converted/renamed files go in /media.
 *.heic
