@@ -210,8 +210,12 @@
   .acq b{color:var(--brass);font-weight:500}
 
   /* gauges */
+  .hdr-top{
+    position:relative;z-index:3;display:flex;align-items:flex-start;
+    justify-content:space-between;gap:14px;
+  }
   .hdr-media{
-    position:absolute;top:16px;right:16px;z-index:3;
+    flex:none;
     width:38px;height:38px;display:flex;align-items:center;justify-content:center;
     background:rgba(10,15,13,.4);border:1px solid var(--line);border-radius:10px;
     color:var(--ivory-dim);cursor:pointer;padding:0;
@@ -225,7 +229,7 @@
     color:var(--pit);background:var(--sheen);border-color:var(--sheen);transform:translateY(-1px);
   }
   .hdr-media:focus-visible{outline:1px dashed var(--sheen);outline-offset:3px}
-  @media (max-width:560px){ .hdr-media{top:12px;right:12px;width:34px;height:34px} }
+  @media (max-width:560px){ .hdr-media{width:34px;height:34px} }
   .gauges{
     display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
     gap:1px;background:var(--line);border:1px solid var(--line);
@@ -838,6 +842,12 @@
     .sp-jump{padding:8px 6px}
     .sp-clear{padding:6px 12px}
     .fn-clear{padding:8px 6px}
+    .rd-nav button{padding:11px 16px}
+    .chip{padding:9px 13px}
+    .rail-listtoggle{padding:8px 13px}
+    .sp-tab{padding:9px 16px}
+    .sp-leg{padding:8px}
+    .cal-d.on{font-size:8.5px}
   }
   @media print{
     body{background:#fff;color:#111}
@@ -1462,15 +1472,17 @@
 </script>
 
 <header>
-  <button type="button" id="all-media" class="hdr-media" aria-label="Browse every photo and clip" title="Browse every photo and clip">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <rect x="6.5" y="3.5" width="14" height="11" rx="2"/>
-      <circle cx="10.6" cy="7.6" r="1.3"/>
-      <path d="M20.5 11.4 16.8 8.1l-5.6 5"/>
-      <path d="M17.5 17.5v1a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1"/>
-    </svg>
-  </button>
-  <div class="eyebrow">Build log · 2019 Kawasaki ZX-6R 636</div>
+  <div class="hdr-top">
+    <div class="eyebrow">Build log · 2019 Kawasaki ZX-6R 636</div>
+    <button type="button" id="all-media" class="hdr-media" aria-label="Browse every photo and clip" title="Browse every photo and clip">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="6.5" y="3.5" width="14" height="11" rx="2"/>
+        <circle cx="10.6" cy="7.6" r="1.3"/>
+        <path d="M20.5 11.4 16.8 8.1l-5.6 5"/>
+        <path d="M17.5 17.5v1a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1"/>
+      </svg>
+    </button>
+  </div>
   <h1 id="hdr-title"></h1>
   <p class="sub" id="hdr-sub"></p>
   <div class="vin" id="hdr-vin"></div>
