@@ -210,6 +210,22 @@
   .acq b{color:var(--brass);font-weight:500}
 
   /* gauges */
+  .hdr-media{
+    position:absolute;top:16px;right:16px;z-index:3;
+    width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,15,13,.4);border:1px solid var(--line);border-radius:10px;
+    color:var(--ivory-dim);cursor:pointer;padding:0;
+    transition:color .2s ease,border-color .2s ease,background .2s ease,transform .2s ease;
+  }
+  .hdr-media svg{
+    width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.5;
+    stroke-linecap:round;stroke-linejoin:round;
+  }
+  .hdr-media:hover{
+    color:var(--pit);background:var(--sheen);border-color:var(--sheen);transform:translateY(-1px);
+  }
+  .hdr-media:focus-visible{outline:1px dashed var(--sheen);outline-offset:3px}
+  @media (max-width:560px){ .hdr-media{top:12px;right:12px;width:34px;height:34px} }
   .gauges{
     display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
     gap:1px;background:var(--line);border:1px solid var(--line);
@@ -1446,6 +1462,14 @@
 </script>
 
 <header>
+  <button type="button" id="all-media" class="hdr-media" aria-label="Browse every photo and clip" title="Browse every photo and clip">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="6.5" y="3.5" width="14" height="11" rx="2"/>
+      <circle cx="10.6" cy="7.6" r="1.3"/>
+      <path d="M20.5 11.4 16.8 8.1l-5.6 5"/>
+      <path d="M17.5 17.5v1a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1"/>
+    </svg>
+  </button>
   <div class="eyebrow">Build log · 2019 Kawasaki ZX-6R 636</div>
   <h1 id="hdr-title"></h1>
   <p class="sub" id="hdr-sub"></p>
@@ -1609,6 +1633,7 @@
 
   /* media helpers */
   var gallery = []; /* flat list of visible media, rebuilt on each renderTimeline */
+  var lbAll = null; /* when set, the viewer walks every item in the log instead */
   function ytId(src){
     if (!src) return null;
     if (/^[\w-]{6,20}$/.test(src) && src.indexOf("/") < 0) return src; /* raw ID */
@@ -1639,8 +1664,9 @@
       lbCount = lb.querySelector(".lb-count"),
       lbIdx = 0;
 
+  function lbSrc(){ return lbAll || gallery; }
   function showLightboxItem(){
-    var g = gallery[lbIdx];
+    var g = lbSrc()[lbIdx];
     if (!g) return;
     var m = g.m;
     lbStage.innerHTML = "";
@@ -1663,9 +1689,10 @@
     }
     lbCap.textContent = m.caption || "";
     lbCtx.textContent = g.evTitle + " · " + g.evDate;
-    lbCount.textContent = (lbIdx+1) + " / " + gallery.length;
+    lbCount.textContent = (lbIdx+1) + " / " + lbSrc().length;
   }
-  function openLightbox(i){
+  function openLightbox(i, all){
+    lbAll = all || null;
     lbIdx = i;
     showLightboxItem();
     lb.classList.add("open");
@@ -1679,10 +1706,12 @@
     lb.classList.remove("vis");
     lbStage.innerHTML = ""; /* stops any playing video */
     document.body.style.overflow = "";
+    lbAll = null;
   }
   function stepLightbox(d){
-    if (!gallery.length) return;
-    lbIdx = (lbIdx + d + gallery.length) % gallery.length;
+    var src = lbSrc();
+    if (!src.length) return;
+    lbIdx = (lbIdx + d + src.length) % src.length;
     showLightboxItem();
   }
   lb.querySelector(".lb-close").addEventListener("click", closeLightbox);
@@ -2434,6 +2463,19 @@
     if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openSpend(); }
   });
 
+  /* every photo and clip in the log, oldest first — the header button */
+  var allMediaBtn = document.getElementById("all-media");
+  if (allMediaBtn){
+    var allMedia = [];
+    events.forEach(function(ev){
+      (ev.media || []).forEach(function(m){
+        allMedia.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
+      });
+    });
+    if (!allMedia.length) allMediaBtn.style.display = "none";
+    else allMediaBtn.addEventListener("click", function(){ openLightbox(0, allMedia); });
+  }
+
   /* next up */
   var nu = document.getElementById("nextup-list");
   (data.nextUp||[]).forEach(function(item){
@@ -2598,7 +2640,7 @@
       railFlagEl.classList.add("on");
     } else railFlagEl.classList.remove("on");
   }
-  function railCard(ev){
+  function railCard(ev, bag){
     var card = document.createElement("article");
     card.className = "ev" + (ev.category === "milestone" ? " ev-hero" : "");
     card.id = "ev-" + ev.id;
@@ -2621,8 +2663,8 @@
       var strip = document.createElement("div");
       strip.className = "media-strip";
       ev.media.forEach(function(m){
-        var gIdx = gallery.length;
-        gallery.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
+        var gIdx = bag.length;   /* the viewer stays inside this day */
+        bag.push({ m: m, evTitle: ev.title, evDate: ev.dateDisplay || fmtDate(ev.date) });
         var t = document.createElement("button");
         t.className = "thumb"; t.type = "button";
         t.setAttribute("aria-label", (m.caption || m.type) + " — open viewer");
@@ -2632,7 +2674,7 @@
         else if (m.type === "youtube"){ var y = ytId(m.src); if (y) src = "https://img.youtube.com/vi/" + y + "/hqdefault.jpg"; }
         t.innerHTML = (src ? "<img src='" + esc(src) + "' alt='' loading='lazy'>" : "<span class='noimg'>video</span>") +
           (m.type !== "image" ? "<span class='play' aria-hidden='true'></span>" : "");
-        t.addEventListener("click", function(){ openLightbox(gIdx); });
+        t.addEventListener("click", function(){ openLightbox(gIdx, bag); });
         strip.appendChild(t);
       });
       card.appendChild(strip);
@@ -2691,12 +2733,12 @@
       var list = dy.ev.filter(railMatches);
       if (!list.length) list = dy.ev;
       railHeadEl.textContent = fmtDate(dy.d) + (list.length > 1 ? " · " + list.length + " entries" : "");
-      gallery.length = Math.min(gallery.length, railGalStart);
       railDetailEl.innerHTML = "";
       /* read straight through, from either end of the stack */
       var pos = railActive.indexOf(railSel);
+      var dayMedia = [];
       railDetailEl.appendChild(railNav(pos, "top"));
-      list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev)); });
+      list.forEach(function(ev){ railDetailEl.appendChild(railCard(ev, dayMedia)); });
       railDetailEl.appendChild(railNav(pos, ""));
     }
     var after = railEl.getBoundingClientRect().top;
