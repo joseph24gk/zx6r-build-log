@@ -1,7 +1,7 @@
-# Daily check: if the media inbox has files, raise a toast.
-# Clicking the toast is not wired to anything - use "Review Photos.cmd"
-# (or just tell Claude) once you've been nudged.
-param([switch]$OpenIfFound)
+# Daily check: if the media inbox has files, publish the phone review page
+# into iCloud and raise a toast. Nothing needs to be running afterwards -
+# the page rides iCloud to your phone and waits.
+param([switch]$OpenIfFound, [switch]$NoPublish)
 
 $ErrorActionPreference = "SilentlyContinue"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -12,7 +12,15 @@ $files = @(Get-ChildItem $cfg.inbox -File |
 if ($files.Count -eq 0) { exit 0 }
 
 $n = $files.Count
-$msg = "$n file$(if($n -ne 1){'s'}) waiting for the build log. Run Review Photos to label them."
+
+# build the phone page first, so the notification is already actionable
+if (-not $NoPublish) {
+  try {
+    powershell -ExecutionPolicy Bypass -File (Join-Path $here "photo-intake.ps1") -Publish -Quiet | Out-Null
+  } catch { }
+}
+
+$msg = "$n file$(if($n -ne 1){'s'}) waiting. Label them on your phone: Files > ZX6R Rebuild > _review."
 
 try {
   [void][Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")

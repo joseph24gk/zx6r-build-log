@@ -26,28 +26,41 @@ about that changes.
    strips the files, names them by date, wires them into the log's JSON,
    commits, pushes, and clears the inbox.
 
-## Away from the computer
+## From your phone (nothing running on the PC)
 
-The photos only exist on the PC and in iCloud until they're published, so
-there's no page on the public site that could show them to you and nobody
-else — a static site can't keep a secret. Two things that do work:
+The daily check also writes a **self-contained review page into iCloud**, so
+the batch is labellable from anywhere with no live session, no remote
+control, and nothing published to the public site.
 
-- **Ask Claude for the contact sheet.** It runs `photo-intake.ps1 -Sheet`,
-  which builds one numbered image of the whole batch, and sends it to you
-  in chat. Reply with plain text — *"1–2 are the tires on the machine,
-  3 is the fender, 4–5 the rearset"* — and it takes over from there.
-- **Just describe them.** Open the folder in the Files app on your phone
-  and tell Claude what's in it. Nothing has to be uploaded anywhere.
+1. On your phone: **Files ▸ iCloud Drive ▸ Documents ▸ Media ▸ ZX6R Rebuild
+   ▸ _review ▸ `ZX6R photo batch.html`** — tap it.
+2. The thumbnails are baked into the file itself, so it works offline and
+   needs nothing else. Same grouping, same split/merge.
+3. Tap **Done**, then either:
+   - **Save to Files** → **iCloud Drive ▸ Downloads**. It syncs back to the
+     PC and Claude picks it up, or
+   - **Copy** and paste it into a chat.
 
-Either way the batch waits in the inbox until you get to it.
+Regenerate it any time with:
+
+```
+powershell -ExecutionPolicy Bypass -File tools\photo-intake.ps1 -Publish
+```
+
+`-Sheet` is still there if you'd rather just get one numbered image in chat
+and reply in plain text (*"1–2 tires, 3 the fender"*).
+
+The `_review` folder is ignored by the intake scan, and gets cleared once a
+batch is processed.
 
 ## Files
 
 | file | what it does |
 |---|---|
-| `photo-intake.ps1` | scans the inbox, builds previews, generates the review page |
-| `intake-template.html` | the review page itself |
-| `check-inbox.ps1` | the daily notifier |
+| `photo-intake.ps1` | scans the inbox, builds previews, generates the review pages (`-Publish` for the phone copy, `-Sheet` for a contact sheet) |
+| `intake-template.html` | the desktop review page |
+| `mobile-review-template.html` | the phone page dropped into iCloud |
+| `check-inbox.ps1` | daily notifier; also publishes the phone page |
 | `Review Photos.cmd` | manual trigger |
 | `config.json` | local paths (gitignored) |
 

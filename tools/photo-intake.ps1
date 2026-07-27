@@ -4,7 +4,7 @@
 #
 #   powershell -ExecutionPolicy Bypass -File tools\photo-intake.ps1
 #
-param([switch]$Quiet, [switch]$Sheet)
+param([switch]$Quiet, [switch]$Sheet, [switch]$Publish)
 
 $ErrorActionPreference = "Stop"
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -90,6 +90,50 @@ if ($Sheet) {
   Write-Host $sheetPath
   for ($k = 0; $k -lt $items.Count; $k++) {
     Write-Host "$($k+1). $($items[$k].file) - $($items[$k].taken)$(if($items[$k].fallback){' (file date)'})"
+  }
+  exit 0
+}
+
+# --- -Publish: a self-contained page dropped into iCloud, so the batch can
+#     be labelled from a phone with nothing running on this machine ---------
+if ($Publish) {
+  $rev = Join-Path $inbox "_review"
+  New-Item -ItemType Directory -Force -Path $rev | Out-Null
+  Get-ChildItem $rev -File -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+
+  $mob = @()
+  for ($k = 0; $k -lt $items.Count; $k++) {
+    $it = $items[$k]
+    $b64 = ""
+    $p = Join-Path $out $it.preview
+    if ($it.preview -and (Test-Path $p)) {
+      $small = Join-Path $out "m$($k+1).jpg"
+      magick $p -resize "440x440>" -quality 68 -strip $small
+      $b64 = "data:image/jpeg;base64," + [Convert]::ToBase64String([IO.File]::ReadAllBytes($small))
+    }
+    $mob += [pscustomobject]@{
+      file = $it.file; date = $it.date; taken = $it.taken; fallback = $it.fallback
+      kind = $it.kind; thumb = $b64
+    }
+  }
+  $mobJson = ($mob | ConvertTo-Json -Depth 4 -Compress)
+  if ($mob.Count -eq 1) { $mobJson = "[$mobJson]" }
+
+  $mtpl = [IO.File]::ReadAllText((Join-Path $here "mobile-review-template.html"), [Text.Encoding]::UTF8)
+  $mtpl = $mtpl.Replace("/*__ITEMS__*/", $mobJson)
+  $page = Join-Path $rev "ZX6R photo batch.html"
+  [IO.File]::WriteAllText($page, $mtpl, (New-Object Text.UTF8Encoding($false)))
+
+  $stamp = [pscustomobject]@{
+    built = (Get-Date).ToString("s"); count = $items.Count
+    files = @($items | ForEach-Object { $_.file })
+  }
+  [IO.File]::WriteAllText((Join-Path $rev "batch.json"),
+    ($stamp | ConvertTo-Json -Depth 4), (New-Object Text.UTF8Encoding($false)))
+
+  if (-not $Quiet) {
+    Write-Host "Published for phone: $page" -ForegroundColor Green
+    Write-Host "  ($([math]::Round((Get-Item $page).Length/1KB)) KB, $($items.Count) file(s))"
   }
   exit 0
 }
