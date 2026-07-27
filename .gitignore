@@ -25,3 +25,6 @@ tools/config.json
 # Scratch
 *.tmp
 ~$*
+
+# Downloaded intake manifests (transient)
+zx6r-intake*.json
