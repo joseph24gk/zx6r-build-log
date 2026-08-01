@@ -69,8 +69,9 @@
                   tools | legal | shop | decision | logistics
     cost          number (USD) or null
     costNote      optional, e.g. "hammer price" / "total w/ shipping"
-    bucket        "parts" | "tools" | null — which running total the cost
-                  feeds. Bike acquisition lives in meta, not here.
+    bucket        "parts" | "tools" | "legal" | null — which running total
+                  the cost feeds; each has its own header gauge. Bike
+                  acquisition lives in meta, not here.
     needsReview   boolean — renders a "verify" chip; use for anything
                   Joseph should confirm (date, amount, whether it happened)
     bullets       optional array rendered as a list under detail. Items are
@@ -881,7 +882,11 @@
   "nextUp": [
     "Front brake MC: assemble the reservoir kit with the OEM barb + O-ring when everything lands, then bleed both ends (rear gets the new EBC pads)",
     "Machine rearset mounting bracket v1 on the work CNC; brake lever is next, footrest last",
-    "Title endgame: Service Oklahoma N Classen visit to rule on 777-with-photo, court appointment held in parallel; whichever clears first wins. Packet is print-ready and travels to both.",
+    "Draft a proposed order for the judge — case caption, findings on notice and purchase, and directive language ordering the state to issue title. Ask the clerk whether the district has a template.",
+    "Confirm with the clerk that the return of service is docketed before September 9, and ask the bailiff whether the proposed order goes in ahead of time or gets handed up at the hearing.",
+    "Watch USPS tracking daily. If it reads Notice Left with no pickup after about a week, line up a Tulsa process server rather than waiting out the full fifteen-day hold.",
+    "Spray the Midnight Emerald swatch panel, then compare finalists against physical chip decks at L M Auto Color in Edmond (Tue–Fri) before committing to a kit.",
+    "Fairing decision: a full custom kit plus tank cover realistically lands $650–1000, so it waits until the title is settled.",
     "Order the TCMT headlight shell only — bench test confirmed the LED internals are healthy",
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
@@ -1420,6 +1425,38 @@
       "spendLabel": "Tire mounting, valve stems + protection"
     },
     {
+      "id": "paint-swatch-order",
+      "date": "2026-07-24",
+      "title": "Ordered Midnight Emerald test cans",
+      "detail": "Two 12 oz aerosols from AutomotiveTouchup — Bentley Midnight Emerald basecoat (2020 Continental GT, paint code LK6M) plus their matching clear. $54.90 shipped. Plan: scuff a scrap fairing with a Scotch-Brite pad, three coats of base and two of clear, then judge it in sun, shade, and garage light before committing to a fairing kit. The panel doubles as a physical sample to mail a vendor, since matching color from photos is where they tend to miss.",
+      "category": "purchase",
+      "cost": 54.90,
+      "costNote": "total, free ship",
+      "bucket": "parts",
+      "system": "bodywork",
+      "spendLabel": "Midnight Emerald test cans + clear"
+    },
+    {
+      "id": "title-petition-filed",
+      "date": "2026-07-27",
+      "title": "Filed the court-ordered title petition",
+      "detail": "Petition filed in district court for a court-ordered title. The bike was bought in April 2025 with the Oklahoma title signed and notarized over to me, but the record owner never completed the transfer and has been unreachable for about sixteen months. No title means no registration, so it can't legally touch a public road no matter how the mechanical work goes. Filing fee $160.39 plus $5.00 in the law library for paperwork and the notary. Hearing set for September 9.",
+      "category": "legal",
+      "cost": 165.39,
+      "costNote": "$160.39 filing + $5.00 law library and notary",
+      "bucket": "legal"
+    },
+    {
+      "id": "title-service-mailed",
+      "date": "2026-07-28",
+      "title": "Mailed notice of hearing to the record owner",
+      "detail": "Two envelopes out the same day. The first is the legal one: certified mail, return receipt requested, restricted delivery, per 12 O.S. 2004(C)(2), with the green card attached. The second is a plain first-class letter with RETURN SERVICE REQUESTED under the return address, sent purely as a probe for a forwarding address if he's moved. $21.12 for the certified piece. A signed green card or a refused envelope both count as good service; unclaimed does not, and that would mean hiring a process server with about three weeks left before the hearing.",
+      "category": "legal",
+      "cost": 21.12,
+      "costNote": "certified mail, RRR + restricted delivery",
+      "bucket": "legal"
+    },
+    {
       "id": "tires-arrive",
       "date": "2026-07-25",
       "title": "Tires land",
@@ -1500,7 +1537,7 @@
       "dateDisplay": "≈ mid Jul 2026",
       "approx": true,
       "title": "Aesthetic locked: Bentley Midnight Emerald",
-      "detail": "Final direction: Bentley Midnight Emerald — a dark, shimmery, blue-leaning green — with black and possibly cream/ivory accents. Explicitly not Kawasaki's Emerald Blazed Green, not teal, not military green, no heavy gold. Auctmarts and NiceCycle are the fairing vendor shortlist — might pay for a render first, might not.",
+      "detail": "Final direction: Bentley Midnight Emerald — a dark, shimmery, blue-leaning green — with black and possibly cream/ivory accents. Paint code LK6M (2020 Continental GT), worth having on hand at a paint counter. Explicitly not Kawasaki's Emerald Blazed Green, not teal, not military green, no heavy gold. Auctmarts and NiceCycle are the fairing vendor shortlist — might pay for a render first, might not.",
       "category": "decision",
       "cost": null,
       "bucket": null
@@ -1528,6 +1565,7 @@
   <div class="gauges">
     <div class="gauge"><div class="num money" id="g-parts">$0</div><div class="lbl">Parts &amp; consumables</div></div>
     <div class="gauge"><div class="num money" id="g-tools">$0</div><div class="lbl">Tools &amp; shop</div></div>
+    <div class="gauge"><div class="num money" id="g-legal">$0</div><div class="lbl">Title &amp; legal</div></div>
     <div class="gauge"><div class="num" id="g-days">0</div><div class="lbl">Days on the bench</div></div>
     <div class="gauge"><div class="num" id="g-events">0</div><div class="lbl">Events logged</div></div>
   </div>
@@ -1624,18 +1662,20 @@
   var events = data.events.concat(snapshots).sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
   var catCounts = {};
   events.forEach(function(ev){ catCounts[ev.category] = (catCounts[ev.category] || 0) + 1; });
-  var partsTotal = 0, toolsTotal = 0, logCount = 0;
+  var partsTotal = 0, toolsTotal = 0, legalTotal = 0, logCount = 0;
   events.forEach(function(ev){
     if (!ev.isSnapshot) logCount++;
     if (typeof ev.cost === "number") {
       if (ev.bucket === "parts") partsTotal += ev.cost;
       else if (ev.bucket === "tools") toolsTotal += ev.cost;
+      else if (ev.bucket === "legal") legalTotal += ev.cost;
     }
   });
   var days = Math.max(0, Math.floor((Date.now() - new Date(data.meta.benchDate+"T00:00:00")) / 86400000));
 
   function countUp(el, target, fmt, dur){
-    if (reduceMotion){ el.textContent = fmt(target); return; }
+    /* a background tab never runs rAF — show the real number instead of 0 */
+    if (reduceMotion || document.hidden){ el.textContent = fmt(target); return; }
     var start = null;
     function step(t){
       if (!start) start = t;
@@ -1648,6 +1688,7 @@
   }
   countUp(document.getElementById("g-parts"), partsTotal, money, 1300);
   countUp(document.getElementById("g-tools"), toolsTotal, money, 1300);
+  countUp(document.getElementById("g-legal"), legalTotal, money, 1300);
   countUp(document.getElementById("g-days"), days, function(n){return Math.round(n).toString();}, 900);
   countUp(document.getElementById("g-events"), logCount, function(n){return Math.round(n).toString();}, 900);
 
