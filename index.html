@@ -888,8 +888,9 @@
     "Aug 22–25 decision point: if service isn't perfected, file the motion for service by publication with the affidavits of due diligence and non-service, plus a motion to continue. Filing before Sep 9 lets the judge sign the publication order early so publication starts immediately — asking verbally at the hearing burns the date. Show up Sep 9 regardless.",
     "Spray the Midnight Emerald swatch panel, then compare finalists against physical chip decks at L M Auto Color in Edmond (Tue–Fri) before committing to a kit.",
     "Fairing decision: a full custom kit plus tank cover realistically lands $650–1000, so it waits until the title is settled.",
-    "Rear brake back-flush: pads out with the rotor in as the stop, pump the pedal to extend the piston, then force it back with a C-clamp. Four or five cycles watching the reservoir for bubbles — this drives fluid backward fast enough to carry air over the crest and clears anything trapped behind the piston at the same time.",
-    "While the rear pads are out: check the piston extends squarely and doesn't hitch, and that the floating caliper slides freely on its pins. If it's still soft after that, fold the hose crest out of its clips so the MC banjo is the clear high point, or take it for a shop pressure bleed.",
+    "Rear brake, step one: fit a shoulder bolt or a sleeve at the clevis with blue 243, then confirm the pedal returns fully on its own and the pads actually release.",
+    "Then bleed conventionally at the rear caliper nipple — this will be the first bleed done with a working compensating port, so expect to recover air that was never reachable before.",
+    "Verify the rear before trusting it: hold the pedal hard for 30 seconds (firm and holding = no air or leak, slow sink = leak or MC bypass, spongy but stable = air left), walk the bike and try to push it with the brake on, confirm the wheel spins free when released, then bed the pads in with about a dozen moderate stops from 30 mph with cooling between. Don't judge braking power before bed-in.",
     "Mount, wire and aim the headlight — the stay carries it, so no bodywork needed first.",
     "Post-ride punch list: re-torque axle nuts, caliper bolts, rearsets and sprocket nuts after a heat cycle; recheck chain slack and lube; bed in the new pads; leak walk on fork seals, water pump weep hole, drain plug, brake fittings and the fuel pump flange now the tank's full; recheck coolant and oil.",
     "Street-legal list: mirrors, plate bracket, signals, brake light switches front and rear, dash and speedo check.",
@@ -910,8 +911,8 @@
       "events": ["back-to-okc","first-start","ebay-controls-bottle","controls-installed"] },
     { "label": "Front brakes", "status": "fixed", "note": "Plumbed Jul 28, then bled properly at the MC nipple in early August — lever is firm and they've worked throughout.",
       "events": ["back-to-okc","front-mc-diagnosis","reservoir-kit","partzilla-oem-order","reservoir-mounted","parts-landing-jul27","front-end-and-brakes","front-brake-bleed-fixed"] },
-    { "label": "Rear brake", "status": "broken", "note": "Big dead stroke then partial engagement — will slow the bike, not stop it. Leading suspect is the ejected caliper piston; pedal lever ratio is a separate geometry problem.",
-      "events": ["rear-brake-saga","vacuum-bleeder","partzilla-oem-order","rear-wheel-chain"] },
+    { "label": "Rear brake", "status": "in-progress", "note": "Root cause found: an over-clamped clevis held the pedal off its stop and kept the compensating port shut, so no bleed could ever work. Shoulder bolt or sleeve, then a real bleed.",
+      "events": ["rear-brake-saga","rear-brake-clevis-root-cause","rear-brake-clevis-fix","vacuum-bleeder","partzilla-oem-order","rear-wheel-chain"] },
     { "label": "Front air intake and fairing stay", "status": "fixed", "note": "Duct and fairing/gauge stay installed Jul 28. Headlight is still open, but it's a full-assembly purchase now, not a shell swap — the original housing is unsalvageable and no empty shell is made for this year.",
       "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes","headlight-shell-dead-end","pillion-seat-headlight-arrive"] },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho.",
@@ -1599,11 +1600,37 @@
       "needsReview": true,
       "bullets": [
         { "label": "Leading suspect", "note": "The piston was ejected from the caliper during an earlier reverse bleed with no pads or spacer in. It was pushed back by hand and the caliper went back together with new pads before it could be properly inspected — so either air is trapped behind it or it's seated cocked." },
-        { "label": "Ruled out", "note": "Pushrod free play (the reverse bleed proved the supply port was open), MC seals, and ABS — the bike has none, and the lead near the brake line bracket is the wheel speed sensor. The line does crest between caliper and MC banjo, but that routing is confirmed OEM with all clips in place." },
+        { "label": "Ruled out", "note": "MC seals — blocking the outlet by hand wouldn't hold it — and ABS, since the bike has none and the lead near the brake line bracket is the wheel speed sensor. The line does crest between caliper and MC banjo, but that routing is confirmed OEM with all clips in place." },
+        { "label": "Wrongly cleared at the time", "note": "The pushrod. A successful reverse bleed got treated as proof the compensating port was fully open — it isn't. A barely-open port passes syringe pressure fine and still stops the MC piston returning under its own spring. This turned out to be the actual cause; see the same day's entry." },
         { "label": "Vacuum bleeding won't fix it", "note": "The flow is limited by the MC supply port, not the pump. The pump can pull harder than the MC can feed, so the hose ID never fills and the fluid never moves fast enough to carry a bubble over the crest." },
         { "label": "Grease the nipple threads", "note": "Grease around the outside of the bleed nipple stopped false bubbles being drawn past the threads. PTFE tape on the threads is the permanent fix next time the system is open." },
         { "label": "Never bleed a caliper with no pads in it", "note": "That's how the piston came out in the first place." },
-        { "label": "Separate from the air: pedal geometry", "note": "The pedal moves through about half its travel before building any resistance, and that predates the crash. Aftermarket rearsets usually offer several clevis holes that set the lever ratio — mounted too close to the pivot gives long dead stroke and weak pressure. That can't be bled out, and it needs pinning down before the right rearset design is finalized rather than inherited." }
+        { "label": "Pedal geometry — demoted, not dead", "note": "The lever-ratio theory (clevis mounted too close to the pivot giving long dead stroke) is no longer the leading explanation now that the over-clamped clevis is found. Worth re-checking free travel only after the clevis is fixed and a real bleed is done." }
+      ]
+    },
+    {
+      "id": "rear-brake-clevis-root-cause",
+      "date": "2026-08-08",
+      "title": "Rear brake traced to an over-clamped clevis",
+      "detail": "After the back-flush — piston cycled in and out with the reservoir cap off and the rotor as the stop — the pedal came up firmer but braking stayed weak, and now it wouldn't return on its own. It had to be lifted with a toe to release. The custom brake lever is tapped M8, and an M8 bolt run through the clevis and threaded into the lever was clamping the clevis solid, pinching the pushrod against the pedal. A pedal that can't return holds the MC piston off its rest position and keeps the compensating port closed. With that port shut the system can't equalize, residual pressure stays trapped, the brake drags, and the circuit can't be bled from either end.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "bullets": [
+        { "label": "It explains the whole saga", "note": "The weak braking, the huge dead travel, and why reverse bleeding, conventional bleeding, banjo bleeding and vacuum bleeding all changed nothing. Every attempt was made on a system hydraulically sealed off from its own reservoir." },
+        { "label": "The rule to take forward", "note": "If a bleed goes badly, check pedal return and compensating-port function before touching a bleeder. Static reservoir level plus a non-returning pedal is the signature." }
+      ]
+    },
+    {
+      "id": "rear-brake-clevis-fix",
+      "date": "2026-08-08",
+      "title": "Clevis gets a shoulder bolt, not a clamped one",
+      "detail": "The clevis has to pivot freely while the fastener stays fully torqued, which means a shoulder bolt — or a sleeve through the clevis bottoming against the lever to set the clamp length. Either way the bolt torques all the way down and can't back out while the clevis still swings. Rejected the obvious alternative of backing a plain M8 off slightly and trusting a locknut and threadlocker: it works, but it leaves clamp load set by feel on every reassembly, and a brake fastener that backs out is a brake that stops existing. Blue 243 on the threads regardless.",
+      "category": "decision",
+      "cost": null,
+      "bucket": null,
+      "bullets": [
+        { "label": "Feeds the CNC work", "note": "Pushrod and clevis geometry get settled as part of the rearset design rather than discovered after it's cut." }
       ]
     },
     {
