@@ -887,7 +887,7 @@
     "Watch USPS tracking daily. If it reads Notice Left with no pickup after about a week, line up a Tulsa process server rather than waiting out the full fifteen-day hold.",
     "Spray the Midnight Emerald swatch panel, then compare finalists against physical chip decks at L M Auto Color in Edmond (Tue–Fri) before committing to a kit.",
     "Fairing decision: a full custom kit plus tank cover realistically lands $650–1000, so it waits until the title is settled.",
-    "Order the TCMT headlight shell only — bench test confirmed the LED internals are healthy",
+    "Headlight: source a complete 2019–23 assembly. Check used OEM first; aftermarket full LED runs ~$180–250 landed but 2–4 weeks from China, so order in August if going that route. Not blocked by the fairing order — the stay carries it.",
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
   "tracker": [
@@ -896,15 +896,15 @@
     { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash.",
       "events": ["back-to-okc","radiator-out","radiator-order","ebay-controls-bottle","supplies-day","cooling-oil-day","flir-validation"] },
     { "label": "Fairings", "status": "in-progress", "note": "Tank cover in, rear fender ordered, nose hardware on. The painted set waits on the Midnight Emerald swatch and the title.",
-      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27"] },
+      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27","headlight-shell-dead-end"] },
     { "label": "The sliders", "status": "broken", "note": "Did their job.",
       "events": ["back-to-okc"] },
     { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun.",
       "events": ["back-to-okc","first-start","ebay-controls-bottle","controls-installed"] },
     { "label": "Front brakes", "status": "fixed", "note": "Plumbed with the OEM barb and O-ring and filled with DOT 4 on Jul 28; rear got new EBC pads.",
       "events": ["back-to-okc","front-mc-diagnosis","reservoir-kit","partzilla-oem-order","reservoir-mounted","parts-landing-jul27","front-end-and-brakes"] },
-    { "label": "Front air intake and fairing stay", "status": "fixed", "note": "Duct and fairing/gauge stay installed Jul 28. Headlight shell is the last piece of the nose.",
-      "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes"] },
+    { "label": "Front air intake and fairing stay", "status": "fixed", "note": "Duct and fairing/gauge stay installed Jul 28. Headlight is still open, but it's a full-assembly purchase now, not a shell swap — the original housing is unsalvageable and no empty shell is made for this year.",
+      "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes","headlight-shell-dead-end"] },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho.",
       "events": ["back-to-okc"] },
     { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way.",
@@ -1532,6 +1532,21 @@
       "cost": null,
       "bucket": null,
       "needsReview": true
+    },
+    {
+      "id": "headlight-shell-dead-end",
+      "date": "2026-08-01",
+      "title": "No shell-only headlight exists for the 2019",
+      "detail": "The plan to buy an empty housing and move the known-good LED internals into it is dead. The \"without the bulb interior\" listings are all halogen-era — 03–04, 05–06, and the 13–18 body — where a separate replaceable bulb made an empty shell a sensible product. The 2019 shipped with a sealed factory LED unit, and every aftermarket option for 2019–2023 is a complete assembly with the light engine already in it. Repair is out too: the original housing is cracked in several places, not just at the mounting ears, and sealing is the part you can't fake — a compromised housing means water in the optics. So it's a full assembly purchase, ranked:",
+      "category": "decision",
+      "cost": null,
+      "bucket": null,
+      "bullets": [
+        { "label": "Used OEM 2019–23 unit", "note": "eBay or a parts-out seller. Correct fit, connector and beam pattern, and the bench-tested internals become the spare." },
+        { "label": "Aftermarket full LED", "note": "Roughly $180–250 landed, but 2–4 weeks on a boat from China." },
+        { "label": "New OEM", "note": "Last resort on price." },
+        { "label": "Not gated on the fairings", "note": "The upper fairing stay carries the headlight, not the upper cowl, and the stay went on Jul 28 — so it can be mounted, wired and aimed with no bodywork on the bike. If the aftermarket route wins, that means ordering in August, not September." }
+      ]
     },
     {
       "id": "rearset-cad-complete",
