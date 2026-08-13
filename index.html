@@ -887,24 +887,32 @@
     "Watch USPS tracking daily. If it reads Notice Left with no pickup after about a week, line up a Tulsa process server rather than waiting out the full fifteen-day hold.",
     "Spray the Midnight Emerald swatch panel, then compare finalists against physical chip decks at L M Auto Color in Edmond (Tue–Fri) before committing to a kit.",
     "Fairing decision: a full custom kit plus tank cover realistically lands $650–1000, so it waits until the title is settled.",
-    "Headlight: source a complete 2019–23 assembly. Check used OEM first; aftermarket full LED runs ~$180–250 landed but 2–4 weeks from China, so order in August if going that route. Not blocked by the fairing order — the stay carries it.",
+    "Rear brake back-flush: pads out with the rotor in as the stop, pump the pedal to extend the piston, then force it back with a C-clamp. Four or five cycles watching the reservoir for bubbles — this drives fluid backward fast enough to carry air over the crest and clears anything trapped behind the piston at the same time.",
+    "While the rear pads are out: check the piston extends squarely and doesn't hitch, and that the floating caliper slides freely on its pins. If it's still soft after that, fold the hose crest out of its clips so the MC banjo is the clear high point, or take it for a shop pressure bleed.",
+    "Mount, wire and aim the headlight — the stay carries it, so no bodywork needed first.",
+    "Post-ride punch list: re-torque axle nuts, caliper bolts, rearsets and sprocket nuts after a heat cycle; recheck chain slack and lube; bed in the new pads; leak walk on fork seals, water pump weep hole, drain plug, brake fittings and the fuel pump flange now the tank's full; recheck coolant and oil.",
+    "Street-legal list: mirrors, plate bracket, signals, brake light switches front and rear, dash and speedo check.",
+    "Check the slip-on to midpipe joint and clamp — likely source of the whistle on the ride video, and free to fix.",
+    "Fairings: verify on the fiche whether the rectifier bracket / horn stay on the large left panel has its own part number. Aftermarket ABS kits reproduce outer panels and tabs only — inner panels, metal brackets, grommets and hardware usually aren't included.",
     "Paint the replacement tank satin/gloss black; maybe chase a Midnight Emerald vendor render after"
   ],
   "tracker": [
     { "label": "Gas tank", "status": "fixed", "note": "Swapped on Jul 20 — pump module moved over; flange O-ring reused, replacement on the end-of-build punch list.",
-      "events": ["back-to-okc","tank-won","tank-arrives","tank-swap","partzilla-oem-order"] },
+      "events": ["back-to-okc","tank-won","tank-arrives","tank-swap","partzilla-oem-order","partzilla-tank-hardware-order"] },
     { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash.",
       "events": ["back-to-okc","radiator-out","radiator-order","ebay-controls-bottle","supplies-day","cooling-oil-day","flir-validation"] },
     { "label": "Fairings", "status": "in-progress", "note": "Tank cover in, rear fender ordered, nose hardware on. The painted set waits on the Midnight Emerald swatch and the title.",
-      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27","headlight-shell-dead-end"] },
+      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27","headlight-shell-dead-end","pillion-seat-headlight-arrive"] },
     { "label": "The sliders", "status": "broken", "note": "Did their job.",
       "events": ["back-to-okc"] },
     { "label": "RH clip-on and controls", "status": "fixed", "note": "Used 2023-donor assembly installed late Jun.",
       "events": ["back-to-okc","first-start","ebay-controls-bottle","controls-installed"] },
-    { "label": "Front brakes", "status": "fixed", "note": "Plumbed with the OEM barb and O-ring and filled with DOT 4 on Jul 28; rear got new EBC pads.",
-      "events": ["back-to-okc","front-mc-diagnosis","reservoir-kit","partzilla-oem-order","reservoir-mounted","parts-landing-jul27","front-end-and-brakes"] },
+    { "label": "Front brakes", "status": "fixed", "note": "Plumbed Jul 28, then bled properly at the MC nipple in early August — lever is firm and they've worked throughout.",
+      "events": ["back-to-okc","front-mc-diagnosis","reservoir-kit","partzilla-oem-order","reservoir-mounted","parts-landing-jul27","front-end-and-brakes","front-brake-bleed-fixed"] },
+    { "label": "Rear brake", "status": "broken", "note": "Big dead stroke then partial engagement — will slow the bike, not stop it. Leading suspect is the ejected caliper piston; pedal lever ratio is a separate geometry problem.",
+      "events": ["rear-brake-saga","vacuum-bleeder","partzilla-oem-order","rear-wheel-chain"] },
     { "label": "Front air intake and fairing stay", "status": "fixed", "note": "Duct and fairing/gauge stay installed Jul 28. Headlight is still open, but it's a full-assembly purchase now, not a shell swap — the original housing is unsalvageable and no empty shell is made for this year.",
-      "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes","headlight-shell-dead-end"] },
+      "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes","headlight-shell-dead-end","pillion-seat-headlight-arrive"] },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho.",
       "events": ["back-to-okc"] },
     { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way.",
@@ -1472,7 +1480,7 @@
       "id": "front-end-and-brakes",
       "date": "2026-07-28",
       "title": "Ram air duct, fairing stay, and the front brakes back together",
-      "detail": "Put the new ram air duct and upper fairing stay on, then finished the front brake system — reservoir plumbed to the master cylinder with the OEM barb and O-ring, and reverse-bled with DOT 4 pushed up from the caliper. That closes out the damage the crash did to the front brakes.",
+      "detail": "Put the new ram air duct and upper fairing stay on, then plumbed the front brake system — reservoir onto the master cylinder with the OEM barb and O-ring, and reverse-bled with DOT 4 pushed up from the caliper. Enough to ride on, though the lever wasn't right yet.",
       "category": "wrenching",
       "cost": null,
       "bucket": null,
@@ -1501,10 +1509,15 @@
       "id": "first-ride",
       "date": "2026-07-28",
       "title": "First ride since the crash",
-      "detail": "Rode it that evening — fourteen months after the highside, and roughly two months after it came back to OKC as a pile of damaged parts. Out of the driveway, down to the gas station to fill up, and back. Brakes, cooling, fuel, controls, and fresh rubber all doing their jobs at the same time.",
+      "detail": "Rode it that evening — fourteen months after the highside, and roughly two months after it came back to OKC as a pile of damaged parts. Zip-tied the loose cables, secured the right rearset, and went: out of the driveway, down to the gas station to fill up, and back. Rode it with no right footpeg, so my right foot floated the whole way and there was no rear brake input available.",
       "category": "milestone",
       "cost": null,
       "bucket": null,
+      "bullets": [
+        { "label": "Quickshifter", "note": "Working." },
+        { "label": "Suspension and handling", "note": "Tracks straight, leans predictably, power delivery strong." },
+        { "label": "Whistling on video", "note": "A dual-exhaust sort of sound, traced to the cracked carbon on the slip-on. Replacement is slip-on only, not a full system, and it waits until after fairings." }
+      ],
       "media": [
         { "type": "video", "src": "media/2026-07-28-first-ride.mp4", "poster": "media/2026-07-28-first-ride-poster.jpg", "caption": "Pulling out of the driveway for the first ride since the crash." }
       ]
@@ -1534,6 +1547,89 @@
       "needsReview": true
     },
     {
+      "id": "front-brake-bleed-fixed",
+      "date": "2026-08-05",
+      "dateDisplay": "≈ Wed Aug 5, 2026",
+      "approx": true,
+      "title": "Front lever finally came firm",
+      "detail": "The front brake had been going all the way to the bar — the bike could be pushed with the lever squeezed. Reverse bled from the caliper up, filled and drained the reservoir twice until the fluid ran clean, and conventional bleeding at the caliper changed nothing. The tell was that the reservoir level never dropped across ten to twenty bleeder cycles, which means fluid was never leaving the master cylinder. The air was trapped in the MC bore. The front MC has its own bleed nipple; bleeding there let it out and the lever came firm.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true,
+      "bullets": [
+        { "label": "A remote-reservoir Nissin MC will not self-prime", "note": "Air sitting in the MC bore can't be reached from the caliper end. Bleed the MC nipple first, not last." },
+        { "label": "Watch the reservoir, not the hose", "note": "If the level isn't dropping while you cycle the bleeder, fluid isn't leaving the MC — stop bleeding the caliper and go upstream." }
+      ]
+    },
+    {
+      "id": "rear-wheel-chain",
+      "date": "2026-08-05",
+      "dateDisplay": "≈ Wed Aug 5, 2026",
+      "approx": true,
+      "title": "Rear wheel in, chain set",
+      "detail": "The rear wheel had gone back in without chain tension actually set. Did it properly: cotter pin out, castle nut loose, equal adjustment both sides, slack measured at the chain's tight spot, castle nut to 127 N·m, slack re-checked after torque, new cotter pin tightened to the next slot — never backed off to reach one.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true,
+      "bullets": [
+        { "label": "The axle blocks are aftermarket", "note": "Anodized aluminum adjusters that may not index to the swingarm's cast marks, so alignment has to be checked with string or a straightedge rather than trusting the stamps. Offset versus stock still unmeasured." }
+      ]
+    },
+    {
+      "id": "vacuum-bleeder",
+      "date": "2026-08-08",
+      "title": "Vacuum bleed kit",
+      "detail": "Pittsburgh vacuum bleeder from Harbor Freight, bought to fight the rear brake. $28.23.",
+      "category": "tools",
+      "cost": 28.23,
+      "bucket": "tools",
+      "spendLabel": "Pittsburgh vacuum bleed kit"
+    },
+    {
+      "id": "rear-brake-saga",
+      "date": "2026-08-08",
+      "title": "Rear brake: still not right",
+      "detail": "Two sessions on the rear brake and it's still the open item. Reverse bleeding got clean, air-free fluid into the reservoir and the pedal stayed soft. The rear MC has no bleed nipple, so the banjo at the master cylinder is the bleed point. Cracking it there now produces a spurt rather than an ooze, so the MC is building real pressure — and blocking the outlet by hand proved the MC seals are good. Where it stands: a big dead stroke, then the pedal engages and does move the pads. It'll roughly slow the bike but isn't adequate yet. Fronts are fully functional throughout.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true,
+      "bullets": [
+        { "label": "Leading suspect", "note": "The piston was ejected from the caliper during an earlier reverse bleed with no pads or spacer in. It was pushed back by hand and the caliper went back together with new pads before it could be properly inspected — so either air is trapped behind it or it's seated cocked." },
+        { "label": "Ruled out", "note": "Pushrod free play (the reverse bleed proved the supply port was open), MC seals, and ABS — the bike has none, and the lead near the brake line bracket is the wheel speed sensor. The line does crest between caliper and MC banjo, but that routing is confirmed OEM with all clips in place." },
+        { "label": "Vacuum bleeding won't fix it", "note": "The flow is limited by the MC supply port, not the pump. The pump can pull harder than the MC can feed, so the hose ID never fills and the fluid never moves fast enough to carry a bubble over the crest." },
+        { "label": "Grease the nipple threads", "note": "Grease around the outside of the bleed nipple stopped false bubbles being drawn past the threads. PTFE tape on the threads is the permanent fix next time the system is open." },
+        { "label": "Never bleed a caliper with no pads in it", "note": "That's how the piston came out in the first place." },
+        { "label": "Separate from the air: pedal geometry", "note": "The pedal moves through about half its travel before building any resistance, and that predates the crash. Aftermarket rearsets usually offer several clevis holes that set the lever ratio — mounted too close to the pivot gives long dead stroke and weak pressure. That can't be bled out, and it needs pinning down before the right rearset design is finalized rather than inherited." }
+      ]
+    },
+    {
+      "id": "octane-confirmed",
+      "date": "2026-08-08",
+      "title": "Settled what fuel it takes",
+      "detail": "The 636 runs 12.9:1 compression and Kawasaki specs a minimum AKI of 90. US pumps jump straight from 89 to 91, so 91 is the practical floor. 93 is fine and there's nothing to gain above it on a stock motor. The 95 figure quoted in other markets is the same fuel measured as RON rather than AKI, which is where the forum confusion comes from.",
+      "category": "decision",
+      "cost": null,
+      "bucket": null
+    },
+    {
+      "id": "cold-start-throttle",
+      "date": "2026-08-08",
+      "title": "Cold start needs throttle — not diagnosed yet",
+      "detail": "The bike has always needed throttle input to start cold, and it carried over to the new tank. An injected bike should never need that. The differentiating test is to cycle the key on three or four times, letting the pump prime and shut off each time, before cranking.",
+      "category": "wrenching",
+      "cost": null,
+      "bucket": null,
+      "needsReview": true,
+      "bullets": [
+        { "label": "If it then fires cleanly", "note": "Fuel pressure is bleeding down at rest — a weak pump check valve, a leaking injector, or a leak at the reused pump flange gasket that's already on the punch list." },
+        { "label": "If nothing changes", "note": "It's the air side: a gummed idle speed control actuator, carbon on the throttle plates, or a vacuum leak at the intake boots. The ISC provides cold fast idle, so a sticky one matches the symptom exactly." },
+        { "label": "Probably not the strainer sock", "note": "A clogged sock starves the engine under load, not at idle." }
+      ]
+    },
+    {
       "id": "headlight-shell-dead-end",
       "date": "2026-08-01",
       "title": "No shell-only headlight exists for the 2019",
@@ -1547,6 +1643,33 @@
         { "label": "New OEM", "note": "Last resort on price." },
         { "label": "Not gated on the fairings", "note": "The upper fairing stay carries the headlight, not the upper cowl, and the stay went on Jul 28 — so it can be mounted, wired and aimed with no bodywork on the bike. If the aftermarket route wins, that means ordering in August, not September." }
       ]
+    },
+    {
+      "id": "pillion-seat-headlight-arrive",
+      "date": "2026-08-13",
+      "title": "Pillion seat and a headlight assembly land",
+      "detail": "Two eBay orders placed Aug 8 arrived together: an aftermarket rear passenger seat and a complete aftermarket headlight assembly for the 2019–23 body. The headlight decision landed on aftermarket rather than used OEM — used complete assemblies were running $250–400+ with unknown crash history, and this was roughly half that and in hand within a week. The tradeoff taken knowingly: beam pattern and build quality below OEM, revisit only if night riding proves it inadequate. With the upper fairing stay already on since Jul 28 it can be mounted and wired now, with no bodywork on the bike. The pillion seat replaces the one lost in the crash, so both seats are on it again.",
+      "category": "purchase",
+      "cost": 180.09,
+      "costNote": "two eBay orders",
+      "bucket": "parts",
+      "system": "bodywork",
+      "spendItems": [
+        { "label": "Headlight assembly (aftermarket, 2019–23)", "cost": 130.13, "system": "bodywork" },
+        { "label": "Pillion seat", "cost": 49.96, "system": "bodywork" }
+      ]
+    },
+    {
+      "id": "partzilla-tank-hardware-order",
+      "date": "2026-08-13",
+      "title": "OEM tank hardware and fasteners",
+      "detail": "Partzilla order backing the tank install and general reassembly: two collars, four dampers across two part numbers, four flange bolts, ten nuts (the biggest single line at $55.80), four more nuts across two sizes, a screw, and two washers. $108.85 subtotal, $133.19 with shipping and tax. The dampers and collars are keyed OEM rubber and spacers that generic hardware can't substitute; plain metric bolts got split off to a McMaster order instead.",
+      "category": "purchase",
+      "cost": 133.19,
+      "costNote": "total w/ shipping + tax",
+      "bucket": "parts",
+      "system": "fuel",
+      "spendLabel": "OEM tank hardware and fasteners"
     },
     {
       "id": "rearset-cad-complete",
