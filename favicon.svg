@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<defs>
+<linearGradient id="tbl" x1="12" y1="11" x2="20" y2="21" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#57c3a1"/><stop offset=".5" stop-color="#205c4d"/><stop offset="1" stop-color="#0c1e26"/>
+</linearGradient>
+<radialGradient id="pg" cx=".38" cy=".32" r=".78">
+<stop offset="0" stop-color="#153b32"/><stop offset="1" stop-color="#080d0c"/></radialGradient>
+</defs>
+<rect width="32" height="32" rx="7.2" fill="url(#pg)"/>
+<g stroke="#070f0e" stroke-width=".3" stroke-linejoin="round">
+<polygon points="5,9.5 11,3.5 13.2,9.2 10.2,12.2"    fill="#5cc9a6"/>
+<polygon points="11,3.5 21,3.5 18.8,9.2 13.2,9.2"    fill="#3d9c81"/>
+<polygon points="5,22.5 5,9.5 10.2,12.2 10.2,19.8"   fill="#2f8168"/>
+<polygon points="21,3.5 27,9.5 21.8,12.2 18.8,9.2"   fill="#21604f"/>
+<polygon points="11,28.5 5,22.5 10.2,19.8 13.2,22.8" fill="#17453a"/>
+<polygon points="27,9.5 27,22.5 21.8,19.8 21.8,12.2" fill="#10303a"/>
+<polygon points="21,28.5 11,28.5 13.2,22.8 18.8,22.8" fill="#0c2028"/>
+<polygon points="27,22.5 21,28.5 18.8,22.8 21.8,19.8" fill="#081419"/>
+</g>
+<g stroke="#0a1614" stroke-width=".22" stroke-linejoin="round">
+<polygon points="10.2,12.2 13.2,9.2 14.4,11.0 12.1,13.3"   fill="#49b291"/>
+<polygon points="13.2,9.2 18.8,9.2 17.6,11.0 14.4,11.0"    fill="#358971"/>
+<polygon points="10.2,19.8 10.2,12.2 12.1,13.3 12.1,18.7"  fill="#2b7360"/>
+<polygon points="18.8,9.2 21.8,12.2 19.9,13.3 17.6,11.0"   fill="#1e5748"/>
+<polygon points="13.2,22.8 10.2,19.8 12.1,18.7 14.4,21.0"  fill="#17453c"/>
+<polygon points="21.8,12.2 21.8,19.8 19.9,18.7 19.9,13.3"  fill="#123640"/>
+<polygon points="18.8,22.8 13.2,22.8 14.4,21.0 17.6,21.0"  fill="#0e2630"/>
+<polygon points="21.8,19.8 18.8,22.8 17.6,21.0 19.9,18.7"  fill="#0a1a22"/>
+<polygon points="14.4,11.0 17.6,11.0 19.9,13.3 19.9,18.7 17.6,21.0 14.4,21.0 12.1,18.7 12.1,13.3" fill="url(#tbl)"/>
+</g>
+<polygon points="12.7,15.0 15.9,11.6 17.5,12.1 13.6,16.2" fill="#f4eede" opacity=".52"/>
+<polygon points="12.2,17.9 13.5,16.5 14.3,16.8 12.7,18.4" fill="#f4eede" opacity=".2"/>
+<polygon points="11,3.5 21,3.5 27,9.5 27,22.5 21,28.5 11,28.5 5,22.5 5,9.5" fill="none" stroke="#6fdcb8" stroke-opacity=".34" stroke-width=".8" stroke-linejoin="round"/>
+</svg>
