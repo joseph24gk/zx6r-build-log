@@ -884,7 +884,6 @@
     "benchDate": "2026-05-30"
   },
   "nextUp": [
-    "Machine the rearset on the work CNC — bracket first since its CAM is already done, then the brake lever, throw and footpeg.",
     "Sep 4: tag agency — pay out title, registration and the capped penalties. Photograph both sides of the original certificate BEFORE surrendering it; it does not come back. Keep the counter receipt, it's the proof of transfer until the new title arrives by mail weeks later.",
     "Sep 8 — the only business day between the counter visit and the hearing, since Sep 7 is Labor Day: file the dismissal without prejudice with the Oklahoma County clerk, then call chambers to confirm the Sep 9 setting is released. If chambers doesn't confirm, appear on the 9th anyway with the receipt.",
     "Do not dismiss before the agency has accepted the assignment. The case is free insurance until then, and refiling after a counter rejection costs the filing fee again plus a new setting two months out.",
@@ -922,8 +921,8 @@
       "events": ["back-to-okc","tcmt-headlight","headlight-bench-test","duct-stay-purchase","parts-landing-jul27","front-end-and-brakes","headlight-shell-dead-end","pillion-seat-headlight-arrive"] },
     { "label": "Exhaust", "status": "broken", "note": "Fractured carbon, still attached. Still kinda sounds good tho.",
       "events": ["back-to-okc"] },
-    { "label": "Right rearset", "status": "in-progress", "note": "Bracket being reverse-engineered — prototypes printed, CAM under way.",
-      "events": ["back-to-okc","rearset-teardown","bracket-prints","cam-start"] },
+    { "label": "Right rearset", "status": "fixed", "note": "Bracket cut Aug 3, lever Aug 6, both on the bike the day they came off the mill. Reverse-engineered from the frame and the intact left side, with printed prototypes as the fit check. The clevis joint on the lever is tracked under Rear brake.",
+      "events": ["back-to-okc","rearset-teardown","bracket-prints","cam-start","rearset-bracket-machined","rearset-lever-machined","rearset-installed"] },
     { "label": "Tires and wheels", "status": "in-progress", "note": "Rosso IVs mounted and back on the bike Jul 26 with new valve stems; powder coat in the final cosmetic phase.",
       "events": ["back-to-okc","tires-rosso-iv","tire-mount","tires-arrive","wheels-and-tires-on"] }
   ],
@@ -1681,7 +1680,13 @@
       "id": "pillion-seat-headlight-arrive",
       "date": "2026-08-13",
       "title": "Pillion seat and a headlight assembly land",
-      "detail": "Two eBay orders placed Aug 8 arrived together: an aftermarket rear passenger seat and a complete aftermarket headlight assembly for the 2019–23 body. The headlight decision landed on aftermarket rather than used OEM — used complete assemblies were running $250–400+ with unknown crash history, and this was roughly half that and in hand within a week. The tradeoff taken knowingly: beam pattern and build quality below OEM, revisit only if night riding proves it inadequate. With the upper fairing stay already on since Jul 28 it can be mounted and wired now, with no bodywork on the bike. The pillion seat replaces the one lost in the crash, so both seats are on it again.",
+      "detail": "Two eBay orders placed Aug 8 arrived together: an aftermarket rear passenger seat and a complete aftermarket headlight assembly for the 2019–23 body. The headlight decision landed on aftermarket rather than used OEM — used complete assemblies were running $250–400+ with unknown crash history, and this was roughly half that and in hand within a week. The tradeoff taken knowingly: beam pattern and build quality below OEM, revisit only if night riding proves it inadequate. With the upper fairing stay already on since Jul 28 it can be mounted and wired now, with no bodywork on the bike. The pillion seat replaces the one lost in the crash, and went straight on the same day, so both seats are on it again.",
+      "media": [
+        { "type": "image", "src": "media/2026-08-13-seat-headlight-arrived.jpg", "caption": "Both boxes on the bench the day they landed — shipping labels pixelated, the repo is public." },
+        { "type": "image", "src": "media/2026-08-13-pillion-seat-unboxed.jpg", "caption": "The pillion seat out of its wrap." },
+        { "type": "image", "src": "media/2026-08-13-headlight-unboxed.jpg", "caption": "The aftermarket headlight assembly, still bagged in the box." },
+        { "type": "image", "src": "media/2026-08-13-pillion-seat-installed.jpg", "caption": "Pillion seat on the bike the same afternoon." }
+      ],
       "category": "purchase",
       "cost": 180.09,
       "costNote": "two eBay orders",
@@ -1930,6 +1935,64 @@
         { "label": "Why fitment reviews are close to noise", "note": "A single Chinese manufacturer produces the large majority of aftermarket fairings sold worldwide, with its mark molded into the inside of the panels, and most Western fairing companies are resellers who paint and ship the same shells. Fitment is barely a differentiator between vendors on a popular current model — mixed fitment reviews for any one seller are largely mixed reviews of the category. What genuinely varies is paint execution, communication and refund mechanics, which is why this came down to a clause rather than to a product." },
         { "label": "No vendor supplies the rubber", "note": "Confirmed across every vendor examined: their bolt kits are threaded fasteners only, with no well nuts, dampers, grommets, push pins or anti-rattle pads. The separate OEM hardware order stands regardless of who paints the kit." },
         { "label": "What it lands at", "note": "No spend yet. Roughly $764 for the kit including tank cover and seat cowl, split across two payments, plus about $200 in OEM hardware from a separate supplier. Order targeted Sep 9." }
+      ]
+    },
+    {
+      "id": "rearset-bracket-machined",
+      "date": "2026-08-03",
+      "title": "The right rearset bracket gets cut — and goes on the bike the same day",
+      "detail": "The part that has been a measuring exercise and a stack of printed prototypes since June came off the work CNC as aluminium. Three operations: job 1 roughed the blank and put the holes in, job 3 finished it, and by the afternoon it was bolted to the frame. Set next to the last printed prototype the two are near indistinguishable in outline — which is the whole point of having printed them.",
+      "category": "fabrication",
+      "cost": null,
+      "bucket": null,
+      "system": "rearsets",
+      "bullets": [
+        { "label": "Why the prototypes were worth the filament", "note": "Every fit question — boss spacing, hole pattern, how the pedal sits relative to the frame — was settled in plastic first, so the aluminium only had to be cut once." },
+        { "label": "Reverse-engineered, not copied", "note": "There was no donor part to trace. Mounting geometry came off the frame itself as ground truth and the peg position was mirrored from the intact left side." }
+      ],
+      "media": [
+        { "type": "video", "src": "media/2026-08-03-bracket-job1-mill.mp4", "poster": "media/2026-08-03-bracket-job1-mill-poster.jpg", "caption": "Job 1 running on the work CNC, flood coolant on and chips coming off the blank." },
+        { "type": "image", "src": "media/2026-08-03-bracket-job1-01.jpg", "caption": "The blank part-way through job 1, still held in the vise with the pocket geometry roughed in." },
+        { "type": "image", "src": "media/2026-08-03-bracket-job1-02.jpg", "caption": "Same setup from the side — the truss shape that carries the peg load is already visible." },
+        { "type": "image", "src": "media/2026-08-03-bracket-job3.jpg", "caption": "Job 3, the last operation, cleaning up the outside profile and the mounting faces." },
+        { "type": "image", "src": "media/2026-08-03-bracket-finished-front.jpg", "caption": "Finished bracket, front face — machining marks left as-cut rather than polished." },
+        { "type": "image", "src": "media/2026-08-03-bracket-finished-back.jpg", "caption": "And the back, showing the pocketing that takes the weight out without touching the load paths." },
+        { "type": "image", "src": "media/2026-08-03-bracket-installed-01.jpg", "caption": "Bolted to the frame the same day it came off the mill." },
+        { "type": "image", "src": "media/2026-08-03-bracket-installed-02.jpg", "caption": "Closer in on the installed bracket — the engraved mark on the web is pixelated here, the repo is public." },
+        { "type": "image", "src": "media/2026-08-03-bracket-vs-prototype.jpg", "caption": "The machined part beside the final 3D-printed prototype it was validated against." }
+      ]
+    },
+    {
+      "id": "rearset-lever-machined",
+      "date": "2026-08-06",
+      "title": "Brake lever cut to match",
+      "detail": "The pedal half of the rearset, three days after the bracket. Two operations rather than three — it is a simpler part, but it is the one that has to get the pushrod geometry right, since the lever ratio it sets is what decides how the rear brake feels. Same method as the bracket: print it, check it, then cut it.",
+      "category": "fabrication",
+      "cost": null,
+      "bucket": null,
+      "system": "rearsets",
+      "media": [
+        { "type": "image", "src": "media/2026-08-06-brake-lever-job1-mill.jpg", "caption": "Job 1 on the lever, the profile being roughed out of the plate." },
+        { "type": "video", "src": "media/2026-08-06-brake-lever-job2-mill.mp4", "poster": "media/2026-08-06-brake-lever-job2-mill-poster.jpg", "caption": "Job 2 running — the second and final operation on the lever." },
+        { "type": "video", "src": "media/2026-08-06-brake-lever-finished.mp4", "poster": "media/2026-08-06-brake-lever-finished-poster.jpg", "caption": "The finished lever off the machine, turned over in hand." },
+        { "type": "image", "src": "media/2026-08-06-brake-lever-vs-prototype.jpg", "caption": "Machined lever next to the printed prototype that proved the shape." }
+      ]
+    },
+    {
+      "id": "rearset-installed",
+      "date": "2026-08-06",
+      "title": "Right rearset assembled and on the bike",
+      "detail": "Bracket and lever together on the frame — the right rearset is a made part now, not a bought one. It closes the longest-running fabrication thread on the build, and it closes a specific gap from the first ride: Jul 28 was ridden with the right foot floating and no rear brake input available at all, because there was nothing there to stand on.",
+      "category": "milestone",
+      "cost": null,
+      "bucket": null,
+      "system": "rearsets",
+      "bullets": [
+        { "label": "The sting in the tail", "note": "Two days later this lever turned out to be the rear brake's root cause. It is tapped M8, and the bolt clamping the clevis to it held the pedal off its stop, which kept the master cylinder's compensating port shut and made every bleed attempt futile. Fabricating the part and getting its clevis joint right were two separate jobs, and only one of them was done here." }
+      ],
+      "media": [
+        { "type": "image", "src": "media/2026-08-06-rearset-assembled-01.jpg", "caption": "Bracket, lever and peg assembled on the bike for the first time." },
+        { "type": "image", "src": "media/2026-08-06-rearset-assembled-02.jpg", "caption": "From behind the exhaust — the pedal in place with the pushrod connected." }
       ]
     }
   ]
