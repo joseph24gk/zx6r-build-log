@@ -8,7 +8,9 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-text-size-adjust:100%}
   body{background:var(--pit);color:var(--ivory);
        font-family:-apple-system,system-ui,"Segoe UI",sans-serif;font-size:16px;line-height:1.5;
-       padding:20px 15px calc(150px + env(safe-area-inset-bottom))}
+       padding:20px 15px 26px}
+  /* the footer only exists once the script has run, so only then reserve room for it */
+  body.has-foot{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
   .wrap{max-width:760px;margin:0 auto}
   h1{font-size:23px;letter-spacing:.01em;margin-bottom:3px}
   .sub{color:var(--faint);font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.1em;
@@ -51,10 +53,29 @@
   .out .row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:11px}
   .out .row button{flex:1;min-width:130px;padding:13px 14px;font-size:14px}
   .out textarea{width:100%;min-height:130px;font-family:ui-monospace,monospace;font-size:11.5px}
+  /* shown when nothing scripted has run — iOS Files/Quick Look previews HTML without JS */
+  .ql{border:1px solid var(--sheen-dim);border-radius:14px;background:var(--emerald);
+      padding:15px 16px;margin-bottom:16px;font-size:14.5px}
+  .ql b{display:block;margin-bottom:6px}
+  .ql p{color:var(--dim);margin:0}
+  .ql i{color:var(--ivory);font-style:normal}
+  .gnum{font-family:ui-monospace,monospace;font-size:11px;font-weight:600;letter-spacing:.08em;
+        color:var(--pit);background:var(--sheen);border-radius:6px;padding:3px 7px}
+  .shotn{position:absolute;top:5px;left:5px;background:rgba(10,15,13,.85);border:1px solid var(--line);
+         border-radius:7px;font-family:ui-monospace,monospace;font-size:10px;color:var(--ivory);
+         padding:3px 6px}
 </style></head>
 <body><div class="wrap">
   <h1>New batch for the build log</h1>
-  <div class="sub" id="sub"></div>
+  <div class="sub" id="sub">grouped by when they were taken</div>
+
+  <div class="ql" id="ql">
+    <b>Preview mode — the labelling controls need a real browser.</b>
+    <p>The Files preview can't run them, so nothing here is typeable. Nothing's broken:
+       just reply in chat using the group tags below —
+       <i>&ldquo;G1 the swatch in the sun, G4 indoors on the shop floor.&rdquo;</i>
+       Every shot is numbered too, so <i>&ldquo;#12 is the violet fade edge&rdquo;</i> works.</p>
+  </div>
 
   <div class="out" id="out">
     <h2>Ready to send</h2>
@@ -70,15 +91,21 @@
     <textarea id="json" readonly></textarea>
   </div>
 
-  <div id="groups"></div>
+  <div id="groups"><!--__GROUPS__--></div>
 </div>
 
-<div class="foot">
+<div class="foot" id="foot" hidden>
   <span class="count" id="count"></span>
   <button type="button" class="go" id="submit">Done — build the file</button>
 </div>
 
 <script>
+/* Everything above renders without JS so the batch is still readable in a
+   preview that won't run scripts. From here on we're upgrading it. */
+const _ql = document.getElementById("ql"); if (_ql) _ql.remove();
+document.getElementById("foot").hidden = false;
+document.body.classList.add("has-foot");
+
 const ITEMS = /*__ITEMS__*/;
 const GAP_MIN = 45;
 const host = document.getElementById("groups");

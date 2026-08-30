@@ -119,8 +119,60 @@ if ($Publish) {
   $mobJson = ($mob | ConvertTo-Json -Depth 4 -Compress)
   if ($mob.Count -eq 1) { $mobJson = "[$mobJson]" }
 
+  # Pre-render the same 45-minute grouping as static markup. iOS Quick Look (the
+  # Files app preview) shows HTML but never runs the script, so a JS-only page
+  # comes up blank on the phone. This is what it falls back to.
+  $GAPMIN = 45
+  $groups = @()
+  $cur = $null
+  foreach ($m in $mob) {
+    $t = $null
+    if ($m.taken) { $t = [datetime]::Parse($m.taken) }
+    if ($cur -and $t -and $cur.last -and (($t - $cur.last).TotalMinutes -le $GAPMIN)) {
+      $cur.items = $cur.items + $m
+      $cur.last  = $t
+    } else {
+      $cur = [pscustomobject]@{ items = @($m); last = $t }
+      $groups = $groups + $cur
+    }
+  }
+
+  $sb = New-Object Text.StringBuilder
+  $shotNo = 0
+  for ($g = 0; $g -lt $groups.Count; $g++) {
+    $gi = $groups[$g]
+    # Kept ASCII on purpose: this file has no BOM, so PowerShell 5.1 reads it as
+    # ANSI and any literal en-dash here becomes a parse error. Entities instead.
+    $dates = @($gi.items | ForEach-Object { [Net.WebUtility]::HtmlEncode($_.date) } | Select-Object -Unique)
+    $times = @($gi.items | Where-Object { $_.taken } |
+               ForEach-Object { ([datetime]::Parse($_.taken)).ToString("HH:mm") })
+    $when = ($dates -join " &ndash; ")
+    if ($times.Count) {
+      $when += " &middot; " + $times[0]
+      if ($times.Count -gt 1) { $when += "&ndash;" + $times[$times.Count - 1] }
+    }
+    $n = $gi.items.Count
+    [void]$sb.Append('<div class="grp"><div class="grp-top">')
+    [void]$sb.Append('<span class="gnum">G' + ($g + 1) + '</span>')
+    [void]$sb.Append('<span class="grp-when">' + $when + '</span>')
+    [void]$sb.Append('<span class="grp-n">' + $n + ' shot' + $(if ($n -eq 1) { '' } else { 's' }) + '</span>')
+    [void]$sb.Append('</div><div class="shots">')
+    foreach ($it in $gi.items) {
+      $shotNo++
+      [void]$sb.Append('<div class="shot">')
+      if ($it.thumb) { [void]$sb.Append('<img src="' + $it.thumb + '" alt="">') }
+      [void]$sb.Append('<div class="shotn">#' + $shotNo + '</div>')
+      [void]$sb.Append('<div class="meta"><span>' + [Net.WebUtility]::HtmlEncode($it.kind) + '</span>')
+      [void]$sb.Append('<span class="' + $(if ($it.fallback) { 'warn' } else { '' }) + '">' +
+                       [Net.WebUtility]::HtmlEncode($it.date) + $(if ($it.fallback) { ' ~' } else { '' }) +
+                       '</span></div></div>')
+    }
+    [void]$sb.Append('</div></div>')
+  }
+
   $mtpl = [IO.File]::ReadAllText((Join-Path $here "mobile-review-template.html"), [Text.Encoding]::UTF8)
   $mtpl = $mtpl.Replace("/*__ITEMS__*/", $mobJson)
+  $mtpl = $mtpl.Replace("<!--__GROUPS__-->", $sb.ToString())
   $page = Join-Path $rev "ZX6R photo batch.html"
   [IO.File]::WriteAllText($page, $mtpl, (New-Object Text.UTF8Encoding($false)))
 
