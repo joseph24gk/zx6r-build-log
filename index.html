@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ZX-6R Build Log</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="favicon.ico" sizes="16x16 32x32 48x48">
@@ -159,7 +159,7 @@
     --mono:'IBM Plex Mono',monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth;touch-action:manipulation}
   body{
     background:var(--pit);
     color:var(--ivory);
@@ -236,11 +236,26 @@
   .hdr-media:focus-visible{outline:1px dashed var(--sheen);outline-offset:3px}
   @media (max-width:560px){ .hdr-media{width:34px;height:34px} }
   .gauges{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
     gap:1px;background:var(--line);border:1px solid var(--line);
     border-radius:8px;overflow:hidden;margin-top:30px;position:relative;z-index:1;
   }
-  .gauge{background:rgba(10,15,13,.72);padding:16px 18px 14px}
+  .gauge{background:rgba(10,15,13,.72);padding:16px 18px 14px;display:flex;flex-direction:column;min-width:0}
+  .gauge .num .of{font-size:.55em;font-weight:500;color:var(--ivory-faint);margin-left:3px}
+  /* the strip + one-liner under each number: a glance at what it is made of */
+  .gx{margin-top:auto;padding-top:13px}
+  .gx-strip{display:flex;align-items:flex-end;gap:1px;height:14px;overflow:hidden}
+  .gx-seg{height:5px;min-width:2px;border-radius:1px}
+  .gx-bar{flex:1;min-height:2px;border-radius:1px 1px 0 0}
+  .gx-dot{flex:none;width:6px;height:6px;border-radius:50%;margin-right:3px}
+  .gx-t{margin-top:7px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+        color:var(--ivory-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gx-t b{color:var(--ivory);font-weight:500}
+  @media (max-width:560px){
+    .gauges{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gauge{padding:14px 14px 13px}
+  }
+  @media (min-width:1440px){ .gauges{grid-template-columns:repeat(6,minmax(0,1fr))} }
   .gauge .num{
     font-family:var(--mono);font-weight:600;font-size:clamp(22px,3.4vw,30px);
     color:var(--ivory);font-variant-numeric:tabular-nums;letter-spacing:-.01em;
@@ -2065,11 +2080,12 @@
   <div class="vin" id="hdr-vin"></div>
   <div class="acq" id="hdr-acq"></div>
   <div class="gauges">
-    <div class="gauge"><div class="num money" id="g-parts">$0</div><div class="lbl">Parts &amp; consumables</div></div>
-    <div class="gauge"><div class="num money" id="g-tools">$0</div><div class="lbl">Tools &amp; shop</div></div>
-    <div class="gauge"><div class="num money" id="g-legal">$0</div><div class="lbl">Title &amp; legal</div></div>
-    <div class="gauge"><div class="num" id="g-days">0</div><div class="lbl">Days on the bench</div></div>
-    <div class="gauge"><div class="num" id="g-events">0</div><div class="lbl">Events logged</div></div>
+    <div class="gauge"><div class="num money" id="g-parts">$0</div><div class="lbl">Parts &amp; consumables</div><div class="gx" id="gx-parts"></div></div>
+    <div class="gauge"><div class="num money" id="g-tools">$0</div><div class="lbl">Tools &amp; shop</div><div class="gx" id="gx-tools"></div></div>
+    <div class="gauge"><div class="num money" id="g-legal">$0</div><div class="lbl">Title &amp; legal</div><div class="gx" id="gx-legal"></div></div>
+    <div class="gauge"><div class="num" id="g-days">0</div><div class="lbl">Days on the bench</div><div class="gx" id="gx-days"></div></div>
+    <div class="gauge"><div class="num" id="g-events">0</div><div class="lbl">Events logged</div><div class="gx" id="gx-events"></div></div>
+    <div class="gauge"><div class="num"><span id="g-status">0</span><span class="of" id="g-status-of"></span></div><div class="lbl">Systems fixed</div><div class="gx" id="gx-status"></div></div>
   </div>
 </header>
 
@@ -3055,6 +3071,108 @@
   partsGauge.addEventListener("keydown", function(e){
     if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openSpend(); }
   });
+
+  /* ── gauge detail: what each number is made of, all read from the data ── */
+  (function(){
+    function put(id, stripHtml, text){
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = "<div class='gx-strip' aria-hidden='true'>" + stripHtml + "</div><div class='gx-t'>" + text + "</div>";
+    }
+    function seg(flex, color, extra){
+      return "<span class='gx-seg' style='flex:" + flex + ";background:" + color + (extra || "") + "'></span>";
+    }
+    function shortDate(iso){ var p = iso.split("-"); return MONTHS[+p[1]-1].slice(0,3) + " " + (+p[2]); }
+    function dayNum(iso){ var p = iso.split("-"); return Date.UTC(+p[0], +p[1]-1, +p[2]) / 86400000; }
+    var logged = data.events;   /* gallery snapshots aren't log entries */
+
+    /* parts — where it went, by system */
+    var bySys = {}, pTot = 0;
+    spendEntries().forEach(function(e){ bySys[e.system] = (bySys[e.system] || 0) + e.cost; pTot += e.cost; });
+    var sysKeys = Object.keys(bySys).sort(function(a, b){ return bySys[b] - bySys[a]; });
+    if (pTot > 0){
+      var topM = SYS_META[sysKeys[0]] || SYS_META.other;
+      put("gx-parts",
+        sysKeys.map(function(k){ return seg(bySys[k].toFixed(2), (SYS_META[k] || SYS_META.other).c); }).join(""),
+        "top: <b>" + esc(topM.label.split(" &")[0].toLowerCase()) + "</b> " + Math.round(bySys[sysKeys[0]] / pTot * 100) + "%");
+    }
+
+    /* tools — every purchase, biggest first */
+    var tools = logged.filter(function(e){ return e.bucket === "tools" && typeof e.cost === "number"; })
+                      .sort(function(a, b){ return b.cost - a.cost; });
+    if (tools.length){
+      put("gx-tools",
+        tools.map(function(e, i){ return seg(e.cost.toFixed(2), "var(--cat-tools)", ";opacity:" + (1 - i / tools.length * 0.6).toFixed(2)); }).join(""),
+        "<b>" + tools.length + "</b> buys · top <b>" + moneyRound(tools[0].cost) + "</b>");
+    }
+
+    /* title & legal — each fee in order, and when the spending stopped */
+    var legal = logged.filter(function(e){ return e.bucket === "legal" && typeof e.cost === "number"; })
+                      .sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (legal.length){
+      put("gx-legal",
+        legal.map(function(e){ return seg(e.cost.toFixed(2), "var(--cat-legal)"); }).join(""),
+        "last spend <b>" + shortDate(legal[legal.length - 1].date) + "</b>");
+    }
+
+    /* days — a week-by-week pulse since the bike hit the bench */
+    var bench = data.meta.benchDate, b0 = dayNum(bench);
+    var weeks = Math.max(1, Math.ceil((days + 1) / 7)), wk = [], worked = {};
+    for (var w = 0; w < weeks; w++) wk.push(0);
+    logged.forEach(function(e){
+      if (e.date < bench) return;
+      var i = Math.floor((dayNum(e.date) - b0) / 7);
+      if (i >= 0 && i < weeks){ wk[i]++; worked[e.date] = 1; }
+    });
+    var wMax = Math.max.apply(null, wk) || 1;
+    put("gx-days",
+      wk.map(function(n){
+        return "<span class='gx-bar' style='height:" + (n ? 3 + Math.round(n / wMax * 11) : 2) +
+               "px;background:" + (n ? "var(--sheen)" : "var(--line)") + "'></span>";
+      }).join(""),
+      "<b>" + Object.keys(worked).length + "</b> days worked");
+
+    /* events — the latest dozen, in their category colours */
+    var byDate = logged.slice().sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    if (byDate.length){
+      put("gx-events",
+        byDate.slice(-12).map(function(e){ return "<span class='gx-dot' style='background:var(--cat-" + e.category + ")'></span>"; }).join(""),
+        "latest <b>" + shortDate(byDate[byDate.length - 1].date) + "</b>");
+    }
+
+    /* systems — one segment per tracked system, fixed first */
+    var trk = data.tracker || [], order = { "fixed":0, "in-progress":1, "broken":2 }, n = { "fixed":0, "in-progress":0, "broken":0 };
+    trk.forEach(function(t){ if (n[t.status] != null) n[t.status]++; });
+    var stNum = document.getElementById("g-status");
+    document.getElementById("g-status-of").textContent = "/" + trk.length;
+    countUp(stNum, n.fixed, function(v){ return Math.round(v).toString(); }, 900);
+    put("gx-status",
+      trk.slice().sort(function(a, b){ return (order[a.status] || 0) - (order[b.status] || 0); })
+         .map(function(t){ return seg(1, (TRK_STATUS[t.status] || TRK_STATUS.broken).c); }).join(""),
+      "<b>" + n["in-progress"] + "</b> open · <b>" + n.broken + "</b> broken");
+
+    var stTile = stNum.closest(".gauge");
+    stTile.classList.add("gauge-btn");
+    stTile.setAttribute("role", "button");
+    stTile.setAttribute("tabindex", "0");
+    stTile.title = "Jump to build status";
+    function toTracker(){
+      var t = document.getElementById("tracker");
+      if (t) t.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    }
+    stTile.addEventListener("click", toTracker);
+    stTile.addEventListener("keydown", function(e){
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toTracker(); }
+    });
+  })();
+
+  /* no zoom — iOS Safari ignores user-scalable=no, so pinch is refused here */
+  ["gesturestart", "gesturechange", "gestureend"].forEach(function(t){
+    document.addEventListener(t, function(e){ e.preventDefault(); }, { passive: false });
+  });
+  document.addEventListener("touchmove", function(e){
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
 
   /* every photo and clip in the log, oldest first — the header button */
   var allMediaBtn = document.getElementById("all-media");
