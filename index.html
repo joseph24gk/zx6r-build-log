@@ -24,7 +24,13 @@
                                            // code etc. — keep VIN and other
                                            // PII OUT in case repo goes public
       acquisition: { date, cost, note },   // shown separately, not in totals
-      benchDate: "YYYY-MM-DD"              // "days on the bench" counts from this
+      benchDate: "YYYY-MM-DD",             // "days on the bench" counts from this
+      status,                              // optional one-liner shown as a pill
+                                           // under the subtitle
+      hero: { src, pos }                   // optional header photo. By default
+                                           // the header shows the newest
+                                           // milestone with a photo or clip;
+                                           // pos is a CSS object-position
     }
     nextUp: [ string, ... ]                // short upcoming-work list
     events: [ Event, ... ]                 // order doesn't matter; sorted by date
@@ -37,12 +43,12 @@
                                          // part of the build: crash damage,
                                          // cosmetic work (paint, powder coat),
                                          // upgrades, anything with a status.
-                                         // Renders as the "Build status" panel.
+                                         // Renders as the "Where it stands" panel.
     label    short part name ("Gas tank")
     status   "broken" | "in-progress" | "fixed"
     note     optional one-liner of current state ("parts ordered")
-    events   optional array of event ids. Makes the row clickable —
-             clicking filters the timeline to just those events.
+    events   optional array of event ids. The item's detail then offers
+             a button that filters the log to just those events.
                                          // Events are the history; the tracker
                                          // is now. New damage found later gets
                                          // logged in that day's event AND
@@ -177,7 +183,8 @@
     position:relative;
     margin:26px auto 0;
     max-width:860px;
-    padding:44px 34px 38px;
+    --hpt:44px;--hpx:34px;
+    padding:var(--hpt) var(--hpx) 38px;
     border:1px solid var(--line);
     border-radius:10px;
     background:
@@ -213,6 +220,43 @@
     color:var(--ivory-faint);letter-spacing:.04em;
   }
   .acq b{color:var(--brass);font-weight:500}
+
+  /* header photo: the newest milestone, full bleed on phones */
+  .hero{position:relative;z-index:2;margin:calc(var(--hpt) * -1) calc(var(--hpx) * -1) 24px}
+  .hero[hidden]{display:none}
+  .hero-btn{display:block;width:100%;padding:0;border:0;background:#050807;cursor:zoom-in}
+  .hero-btn img{display:block;width:100%;aspect-ratio:16/11;object-fit:cover}
+  .hero-btn:focus-visible{outline:2px solid var(--sheen);outline-offset:-4px}
+  .hero-cap{
+    position:absolute;left:0;right:0;bottom:0;pointer-events:none;
+    display:flex;flex-direction:column;gap:3px;
+    padding:40px var(--hpx) 14px;
+    background:linear-gradient(transparent, rgba(6,10,9,.9));
+  }
+  .hero-k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--sheen)}
+  .hero-t{font-size:14px;font-weight:600;line-height:1.3;color:var(--ivory)}
+  .hdr-main{position:relative;z-index:2}
+  .status{
+    display:inline-flex;align-items:center;gap:9px;margin-top:14px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ivory);
+    border:1px solid color-mix(in srgb,var(--brass) 40%,var(--line));border-radius:999px;
+    padding:5px 13px 5px 10px;background:rgba(10,15,13,.5);
+  }
+  .status[hidden]{display:none}
+  .status::before{
+    content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--brass);
+    box-shadow:0 0 8px color-mix(in srgb,var(--brass) 60%,transparent);
+  }
+  @media (min-width:760px){
+    header.has-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:30px}
+    header.has-hero .hdr-main{grid-column:1;grid-row:1}
+    /* the photo fills its cell; the text column sets the row height */
+    header.has-hero .hero{grid-column:2;grid-row:1;margin:0;min-height:260px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+    header.has-hero .hero-btn{position:absolute;inset:0}
+    header.has-hero .hero-btn img{height:100%;aspect-ratio:auto}
+    header.has-hero .hero-cap{padding:34px 16px 12px}
+    header.has-hero .gauges{grid-column:1 / -1}
+  }
 
   /* gauges */
   .hdr-top{
@@ -268,7 +312,7 @@
 
   /* ── filters ───────────────────────────────────────────── */
   .filters{
-    display:flex;flex-wrap:wrap;gap:8px;margin:34px 0 6px;
+    display:flex;flex-wrap:wrap;gap:8px;margin:34px 0 6px;position:relative;
   }
   .chip{
     font-family:var(--mono);font-size:11px;letter-spacing:.1em;
@@ -510,9 +554,14 @@
   /* ── horizontal rail ───────────────────────────────────── */
   /* section shells */
   .sec{
+    --spx:22px;
     margin-top:30px;border:1px solid var(--line);border-radius:10px;
     background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
-    padding:20px 22px 18px;
+    padding:20px var(--spx) 18px;
+  }
+  .sec-meta{
+    order:2;flex:none;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.08em;color:var(--ivory-faint);
   }
   .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
   .sec-head h2{
@@ -603,15 +652,9 @@
   @media (max-width:560px){ .rail{height:108px} .rail-flag .t{font-size:11.5px} }
 
   /* ── next up ───────────────────────────────────────────── */
-  .nextup{
-    margin-top:30px;border:1px solid var(--line);border-radius:10px;
-    background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
-    padding:26px 28px;
-  }
-  .nextup h2{
-    font-family:var(--display);font-weight:800;font-size:30px;
-    letter-spacing:.05em;text-transform:uppercase;margin-bottom:14px;
-  }
+  .nextup:not(.open) .nu-more{display:none}
+  .nextup:not(.open) li{overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+  .nu-toggle{margin-top:10px}
   .nextup ul{list-style:none}
   .nextup li{
     padding:9px 0 9px 26px;position:relative;color:var(--ivory-dim);
@@ -624,41 +667,89 @@
     clip-path:polygon(50% 0,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
   }
 
-  .tracker{
-    margin:30px 0 0;border:1px solid var(--line);border-radius:10px;
-    background:linear-gradient(150deg,var(--emerald-deep),var(--panel) 70%);
-    padding:22px 24px 18px;
+  /* ── where it stands ─────────────────────────────────── */
+  .trk-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .trk-group{
+    grid-column:1 / -1;margin:8px 0 -1px;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ivory-faint);
   }
-  .trk-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:8px}
-  .tracker h2{
-    font-family:var(--display);font-weight:800;font-size:24px;
-    letter-spacing:.05em;text-transform:uppercase;
+  .trk-group:first-child{margin-top:0}
+  .trk-chip{
+    display:flex;align-items:center;gap:9px;min-width:0;text-align:left;cursor:pointer;
+    font-family:var(--body);font-size:13px;font-weight:600;line-height:1.25;color:var(--ivory);
+    background:rgba(10,15,13,.45);border:1px solid var(--line);border-radius:8px;padding:9px 11px;
+    transition:border-color .15s,background .15s;
   }
-  .trk-count{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ivory-faint)}
-  .trk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:0 30px}
-  .trk-item{
-    display:flex;gap:11px;padding:8px 0;border-bottom:1px dashed var(--line);
-    width:100%;text-align:left;background:none;border-left:none;border-right:none;border-top:none;
-    font-family:var(--body);
+  .trk-chip:hover{border-color:color-mix(in srgb,var(--trk-c) 50%,var(--line))}
+  .trk-chip[aria-expanded="true"]{
+    border-color:var(--trk-c);
+    background:color-mix(in srgb,var(--trk-c) 10%,rgba(10,15,13,.45));
   }
-  .trk-can{cursor:pointer;transition:background .2s,padding .2s}
-  .trk-can:hover{background:rgba(63,174,140,.05)}
-  .trk-can.on{background:rgba(63,174,140,.09)}
-  .trk-can.on .trk-label{color:var(--sheen)}
-  .trk-n{
-    font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
-    color:var(--ivory-faint);margin-left:8px;opacity:0;transition:opacity .2s;
-  }
-  .trk-can:hover .trk-n,.trk-can.on .trk-n{opacity:1}
-  @media (pointer:coarse){ .trk-n{opacity:1} }
+  .trk-chip.on .trk-label{color:var(--sheen)}
+  .trk-chip:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
+  .trk-label{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   .trk-dot{
-    flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;
-    background:var(--trk-c);
+    flex:none;width:9px;height:9px;border-radius:50%;background:var(--trk-c);
     box-shadow:0 0 8px color-mix(in srgb,var(--trk-c) 45%,transparent);
   }
-  .trk-label{color:var(--ivory);font-weight:600;font-size:13.5px;margin-right:8px}
+  .trk-detail{
+    margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;
+    background:rgba(10,15,13,.5);box-shadow:inset 3px 0 0 var(--trk-c);
+    animation:rdIn .25s ease;
+  }
+  .trk-detail[hidden]{display:none}
+  .trk-d-head{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .trk-d-head b{font-weight:600;color:var(--ivory)}
   .trk-state{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--trk-c)}
-  .trk-note{display:block;color:var(--ivory-faint);font-size:12.5px;line-height:1.5;margin-top:2px}
+  .trk-d-note{margin-top:5px;color:var(--ivory-dim);font-size:13.5px;line-height:1.5}
+  .trk-d-go{margin-top:10px}
+
+  /* ── the story so far ─────────────────────────────────── */
+  .story-strip{
+    list-style:none;display:flex;gap:12px;overflow-x:auto;
+    margin:2px calc(var(--spx) * -1) 0;padding:4px var(--spx) 8px;
+    scroll-snap-type:x mandatory;scroll-padding:0 var(--spx);scrollbar-width:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 30px),transparent);
+            mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 30px),transparent);
+  }
+  .story-strip::-webkit-scrollbar{display:none}
+  .story-strip li{flex:none;width:164px;position:relative;scroll-snap-align:start}
+  .story-strip li + li::before{ /* the thread between chapters */
+    content:"";position:absolute;left:-12px;top:52px;width:12px;height:1px;
+    background:var(--sheen-dim);
+  }
+  .st-card{
+    position:relative;display:flex;flex-direction:column;width:100%;height:100%;padding:0;
+    text-align:left;cursor:pointer;overflow:hidden;
+    font-family:var(--body);color:inherit;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    transition:border-color .2s ease,transform .2s ease;
+  }
+  .st-card:focus-visible{outline:2px solid var(--sheen);outline-offset:2px}
+  @media (hover:hover){ .st-card:hover{border-color:var(--sheen-dim);transform:translateY(-2px)} }
+  .st-latest .st-card{border-color:color-mix(in srgb,var(--sheen) 50%,var(--line))}
+  .st-media{display:block;flex:none;height:104px;background:var(--emerald-deep)}
+  .st-media img{display:block;width:100%;height:100%;object-fit:cover}
+  .st-blank{
+    display:flex;flex-direction:column;justify-content:flex-end;padding:10px 12px;
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(63,174,140,.2), transparent 60%),
+      linear-gradient(150deg,var(--emerald-deep),#08130f);
+  }
+  .st-m{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--sheen)}
+  .st-d{font-family:var(--display);font-weight:800;font-size:44px;line-height:.9;color:var(--ivory)}
+  .st-y{margin-top:3px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ivory-faint)}
+  .st-tag{
+    position:absolute;top:8px;left:8px;padding:2px 8px;border-radius:999px;
+    font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--pit);background:var(--sheen);
+  }
+  .st-when{padding:9px 11px 0;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ivory-faint)}
+  .st-title{
+    padding:3px 11px 11px;font-size:13.5px;font-weight:600;line-height:1.3;color:var(--ivory);
+    overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  }
 
   /* ── spend breakdown modal ────────────────────────────── */
   .gauge-btn{cursor:pointer;transition:background .15s}
@@ -824,8 +915,21 @@
   footer b{color:var(--sheen);font-weight:500}
 
   @media (max-width:560px){
-    header{padding:32px 22px 28px;margin:14px 10px 0;border-radius:8px}
+    header{--hpt:28px;--hpx:20px;padding:var(--hpt) var(--hpx) 24px;margin:14px 14px 0;border-radius:8px}
+    .acq-note{display:none}
     .wrap{padding:0 14px 60px}
+    .sec{--spx:16px;margin-top:16px;padding-top:16px}
+    .trk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    /* filters become one swipeable row instead of six wrapped ones */
+    .filters{
+      flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+      margin:16px calc(var(--spx) * -1) 4px;padding:2px var(--spx) 6px;
+      -webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 26px),transparent);
+              mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 26px),transparent);
+    }
+    .filters::-webkit-scrollbar{display:none}
+    .filters .chip{flex:none}
+    footer{margin-top:28px;font-size:10px;line-height:1.6}
     .ev{padding:14px 15px 13px}
     .ev-cost{margin-left:0;width:100%}
   }
@@ -846,11 +950,12 @@
       grid-template-columns:352px minmax(0,1fr);
       column-gap:26px;
     }
-    #sec-timeline{grid-column:2;grid-row:1 / span 2;margin-top:30px}
-    .tracker{grid-column:1;grid-row:1;margin-top:30px}
-    .nextup{grid-column:1;grid-row:2;margin-top:26px}
+    .story{grid-column:1 / -1;grid-row:1}
+    #sec-timeline{grid-column:2;grid-row:2 / span 2;margin-top:30px}
+    .tracker{grid-column:1;grid-row:2;margin-top:30px}
+    .nextup{grid-column:1;grid-row:3;margin-top:26px}
     footer{grid-column:1 / -1}
-    .trk-grid{grid-template-columns:1fr}
+    .trk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .rail{height:132px}
   }
   @media (min-width:1180px) and (max-width:1439px){
@@ -896,7 +1001,8 @@
     "subtitle": "Ground-up rebuild of a highsided 2019 Kawasaki ZX-6R 636 — mechanical restoration, CNC part fabrication, and a court-ordered title fight, logged as it happens.",
     "idLine": "ZX636HKFA · 636cc · full VIN kept offline",
     "acquisition": { "date": "2025-04-09", "cost": 8000, "note": "private sale Apr 9, 2025 (cash pulled Apr 8); title assignment notarized earlier (notary date Mar 25, year illegible)" },
-    "benchDate": "2026-05-30"
+    "benchDate": "2026-05-30",
+    "status": "Next goal: rideable before winter"
   },
   "nextUp": [
     "Sep 4: tag agency — pay out title, registration and the capped penalties. Photograph both sides of the original certificate BEFORE surrendering it; it does not come back. Keep the counter receipt, it's the proof of transfer until the new title arrives by mail weeks later.",
@@ -2064,6 +2170,11 @@
 </script>
 
 <header>
+  <figure class="hero" id="hdr-hero" hidden>
+    <button type="button" class="hero-btn" id="hdr-hero-btn"><img id="hdr-hero-img" alt=""></button>
+    <figcaption class="hero-cap"><span class="hero-k" id="hdr-hero-k"></span><span class="hero-t" id="hdr-hero-t"></span></figcaption>
+  </figure>
+  <div class="hdr-main">
   <div class="hdr-top">
     <div class="eyebrow">Build log · 2019 Kawasaki ZX-6R 636</div>
     <button type="button" id="all-media" class="hdr-media" aria-label="Browse every photo and clip" title="Browse every photo and clip">
@@ -2077,8 +2188,10 @@
   </div>
   <h1 id="hdr-title"></h1>
   <p class="sub" id="hdr-sub"></p>
+  <div class="status" id="hdr-status" hidden></div>
   <div class="vin" id="hdr-vin"></div>
   <div class="acq" id="hdr-acq"></div>
+  </div>
   <div class="gauges">
     <div class="gauge"><div class="num money" id="g-parts">$0</div><div class="lbl">Parts &amp; consumables</div><div class="gx" id="gx-parts"></div></div>
     <div class="gauge"><div class="num money" id="g-tools">$0</div><div class="lbl">Tools &amp; shop</div><div class="gx" id="gx-tools"></div></div>
@@ -2090,9 +2203,21 @@
 </header>
 
 <div class="wrap">
+  <section class="sec story" id="story" aria-labelledby="story-h">
+    <div class="sec-head"><h2 id="story-h">The story so far</h2><span class="sec-meta" id="story-meta"></span></div>
+    <ol class="story-strip" id="story-strip"></ol>
+  </section>
+
+  <section class="sec tracker" id="tracker" aria-label="Where it stands"></section>
+
+  <section class="sec nextup" aria-labelledby="nextup-h">
+    <div class="sec-head"><h2 id="nextup-h">Up next</h2><span class="sec-meta" id="nextup-meta"></span></div>
+    <ul id="nextup-list"></ul>
+  </section>
+
   <section class="sec" id="sec-timeline">
     <div class="sec-head">
-      <h2>Build timeline</h2>
+      <h2>The full log</h2>
       <button type="button" class="rail-listtoggle" id="rail-listtoggle" aria-expanded="false">full list <span class="chev" aria-hidden="true">▾</span></button>
     </div>
     <div class="filters" id="filters" role="group" aria-label="Filter timeline by category"></div>
@@ -2108,13 +2233,6 @@
     </div>
 
     <div id="timeline" class="tl-hidden"></div>
-  </section>
-
-  <section class="tracker" id="tracker" aria-label="Build status"></section>
-
-  <section class="nextup">
-    <h2>Up next</h2>
-    <ul id="nextup-list"></ul>
   </section>
 
   <footer>
@@ -2167,7 +2285,10 @@
   document.getElementById("hdr-vin").textContent = data.meta.idLine || data.meta.vin || "";
   var acq = data.meta.acquisition;
   document.getElementById("hdr-acq").innerHTML =
-    "Acquired " + fmtDate(acq.date) + " · <b>" + moneyRound(acq.cost) + "</b> · " + esc(acq.note);
+    "Acquired " + fmtDate(acq.date) + " · <b>" + moneyRound(acq.cost) + "</b>" +
+    (acq.note ? "<span class='acq-note'> · " + esc(acq.note) + "</span>" : "");
+  var hdrStatus = document.getElementById("hdr-status");
+  if (hdrStatus && data.meta.status){ hdrStatus.textContent = data.meta.status; hdrStatus.hidden = false; }
 
   /* totals — gallery snapshots join the timeline but not the log-entry count */
   var snapshots = (data.gallery||[]).map(function(s){
@@ -2212,6 +2333,7 @@
 
   /* filters */
   var activeCat = null;
+  var trkRefresh = null; /* set by the tracker so its detail button tracks the filter */
   var filtersEl = document.getElementById("filters");
   var cats = [];
   events.forEach(function(ev){ if (cats.indexOf(ev.category) < 0) cats.push(ev.category); });
@@ -2231,6 +2353,8 @@
     return b;
   }
   function renderFilters(){
+    /* on phones this is a swipeable row, so a re-render must not snap it back */
+    var keep = filtersEl.scrollLeft;
     filtersEl.innerHTML = "";
     var all = chip("All events", null);
     if (activeCat === null) all.classList.add("active");
@@ -2238,6 +2362,14 @@
     cats.forEach(function(c){
       filtersEl.appendChild(chip((CAT_META[c]||{label:c}).label, c));
     });
+    filtersEl.scrollLeft = keep;
+    var on = filtersEl.querySelector(".chip.active");
+    if (on && filtersEl.scrollWidth > filtersEl.clientWidth){
+      var l = on.offsetLeft, r = l + on.offsetWidth;
+      if (l < filtersEl.scrollLeft || r > filtersEl.scrollLeft + filtersEl.clientWidth)
+        filtersEl.scrollTo({ left: Math.max(0, l - 24), behavior: reduceMotion ? "auto" : "smooth" });
+    }
+    if (trkRefresh) trkRefresh();
   }
 
   /* media helpers */
@@ -2528,7 +2660,7 @@
     }, 160);
   }
 
-  /* damage tracker — current state; the timeline stays the history */
+  /* where it stands — current state; the log stays the history */
   var TRK_STATUS = {
     "broken":      { word:"broken",      c:"#c96f63" },
     "in-progress": { word:"in progress", c:"var(--brass)" },
@@ -2538,42 +2670,68 @@
   var trkItems = data.tracker || [];
   if (!trkItems.length){ trkEl.style.display = "none"; }
   else {
-    var tc = { "broken":0, "in-progress":0, "fixed":0 };
-    trkItems.forEach(function(t){ if (tc[t.status] != null) tc[t.status]++; });
-    trkEl.innerHTML =
-      "<div class='trk-head'><h2>Build status</h2>" +
-      "<span class='trk-count'>" + tc["fixed"] + " fixed · " + tc["in-progress"] + " in progress · " + tc["broken"] + " broken</span></div>" +
-      "<div class='trk-grid'>" + trkItems.map(function(t, i){
-        var s = TRK_STATUS[t.status] || TRK_STATUS["broken"];
-        var can = !!(t.events && t.events.length);
-        return "<" + (can ? "button type='button'" : "div") + " class='trk-item" + (can ? " trk-can" : "") +
-          "' data-i='" + i + "' style='--trk-c:" + s.c + "'>" +
-          "<span class='trk-dot' aria-hidden='true'></span>" +
-          "<div><span class='trk-label'>" + esc(t.label) + "</span>" +
-          "<span class='trk-state'>" + s.word + "</span>" +
-          (can ? "<span class='trk-n'>" + t.events.length + " entries</span>" : "") +
-          (t.note ? "<span class='trk-note'>" + esc(t.note) + "</span>" : "") +
-          "</div></" + (can ? "button" : "div") + ">";
-      }).join("") + "</div>";
-    Array.prototype.forEach.call(trkEl.querySelectorAll(".trk-can"), function(b){
-      b.addEventListener("click", function(){
-        var t = trkItems[+b.getAttribute("data-i")];
-        activeTrack = (activeTrack && activeTrack.label === t.label) ? null : t;
-        activeCat = null;
-        Array.prototype.forEach.call(trkEl.querySelectorAll(".trk-can"), function(x){
-          x.classList.toggle("on", activeTrack !== null && x === b);
-        });
-        renderFilters();
-        renderTimelineAnimated();
-        /* only travel if the rail isn't already on screen */
-        var rEl = document.getElementById("rail");
-        if (rEl){
-          var rb = rEl.getBoundingClientRect();
-          if (rb.bottom < 0 || rb.top > (window.innerHeight || 0) - 60)
-            rEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
-        }
+    var trkKey = function(t){ return TRK_STATUS[t.status] ? t.status : "broken"; };
+    var tFixed = trkItems.filter(function(t){ return t.status === "fixed"; }).length;
+    var trkHtml =
+      "<div class='sec-head'><h2>Where it stands</h2>" +
+      "<span class='sec-meta'>" + tFixed + " of " + trkItems.length + " fixed</span></div>" +
+      "<div class='trk-grid'>";
+    /* what still needs work first, what's done last */
+    ["in-progress", "broken", "fixed"].forEach(function(st){
+      var idx = [];
+      trkItems.forEach(function(t, i){ if (trkKey(t) === st) idx.push(i); });
+      if (!idx.length) return;
+      trkHtml += "<div class='trk-group'>" + TRK_STATUS[st].word + " · " + idx.length + "</div>";
+      idx.forEach(function(i){
+        var t = trkItems[i];
+        trkHtml += "<button type='button' class='trk-chip" + (t.events && t.events.length ? " trk-can" : "") +
+          "' data-i='" + i + "' style='--trk-c:" + TRK_STATUS[st].c + "' aria-expanded='false' aria-controls='trk-detail'>" +
+          "<span class='trk-dot' aria-hidden='true'></span><span class='trk-label'>" + esc(t.label) + "</span></button>";
       });
     });
+    trkHtml += "</div><div class='trk-detail' id='trk-detail' hidden></div>";
+    trkEl.innerHTML = trkHtml;
+
+    var trkDetail = trkEl.querySelector("#trk-detail"), trkOpen = -1;
+    var trkChips = trkEl.querySelectorAll(".trk-chip");
+    var trkShow = function(i){
+      trkOpen = i;
+      Array.prototype.forEach.call(trkChips, function(x){
+        x.setAttribute("aria-expanded", +x.getAttribute("data-i") === i ? "true" : "false");
+      });
+      if (i < 0){ trkDetail.hidden = true; trkDetail.innerHTML = ""; return; }
+      var t = trkItems[i], st = TRK_STATUS[trkKey(t)], n = (t.events || []).length;
+      var filtered = !!(activeTrack && activeTrack.label === t.label);
+      trkDetail.style.setProperty("--trk-c", st.c);
+      trkDetail.innerHTML =
+        "<div class='trk-d-head'><b>" + esc(t.label) + "</b><span class='trk-state'>" + st.word + "</span></div>" +
+        (t.note ? "<p class='trk-d-note'>" + esc(t.note) + "</p>" : "") +
+        (n ? "<button type='button' class='rail-listtoggle trk-d-go'>" +
+             (filtered ? "show the whole log again" : "show its " + n + " entr" + (n === 1 ? "y" : "ies") + " in the log &darr;") +
+             "</button>" : "");
+      trkDetail.hidden = false;
+      var go = trkDetail.querySelector(".trk-d-go");
+      if (go) go.addEventListener("click", function(){
+        activeTrack = filtered ? null : t;
+        activeCat = null;
+        Array.prototype.forEach.call(trkEl.querySelectorAll(".trk-can"), function(x){
+          x.classList.toggle("on", !filtered && +x.getAttribute("data-i") === i);
+        });
+        renderFilters();          /* also refreshes this button via trkRefresh */
+        renderTimelineAnimated();
+        if (!filtered){
+          var rEl = document.getElementById("rail");
+          if (rEl) rEl.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        }
+      });
+    };
+    Array.prototype.forEach.call(trkChips, function(b){
+      b.addEventListener("click", function(){
+        var i = +b.getAttribute("data-i");
+        trkShow(trkOpen === i ? -1 : i);
+      });
+    });
+    trkRefresh = function(){ if (trkOpen >= 0) trkShow(trkOpen); };
   }
 
   /* ── spend breakdown modal (click the Parts gauge) ────── */
@@ -3187,13 +3345,118 @@
     else allMediaBtn.addEventListener("click", function(){ openLightbox(0, allMedia); });
   }
 
-  /* next up */
+  /* next up — the first few, the rest behind a toggle */
   var nu = document.getElementById("nextup-list");
-  (data.nextUp||[]).forEach(function(item){
+  var nuSec = nu.closest(".nextup");
+  var nuItems = data.nextUp || [], NU_SHOW = 3;
+  nuItems.forEach(function(item, i){
     var li = document.createElement("li");
     li.textContent = item;
+    if (i >= NU_SHOW) li.className = "nu-more";
     nu.appendChild(li);
   });
+  var nuMeta = document.getElementById("nextup-meta");
+  if (nuMeta) nuMeta.textContent = nuItems.length + " to do";
+  if (!nuItems.length) nuSec.style.display = "none";
+  else if (nuItems.length > NU_SHOW){
+    var nuBtn = document.createElement("button");
+    nuBtn.type = "button";
+    nuBtn.className = "rail-listtoggle nu-toggle";
+    var nuSet = function(open){
+      nuSec.classList.toggle("open", open);
+      nuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      nuBtn.innerHTML = (open ? "show fewer" : "show all " + nuItems.length) +
+        " <span class='chev' aria-hidden='true'>▾</span>";
+    };
+    nuSet(false);
+    nuBtn.addEventListener("click", function(){ nuSet(!nuSec.classList.contains("open")); });
+    nuSec.appendChild(nuBtn);
+  }
+
+  /* milestones carry the story: the header photo and the strip both read them */
+  function stByDate(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }
+  function stPic(ev){
+    var ms = ev.media || [];
+    for (var k = 0; k < ms.length; k++){
+      if (ms[k].type === "image") return ms[k].src;
+      if (ms[k].poster) return ms[k].poster;
+    }
+    return null;
+  }
+  function stShort(ev){
+    if (ev.dateDisplay) return ev.dateDisplay;
+    var f = fmtDate(ev.date);
+    return ev.date.slice(0, 4) === String(new Date().getFullYear()) ? f.replace(/, \d{4}$/, "") : f;
+  }
+  var milestones = data.events.filter(function(e){ return e.category === "milestone"; }).sort(stByDate);
+
+  /* ── header photo: the newest milestone that has one, unless meta.hero picks ── */
+  (function(){
+    var fig = document.getElementById("hdr-hero");
+    if (!fig) return;
+    var hm = data.meta.hero || {}, src = hm.src || null, ev = null;
+    if (src){
+      data.events.forEach(function(e){
+        (e.media || []).forEach(function(m){ if (m.src === src || m.poster === src) ev = e; });
+      });
+    } else {
+      for (var k = milestones.length - 1; k >= 0 && !src; k--){
+        src = stPic(milestones[k]);
+        if (src) ev = milestones[k];
+      }
+    }
+    if (!src) return;
+    var img = document.getElementById("hdr-hero-img"), cap = null;
+    if (ev) (ev.media || []).forEach(function(m){ if (!cap && (m.src === src || m.poster === src)) cap = m.caption; });
+    img.src = src;
+    img.alt = cap || (ev ? ev.title : "");
+    if (hm.pos) img.style.objectPosition = hm.pos;
+    document.getElementById("hdr-hero-k").textContent = hm.src ? "From the log" : "Latest milestone";
+    document.getElementById("hdr-hero-t").textContent = ev ? stShort(ev) + " · " + ev.title : "";
+    var btn = document.getElementById("hdr-hero-btn");
+    btn.setAttribute("aria-label", "Open this photo" + (ev ? ": " + ev.title : ""));
+    btn.addEventListener("click", function(){
+      var list = [], at = 0;
+      events.forEach(function(e){
+        (e.media || []).forEach(function(m){
+          if (m.src === src || m.poster === src) at = list.length;
+          list.push({ m: m, evTitle: e.title, evDate: e.dateDisplay || fmtDate(e.date) });
+        });
+      });
+      openLightbox(at, list);
+    });
+    fig.hidden = false;
+    fig.parentElement.classList.add("has-hero");
+  })();
+
+  /* ── the story so far: every milestone, oldest first ── */
+  (function(){
+    var sec = document.getElementById("story"), list = document.getElementById("story-strip");
+    if (!sec || !list) return;
+    if (!milestones.length){ sec.style.display = "none"; return; }
+    var meta = document.getElementById("story-meta");
+    if (meta) meta.textContent = milestones.length + " chapters";
+    milestones.forEach(function(ev, i){
+      var li = document.createElement("li"), last = i === milestones.length - 1;
+      var pic = stPic(ev), p = ev.date.split("-");
+      if (last) li.className = "st-latest";
+      li.innerHTML =
+        "<button type='button' class='st-card'>" +
+          (pic
+            ? "<span class='st-media'><img src='" + esc(pic).replace(/'/g, "&#39;") + "' alt='' loading='lazy'></span>"
+            : "<span class='st-media st-blank' aria-hidden='true'>" +
+                "<span class='st-m'>" + MONTHS[+p[1] - 1].slice(0, 3) + "</span>" +
+                "<span class='st-d'>" + (ev.approx ? "≈" : "") + (+p[2]) + "</span>" +
+                "<span class='st-y'>" + p[0] + "</span></span>") +
+          (last ? "<span class='st-tag'>latest</span>" : "") +
+          "<span class='st-when'>" + esc(stShort(ev)) + "</span>" +
+          "<span class='st-title'>" + esc(ev.title) + "</span>" +
+        "</button>";
+      li.firstChild.setAttribute("aria-label", ev.title + ", " + (ev.dateDisplay || fmtDate(ev.date)) + " — open in the log");
+      li.firstChild.addEventListener("click", function(){ railGoToDate(ev.date); });
+      list.appendChild(li);
+    });
+  })();
 
   /* ── horizontal rail: one hairline tick per day ─────────── */
   var railEl = document.getElementById("rail"),
@@ -3299,8 +3562,10 @@
       for (var k = 0; k < dy.ev.length; k++)
         if (railMatches(dy.ev[k])){ railActive.push(i); return; }
     });
-    /* any filter change — including clearing — starts at the first match */
-    railSel = railActive.length ? railActive[0] : -1;
+    /* a filtered thread reads from its first entry; the unfiltered log opens on
+       the newest, since the story strip above already starts at the beginning */
+    var threaded = !!(activeCat || activeTrack);
+    railSel = railActive.length ? railActive[threaded ? 0 : railActive.length - 1] : -1;
     railGalStart = gallery.length;
     railRenderDay();
     railPaint();
@@ -3342,18 +3607,25 @@
     });
     if (f >= 0 && railActive.indexOf(f) >= 0){
       var dy2 = railDays[f];
-      railFlagEl.style.left = railX(f) + "px";
       railFlagEl.querySelector(".t").textContent =
         dy2.ev.length > 1 ? dy2.ev.length + " entries" : dy2.ev[0].title;
       var dEl = railFlagEl.querySelector(".d");
       dEl.textContent = fmtDate(dy2.d);
+      /* centred on its tick, but never hanging past either end of the rail */
+      var fHalf = railFlagEl.offsetWidth / 2;
+      railFlagEl.style.left = Math.max(fHalf, Math.min(railEl.clientWidth - fHalf, railX(f))) + "px";
       dEl.style.color = railColor(f);
       railFlagEl.classList.add("on");
     } else railFlagEl.classList.remove("on");
   }
   function railCard(ev, bag){
+    /* the paragraph is the read; bullets fold like the full list's, and the
+       open state is shared with it */
+    var rb = !!(ev.bullets && ev.bullets.length);
+    var rOpen = rb && openIds.hasOwnProperty(ev.id) ? openIds[ev.id] : false;
+    var rLabel = rb ? "+ " + ev.bullets.length + " items" : "";
     var card = document.createElement("article");
-    card.className = "ev" + (ev.category === "milestone" ? " ev-hero" : "");
+    card.className = "ev" + (ev.category === "milestone" ? " ev-hero" : "") + (rb && !rOpen ? " closed" : "");
     card.id = "ev-" + ev.id;
     card.style.setProperty("--node", "var(--cat-" + ev.category + ")");
     card.style.setProperty("--catc", "var(--cat-" + ev.category + ")");
@@ -3368,8 +3640,21 @@
       "</div>" +
       "<h3>" + esc(ev.title) + "</h3>" +
       (ev.detail ? "<p>" + esc(ev.detail) + "</p>" : "") +
-      bulletsHtml(ev) +
+      (rb ? "<div class='ev-more'><div class='ev-more-inner'>" + bulletsHtml(ev) + "</div></div>" +
+            "<button type='button' class='ev-toggle' aria-expanded='" + (rOpen ? "true" : "false") + "'>" +
+            "<span class='tgl'>" + (rOpen ? "less" : rLabel) + "</span><span class='chev' aria-hidden='true'>▾</span></button>"
+          : "") +
       (ev.needsReview ? "<span class='verify'>verify</span>" : "");
+    var rTgl = card.querySelector(".ev-toggle");
+    if (rTgl){
+      rTgl.addEventListener("click", function(){
+        var opening = card.classList.contains("closed");
+        card.classList.toggle("closed");
+        openIds[ev.id] = opening;
+        rTgl.setAttribute("aria-expanded", opening ? "true" : "false");
+        rTgl.querySelector(".tgl").textContent = opening ? "less" : rLabel;
+      });
+    }
     if (ev.media && ev.media.length){
       var strip = document.createElement("div");
       strip.className = "media-strip";
