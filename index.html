@@ -888,7 +888,9 @@
     "Sep 8 — the only business day between the counter visit and the hearing, since Sep 7 is Labor Day: file the dismissal without prejudice with the Oklahoma County clerk, then call chambers to confirm the Sep 9 setting is released. If chambers doesn't confirm, appear on the 9th anyway with the receipt.",
     "Do not dismiss before the agency has accepted the assignment. The case is free insurance until then, and refiling after a counter rejection costs the filing fee again plus a new setting two months out.",
     "Second bike: registration on the Rebel is also lapsed — ask about it at the same counter visit.",
-    "Place the fairing order Sep 9, co-funded. Pay by credit card, single card. Restate the color direction and the sample-stage refund understanding in the order notes so it attaches to the order record rather than only the email thread.",
+    "Confirm the $397 refund lands on the card by Sep 17, then close the PayPal dispute. If it doesn't land, escalate to a claim immediately — don't let it auto-close.",
+    "Order an in-stock black fairing kit from a US warehouse for fast delivery, roughly $540–570, to get the bike rideable before winter. Confirm the kit is physically in a US warehouse before paying.",
+    "Custom green deferred to winter. The swatch panel and the fender test piece carry forward; revisit the unpainted-kit-plus-local-painter route when there's no ride time at stake.",
     "Order OEM fairing hardware — well nuts 92015-1757, dampers 92075-1011 / 92075-1964 / 92160-1183, washers, both rivet sizes, anti-rattle pads, harness clip 92173-0868, mirrors. None of this is in any vendor's bolt kit. Roughly $200.",
     "Rear brake, step one: fit a shoulder bolt or a sleeve at the clevis with blue 243, then confirm the pedal returns fully on its own and the pads actually release.",
     "Then bleed conventionally at the rear caliper nipple — this will be the first bleed done with a working compensating port, so expect to recover air that was never reachable before.",
@@ -905,8 +907,8 @@
       "events": ["back-to-okc","tank-won","tank-arrives","tank-swap","partzilla-oem-order","partzilla-tank-hardware-order"] },
     { "label": "Radiator & bottle", "status": "fixed", "note": "Aftermarket radiator + used OEM bottle installed Jul 11, FLIR-validated Jul 15. Fan survived the crash.",
       "events": ["back-to-okc","radiator-out","radiator-order","ebay-controls-bottle","supplies-day","cooling-oil-day","flir-validation"] },
-    { "label": "Fairings", "status": "in-progress", "note": "Color target validated on a sprayed panel Aug 17. Vendor switched Aug 24 after the challenger agreed in writing to a sprayed sample with photos and video and a refundable first payment if no shade is agreed. Order targeted Sep 9.",
-      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27","headlight-shell-dead-end","pillion-seat-headlight-arrive","midnight-emerald-swatch-sprayed","fairing-vendor-terms-reviewed","fairing-vendor-switched"] },
+    { "label": "Fairings", "status": "in-progress", "note": "First vendor took payment Aug 26, never produced the agreed paint sample, and went silent for sixteen days. Full refund recovered Sep 15 within hours of a formal dispute. Plan reset: in-stock black kit now to get the bike rideable, custom green deferred to winter.",
+      "events": ["back-to-okc","tcmt-headlight","midnight-emerald","rear-fender","paint-swatch-order","parts-landing-jul27","headlight-shell-dead-end","pillion-seat-headlight-arrive","midnight-emerald-swatch-sprayed","fairing-vendor-terms-reviewed","fairing-vendor-switched","fairing-kit-ordered","fairing-vendor-goes-silent","fairing-refund-recovered"] },
     { "label": "Title & registration", "status": "in-progress", "note": "Original certificate found Aug 13 after a sixteen-month search. Court case moot; titling and registration paid out at the counter, dismissal to follow.",
       "events": ["owner-outreach","middleman-outreach","form-777-pivot","title-packet-assembled","form-777-rejected","title-petition-filed","title-service-mailed","title-service-attempt-failed","title-bond-route-closed","process-server-hired","service-fails-record-owner-moved","original-title-found"] },
     { "label": "The sliders", "status": "broken", "note": "Did their job.",
@@ -1993,6 +1995,53 @@
       "media": [
         { "type": "image", "src": "media/2026-08-06-rearset-assembled-01.jpg", "caption": "Bracket, lever and peg assembled on the bike for the first time." },
         { "type": "image", "src": "media/2026-08-06-rearset-assembled-02.jpg", "caption": "From behind the exhaust — the pedal in place with the pushrod connected." }
+      ]
+    },
+    {
+      "id": "fairing-kit-ordered",
+      "date": "2026-08-26",
+      "title": "First half paid on the custom fairing kit",
+      "detail": "Paid the first of two installments on the custom-painted kit — $397 of roughly $764, covering the full fairing set plus tank cover and seat cowl. Ordered two weeks ahead of the planned date, because the vendor's sales manager had confirmed in writing that the first payment carried no commitment and existed only to open an order so paint and design details would not get crossed. The agreed sequence was specific, and was the entire reason this vendor won over the alternative: a physical paint sample sprayed and filmed, sent for approval, colour adjustable, payment refundable if no agreeable shade was reached. Only after that would the kit go into production.",
+      "category": "purchase",
+      "cost": null,
+      "costNote": "$397.00 — refunded in full on Sep 15",
+      "bucket": null,
+      "system": "bodywork",
+      "bullets": [
+        { "label": "Contradicted in forty-four seconds", "note": "An automatically generated service agreement arrived forty-four seconds after the payment cleared. It states the order was already in the production queue and that custom orders cannot be cancelled once production begins — the direct opposite of the written assurance the order was placed on, and generated before any sample existed." },
+        { "label": "And the money went somewhere else", "note": "The payment did not go to either of the vendor's two trading names. It went to a third entity registered to a free consumer email address, which the agreement asserts is affiliated with both." }
+      ]
+    },
+    {
+      "id": "fairing-vendor-goes-silent",
+      "date": "2026-09-12",
+      "title": "Seventeen days, no sample, no reply",
+      "detail": "Seventeen days after payment there is no paint sample, no photos, no video and no reply. Two emails have gone unanswered. A call to the toll-free line reached an automated system that took a name, email, phone number and order number, and promised a response within twenty-four hours. Nothing came. The dispute was filed on September 15. The vendor issued a full refund the same evening, roughly seven hours later.",
+      "category": "decision",
+      "cost": null,
+      "bucket": null,
+      "system": "bodywork",
+      "bullets": [
+        { "label": "The pattern reverses exactly at the payment", "note": "Replies had previously arrived within hours, including weekends and overnight, right up until the money moved. Some of that was already suspect — one follow-up landed two seconds after the message it was chasing, which is automation, not attention — but a human was clearly writing the substantive replies until the payment cleared." },
+        { "label": "Why a dispute rather than a claim", "note": "PayPal allows a dispute up to a hundred and eighty days from payment, so day seventeen left a wide margin. A dispute is a reversible messaging step that preserves the escalation window, so it costs nothing to open early and can be closed if the vendor resurfaces." },
+        { "label": "Three things in parallel", "note": "A final dated request quoting the vendor's own written refund assurance back to them, an independent enquiry to the brand whose name is on the order asking whether the payment entity is authorised to trade under it, and the dispute itself." }
+      ]
+    },
+    {
+      "id": "fairing-refund-recovered",
+      "date": "2026-09-15",
+      "title": "Refund issued seven hours after the dispute was filed",
+      "detail": "The full amount was refunded on the evening of September 15, hours after a PayPal dispute was opened. Three emails, a support ticket raised on the vendor's own website and a voicemail left with their automated line had produced nothing across sixteen days of silence. A formal dispute produced a refund before the end of the same day. That timing is the whole lesson: the vendor was reachable the entire time and simply had no reason to respond until non-response carried a cost. Politeness, patience and clearly worded deadlines achieved nothing. A mechanism with teeth achieved everything within hours.",
+      "category": "decision",
+      "cost": null,
+      "costNote": "$397.00 returned — net spend on fairings is $0.00",
+      "bucket": null,
+      "system": "bodywork",
+      "bullets": [
+        { "label": "It was won weeks before it started", "note": "The refundability of the first payment was made an explicit condition of ordering and confirmed by the vendor in writing. Every exchange stayed in one thread. The dispute was filed with a structured packet of ten exhibits rather than a paragraph of complaint." },
+        { "label": "The most useful exhibit wasn't the angriest one", "note": "It was the vendor's own automated order confirmation, which promised photographs and video for approval before shipping — a commitment made by their own system, independent of any salesperson." },
+        { "label": "Two procedural details worth carrying", "note": "The payment was funded by a debit card rather than a credit card, which would have left materially weaker recourse had the dispute route failed. And the claim was very nearly filed under a vehicle category, which would have been fatal — the protection program excludes vehicles outright, and the purchase had to be characterised accurately as motorcycle parts." },
+        { "label": "A promise of a refund is not a refund", "note": "The dispute stays open until the money is confirmed in the account. A closed dispute cannot be reopened." }
       ]
     }
   ]
